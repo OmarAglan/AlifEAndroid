@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_code_editor/flutter_code_editor.dart';
-import 'package:flutter_highlight/themes/alifDark.dart';
-import 'package:highlight/languages/alif.dart';
+import 'package:alifeditor/libs/theme.dart';
+import 'package:alifeditor/libs/alif.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class IDE extends StatefulWidget {
