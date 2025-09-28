@@ -1,11 +1,11 @@
 import 'dart:io';
-import 'dart:convert';
 import 'package:alifeditor/utils/premissions.dart';
 import 'package:alifeditor/widgets/AppBar.dart';
 import 'package:alifeditor/widgets/IDE.dart';
 import 'package:alifeditor/widgets/Shortcuts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(
@@ -30,9 +30,8 @@ class _AlifRunnerState extends State<AlifRunner> {
   final ValueNotifier<String> output = ValueNotifier("");
   TextEditingController inputController = TextEditingController();
   final ValueNotifier<Process?> runningProcess = ValueNotifier(null);
-  final ValueNotifier<String?> currentFilePath = ValueNotifier(null);
 
-  final ValueNotifier<int> selectedFile = ValueNotifier<int>(-1);
+  final ValueNotifier<Map<dynamic, dynamic>> selectedFile = ValueNotifier({});
   final ValueNotifier<double> fontSize = ValueNotifier<double>(15);
 
   @override
@@ -74,46 +73,23 @@ class _AlifRunnerState extends State<AlifRunner> {
       output.value += "خطأ: لغة ألف ليست متاحة\n";
       return;
     }
-    final prefs = await SharedPreferences.getInstance();
-
     try {
-      final tempDir = "/storage/emulated/0/Documents";
-      final filesData = jsonDecode(prefs.getString('opened_files') ?? '[]');
-      final files = (filesData as List)
-          .map((item) => Map<String, String>.from(item))
-          .toList();
-      if (files.isEmpty) {
-        output.value += "خطأ: لا يوجد ملفات محفوظة\n";
-        return;
-      }
-      if (selectedFile.value < 0 || selectedFile.value >= files.length) {
-        output.value += "خطأ: الملف المحدد غير موجود\n";
-        return;
-      }
-      final Map<String, String> filePaths = {};
-      final alifTempDir = Directory('$tempDir/شفرات لغة الف');
-      if (!await alifTempDir.exists()) {
-        await alifTempDir.create(recursive: true);
-      }
-      for (var file in files) {
-        final filename = file["Name"] ?? "temp.alif";
-        final content = file["Code"] ?? "";
-
-        final tempFile = File('${alifTempDir.path}/$filename');
-        await tempFile.writeAsString(content);
-        filePaths[filename] = tempFile.path;
-      }
-
-      final selectedFilename = files[selectedFile.value]["Name"] ?? "temp.alif";
-      final selectedFilePath = filePaths[selectedFilename]!;
-
       final aliflang = File(alifBinPath!);
       await Process.run('chmod', ['755', aliflang.path]);
       final libDir = alifBinPath!.replaceAll('/libalif.so', '');
 
+      final tempDir = await getTemporaryDirectory();
+      final tempFile = File('${tempDir.path}/${selectedFile.value["Name"]}');
+      await tempFile.writeAsString(selectedFile.value["Code"] ?? "");
+      final codePath = selectedFile.value["Path"] == ""
+          ? tempFile.path
+          : selectedFile.value["Path"];
+
+      print("----------------------------- $codePath : ${selectedFile.value}");
+
       final process = await Process.start(
         "/system/bin/linker64",
-        [aliflang.path, selectedFilePath],
+        [aliflang.path, codePath],
         environment: {'LD_LIBRARY_PATH': libDir},
       );
       runningProcess.value = process;
@@ -152,7 +128,6 @@ class _AlifRunnerState extends State<AlifRunner> {
             children: [
               AlifAppBar(
                 controller: code,
-                currentFilePath: currentFilePath,
                 inputController: inputController,
                 output: output,
                 alifBinPath: alifBinPath,

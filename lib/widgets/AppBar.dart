@@ -14,7 +14,6 @@ class AlifAppBar extends StatefulWidget {
   const AlifAppBar({
     super.key,
     required this.controller,
-    required this.currentFilePath,
     required this.inputController,
     required this.output,
     required this.alifBinPath,
@@ -25,13 +24,12 @@ class AlifAppBar extends StatefulWidget {
   });
 
   final TextEditingController controller;
-  final ValueNotifier<String?> currentFilePath;
   final TextEditingController inputController;
   final ValueNotifier<String> output;
   final String? alifBinPath;
   final ValueNotifier<Process?> runningProcess;
   final VoidCallback runAlifCode;
-  final ValueNotifier<int> selectedFile;
+  final ValueNotifier<Map<dynamic, dynamic>> selectedFile;
   final ValueNotifier<double> fontSize;
 
   @override
@@ -45,20 +43,23 @@ class _AlifAppBarState extends State<AlifAppBar> {
   @override
   Widget build(BuildContext context) {
     ValueNotifier<String> output = widget.output;
-    ValueNotifier<String?> currentFilePath = widget.currentFilePath;
     TextEditingController controller = widget.controller;
     TextEditingController inputController = widget.inputController;
     String? alifBinPath = widget.alifBinPath;
     ValueNotifier<Process?> runningProcess = widget.runningProcess;
     VoidCallback runAlifCode = widget.runAlifCode;
-    ValueNotifier<int> selectedFile = widget.selectedFile;
+    ValueNotifier<Map<dynamic, dynamic>> selectedFile = widget.selectedFile;
 
-    Future<void> saveCode(String code, String? fileName) async {
+    Future<void> saveCode(String code) async {
       try {
         final bytes = Uint8List.fromList(utf8.encode(code));
 
         final path = await FileSaver.instance.saveAs(
-          name: (fileName == null || fileName.isEmpty) ? 'شفرة' : fileName,
+          name:
+              (selectedFile.value["Name"] == null ||
+                  selectedFile.value["Name"].isEmpty)
+              ? 'شفرة'
+              : selectedFile.value["Name"],
           bytes: bytes,
           fileExtension: "alif",
           mimeType: MimeType.other,
@@ -69,7 +70,14 @@ class _AlifAppBarState extends State<AlifAppBar> {
           return;
         }
 
-        currentFilePath.value = path;
+        if (selectedFile.value["Path"] == "") {
+          selectedFile.value = {
+            "id": selectedFile.value["id"],
+            "Name": selectedFile.value["Name"],
+            "Path": path,
+            "Code": code,
+          };
+        }
         output.value += "تم الحفظ في: $path\n";
       } catch (e) {
         output.value += "خطأ أثناء الحفظ: $e\n";
@@ -93,8 +101,14 @@ class _AlifAppBarState extends State<AlifAppBar> {
           final code = await File(path).readAsString();
           setState(() {
             controller.text = code;
-            currentFilePath.value = path;
+            selectedFile.value = {
+              "id": selectedFile.value["id"],
+              "Name": selectedFile.value["Name"],
+              "Path": path,
+              "Code": code,
+            };
           });
+          print("---------------------------------- $path : ${selectedFile.value}");
 
           final prefs = await SharedPreferences.getInstance();
 
@@ -133,7 +147,10 @@ class _AlifAppBarState extends State<AlifAppBar> {
             "Code": code,
           });
           setState(() {
-            selectedFile.value = filesList.length - 1;
+            selectedFile.value = {
+              ...selectedFile.value,
+              "id": filesList.length - 1,
+            };
           });
         }
       } catch (e) {
@@ -164,15 +181,7 @@ class _AlifAppBarState extends State<AlifAppBar> {
                       color: Colors.white,
                       size: 20,
                     ),
-                    onPressed: () => saveCode(
-                      controller.text,
-                      currentFilePath.value
-                          ?.split('/')
-                          .last
-                          .replaceAll('.alif', '')
-                          .replaceAll('.aliflib', '')
-                          .replaceAll('.الف', ''),
-                    ),
+                    onPressed: () => saveCode(controller.text),
                   ),
                   IconButton(
                     icon: const Icon(
@@ -252,12 +261,11 @@ class _AlifAppBarState extends State<AlifAppBar> {
 
           OpenedFiles(
             key: _openedFilesKey,
-            currentFilePath: currentFilePath,
             currentCode: controller,
             output: output,
-            selectedFile: selectedFile.value,
+            selectedFile: selectedFile,
             onFileSelected: (index) {
-              selectedFile.value = index;
+              selectedFile.value = {...selectedFile.value, "id": index};
             },
           ),
         ],
