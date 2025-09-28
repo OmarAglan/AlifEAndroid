@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:convert';
+import 'package:alifeditor/utils/premissions.dart';
 import 'package:alifeditor/widgets/AppBar.dart';
 import 'package:alifeditor/widgets/IDE.dart';
 import 'package:alifeditor/widgets/Shortcuts.dart';
@@ -38,6 +40,7 @@ class _AlifRunnerState extends State<AlifRunner> {
     super.initState();
     _loadSavedFontSize();
     setupAlif();
+    requestStoragePermission(context);
   }
 
   Future<void> _loadSavedFontSize() async {
@@ -68,18 +71,49 @@ class _AlifRunnerState extends State<AlifRunner> {
 
   Future<void> runAlifCode() async {
     if (alifBinPath == null) {
-      output.value += "خطأ: لغة الف ليست متاحة\n";
+      output.value += "خطأ: لغة ألف ليست متاحة\n";
       return;
     }
+    final prefs = await SharedPreferences.getInstance();
 
     try {
+      final tempDir = "/storage/emulated/0/Documents";
+      final filesData = jsonDecode(prefs.getString('opened_files') ?? '[]');
+      final files = (filesData as List)
+          .map((item) => Map<String, String>.from(item))
+          .toList();
+      if (files.isEmpty) {
+        output.value += "خطأ: لا يوجد ملفات محفوظة\n";
+        return;
+      }
+      if (selectedFile.value < 0 || selectedFile.value >= files.length) {
+        output.value += "خطأ: الملف المحدد غير موجود\n";
+        return;
+      }
+      final Map<String, String> filePaths = {};
+      final alifTempDir = Directory('$tempDir/شفرات لغة الف');
+      if (!await alifTempDir.exists()) {
+        await alifTempDir.create(recursive: true);
+      }
+      for (var file in files) {
+        final filename = file["Name"] ?? "temp.alif";
+        final content = file["Code"] ?? "";
+
+        final tempFile = File('${alifTempDir.path}/$filename');
+        await tempFile.writeAsString(content);
+        filePaths[filename] = tempFile.path;
+      }
+
+      final selectedFilename = files[selectedFile.value]["Name"] ?? "temp.alif";
+      final selectedFilePath = filePaths[selectedFilename]!;
+
       final aliflang = File(alifBinPath!);
       await Process.run('chmod', ['755', aliflang.path]);
       final libDir = alifBinPath!.replaceAll('/libalif.so', '');
 
       final process = await Process.start(
         "/system/bin/linker64",
-        [aliflang.path, "-ص", code.text],
+        [aliflang.path, selectedFilePath],
         environment: {'LD_LIBRARY_PATH': libDir},
       );
       runningProcess.value = process;
@@ -91,8 +125,10 @@ class _AlifRunnerState extends State<AlifRunner> {
           output.value += "خطأ: $data";
         }
       });
-      process.exitCode.then((code) {
-        if (code != 0) output.value += "حدث خطأ في الشفرة\n";
+      process.exitCode.then((exitCode) {
+        if (exitCode != 0) {
+          output.value += "حدث خطأ في الشفرة\n[رقم $exitCode]\n";
+        }
       });
     } catch (e, s) {
       output.value += "استثناء أثناء التشغيل: $e\n$s";

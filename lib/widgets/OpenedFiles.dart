@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OpenedFiles extends StatefulWidget {
@@ -57,6 +58,7 @@ class OpenedFilesState extends State<OpenedFiles> {
     final prefs = await SharedPreferences.getInstance();
     final encoded = jsonEncode(files);
     await prefs.setString('opened_files', encoded);
+    await prefs.setInt("last_file", 0);
   }
 
   void _openFile(int fileIndex) async {
@@ -73,7 +75,7 @@ class OpenedFilesState extends State<OpenedFiles> {
       }
     }
 
-    // تغيير المؤشر قبل الـ setState
+    // تغيير المؤشر
     _selectedIndex = fileIndex;
     await prefs.setInt("last_file", fileIndex);
 
@@ -205,6 +207,51 @@ class OpenedFilesState extends State<OpenedFiles> {
     super.dispose();
   }
 
+  void removeFile(int index) async {
+    setState(() {
+      files.removeAt(index);
+      if (_selectedIndex == index) {
+        if (files.isNotEmpty) {
+          _selectedIndex = 0;
+          widget.currentFilePath.value = files[0]["Path"] ?? "";
+          widget.currentCode.text = files[0]["Code"] ?? "";
+        } else {
+          _selectedIndex = -1;
+          widget.currentFilePath.value = null;
+          widget.currentCode.clear();
+        }
+      } else if (_selectedIndex > index) {
+        _selectedIndex--;
+      }
+    });
+
+    await _saveFilesToStorage();
+  }
+  void updateFile(int index, String name) async {
+    setState(() {
+      files[index] = {
+        "Name": name,
+        "Path": files[index]["Path"]!,
+        "Code": files[index]["Code"]!,
+      };
+      if (_selectedIndex == index) {
+        if (files.isNotEmpty) {
+          _selectedIndex = 0;
+          widget.currentFilePath.value = files[0]["Path"] ?? "";
+          widget.currentCode.text = files[0]["Code"] ?? "";
+        } else {
+          _selectedIndex = -1;
+          widget.currentFilePath.value = null;
+          widget.currentCode.clear();
+        }
+      } else if (_selectedIndex > index) {
+        _selectedIndex--;
+      }
+    });
+
+    await _saveFilesToStorage();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -266,57 +313,106 @@ class OpenedFilesState extends State<OpenedFiles> {
               child: InkWell(
                 borderRadius: BorderRadius.circular(15),
                 onTap: () => _openFile(i),
-                onLongPress: () async {
-                  final confirmed = await showDialog<bool>(
+                onLongPress: () {
+                  final nameController = TextEditingController(text: files[i]["Name"]);
+                  
+                  showModalBottomSheet(
                     context: context,
-                    builder: (context) => Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: AlertDialog(
-                        backgroundColor: const Color(0xFF081433),
-                        title: Text(
-                          'تأكيد الحذف',
-                          textAlign: TextAlign.right,
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        content: Text(
-                          'هل أنت متأكد من حذف الملف "${files[i]["Name"]}"؟',
-                          textAlign: TextAlign.right,
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(false),
-                            child: Text('لا'),
-                          ),
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(true),
-                            child: Text('نعم'),
-                          ),
-                        ],
-                      ),
-                    ),
+                    builder: (BuildContext context) {
+                      return StatefulBuilder(
+                        builder: (BuildContext context, StateSetter setModalState) {
+                          return WillPopScope(
+                            onWillPop: () {
+                              nameController.dispose();
+                              return Future.value(true);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(16),
+                                  topRight: Radius.circular(16),
+                                ),
+                                color: Color(0xFF081433),
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Text(
+                                    "تعديل الملف",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Directionality(
+                                    textDirection: TextDirection.rtl,
+                                    child: TextField(
+                                      controller: nameController,
+                                      textAlign: TextAlign.right,
+                                      style: const TextStyle(color: Colors.white),
+                                      decoration: const InputDecoration(
+                                        labelText: "اسم الملف",
+                                        labelStyle: TextStyle(color: Colors.white70),
+                                        hintStyle: TextStyle(color: Colors.white54),
+                                        border: OutlineInputBorder(),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.white54),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.white),
+                                        ),
+                                        contentPadding: EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      TextButton.icon(
+                                        icon: const Icon(LucideIcons.trash, color: Colors.red),
+                                        label: const Text(
+                                          'حذف',
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                        onPressed: () {
+                                          nameController.dispose();
+                                          Navigator.pop(context);
+                                          removeFile(i);
+                                        },
+                                      ),
+                                      const SizedBox(width: 8),
+                                      ElevatedButton.icon(
+                                        icon: const Icon(LucideIcons.save, size: 20),
+                                        label: const Text('حفظ التغييرات'),
+                                        onPressed: () {
+                                          final newName = nameController.text.trim();
+                                          if (newName.isNotEmpty) {
+                                            nameController.dispose();
+                                            Navigator.pop(context);
+                                            updateFile(
+                                              i,
+                                              newName
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
                   );
-
-                  if (confirmed == true) {
-                    setState(() {
-                      files.removeAt(i);
-                      if (_selectedIndex == i) {
-                        if (files.isNotEmpty) {
-                          _selectedIndex = 0;
-                          widget.currentFilePath.value = files[0]["Path"] ?? "";
-                          widget.currentCode.text = files[0]["Code"] ?? "";
-                        } else {
-                          _selectedIndex = -1;
-                          widget.currentFilePath.value = null;
-                          widget.currentCode.clear();
-                        }
-                      } else if (_selectedIndex > i) {
-                        _selectedIndex--;
-                      }
-                    });
-
-                    await _saveFilesToStorage();
-                  }
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
