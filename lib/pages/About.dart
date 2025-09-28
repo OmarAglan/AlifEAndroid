@@ -4,8 +4,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class About extends StatefulWidget {
-  const About({super.key, required this.fontSize});
+  const About({super.key, required this.fontSize, required this.autoSave});
   final ValueNotifier<double> fontSize;
+  final ValueNotifier<bool> autoSave;
 
   @override
   State<About> createState() => _AboutState();
@@ -17,7 +18,7 @@ class _AboutState extends State<About> {
     return SafeArea(
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-        height: 270,
+        height: 300,
         decoration: BoxDecoration(
           color: const Color(0xFF0A0830),
           borderRadius: BorderRadius.only(
@@ -28,7 +29,7 @@ class _AboutState extends State<About> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Settings(fontSize: widget.fontSize),
+            Settings(fontSize: widget.fontSize, autoSave: widget.autoSave),
             Column(
               children: [
                 Column(

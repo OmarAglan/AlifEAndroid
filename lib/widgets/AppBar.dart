@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:alifeditor/pages/About.dart';
+import 'package:alifeditor/utils/filePicker.dart';
 import 'package:alifeditor/widgets/OpenedFiles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../pages/Terminal.dart';
@@ -21,6 +21,7 @@ class AlifAppBar extends StatefulWidget {
     required this.runAlifCode,
     required this.selectedFile,
     required this.fontSize,
+    required this.autoSave,
   });
 
   final TextEditingController controller;
@@ -30,7 +31,9 @@ class AlifAppBar extends StatefulWidget {
   final ValueNotifier<Process?> runningProcess;
   final VoidCallback runAlifCode;
   final ValueNotifier<Map<dynamic, dynamic>> selectedFile;
+
   final ValueNotifier<double> fontSize;
+  final ValueNotifier<bool> autoSave;
 
   @override
   State<AlifAppBar> createState() => _AlifAppBarState();
@@ -85,74 +88,53 @@ class _AlifAppBarState extends State<AlifAppBar> {
     }
 
     Future<void> openCode() async {
-      FilePickerResult? result;
       try {
-        if (Platform.isAndroid) {
-          result = await FilePicker.platform.pickFiles(type: FileType.any);
-        } else {
-          result = await FilePicker.platform.pickFiles(
-            type: FileType.custom,
-            allowedExtensions: ['alif', "aliflib", "الف"],
-          );
-        }
+        showFileManagerModal(context, (selectedPath) async {
+          final file = File(selectedPath);
+          final code = await file.readAsString();
+          final fileName = selectedPath.split(Platform.pathSeparator).last;
 
-        if (result != null && result.files.single.path != null) {
-          final path = result.files.single.path!;
-          final code = await File(path).readAsString();
-          setState(() {
-            controller.text = code;
-            selectedFile.value = {
-              "id": selectedFile.value["id"],
-              "Name": selectedFile.value["Name"],
-              "Path": path,
-              "Code": code,
-            };
-          });
-          print("---------------------------------- $path : ${selectedFile.value}");
+          setState(() => controller.text = code);
 
           final prefs = await SharedPreferences.getInstance();
 
-          List<Map<String, String>> filesList = [];
+          // جلب الملفات القديمة
           final savedFiles = prefs.getString('opened_files');
-          if (savedFiles != null) {
-            final decoded = jsonDecode(savedFiles);
-            if (decoded is List) {
-              filesList = decoded.map<Map<String, String>>((item) {
-                return {
-                  "Name": item["Name"].toString(),
-                  "Path": item["Path"].toString(),
-                  "Code": item["Code"].toString(),
-                };
-              }).toList();
-            }
-          }
+          final List<Map<String, String>> filesList = savedFiles != null
+              ? List<Map<String, String>>.from(
+                  jsonDecode(savedFiles).map(
+                    (item) => {
+                      "Name": item["Name"].toString(),
+                      "Path": item["Path"].toString(),
+                      "Code": item["Code"].toString(),
+                    },
+                  ),
+                )
+              : [];
 
-          final fileName = path.split(Platform.pathSeparator).last;
-          final existingIndex = filesList.indexWhere((f) => f["Path"] == path);
+          // تحديث الملف أو إضافته
+          final fileData = {
+            "Name": fileName,
+            "Path": selectedPath,
+            "Code": code,
+          };
+          final existingIndex = filesList.indexWhere(
+            (f) => f["Path"] == selectedPath,
+          );
+
           if (existingIndex >= 0) {
-            filesList[existingIndex] = {
-              "Name": fileName,
-              "Path": path,
-              "Code": code,
-            };
+            filesList[existingIndex] = fileData;
           } else {
-            filesList.add({"Name": fileName, "Path": path, "Code": code});
+            filesList.add(fileData);
           }
 
+          // حفظ الملفات
           await prefs.setString('opened_files', jsonEncode(filesList));
 
-          _openedFilesKey.currentState?.addOrUpdateFile({
-            "Name": fileName,
-            "Path": path,
-            "Code": code,
-          });
-          setState(() {
-            selectedFile.value = {
-              ...selectedFile.value,
-              "id": filesList.length - 1,
-            };
-          });
-        }
+          // تحديث واجهة المستخدم
+          _openedFilesKey.currentState?.addOrUpdateFile(fileData);
+          selectedFile.value = {...fileData, "id": filesList.length - 1};
+        });
       } catch (e) {
         output.value += "خطأ أثناء الفتح: $e\n";
       }
@@ -244,7 +226,10 @@ class _AlifAppBarState extends State<AlifAppBar> {
                   showModalBottomSheet(
                     context: context,
                     isScrollControlled: true,
-                    builder: (context) => About(fontSize: widget.fontSize),
+                    builder: (context) => About(
+                      fontSize: widget.fontSize,
+                      autoSave: widget.autoSave,
+                    ),
                   );
                 },
                 child: Text(
@@ -264,6 +249,7 @@ class _AlifAppBarState extends State<AlifAppBar> {
             currentCode: controller,
             output: output,
             selectedFile: selectedFile,
+            autoSave: widget.autoSave,
             onFileSelected: (index) {
               selectedFile.value = {...selectedFile.value, "id": index};
             },

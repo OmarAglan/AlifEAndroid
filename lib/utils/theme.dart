@@ -7,7 +7,7 @@ const alifDarkTheme = {
   ),
   'subst': TextStyle(color: Color(0xFFFFFFFF)),
   'keyword': TextStyle(color: Color(0xfffe8730)),
-  'function': TextStyle(color: Color.fromRGBO(218, 183, 68, 1)),
+  'function': TextStyle(color: Color(0xFFDAB744)),
   'operator': TextStyle(color: Color(0xffe06c75)),
   'number': TextStyle(color: Color(0xffd3869b)),
   'string': TextStyle(color: Color(0xff3bb026)),

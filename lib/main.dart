@@ -5,7 +5,6 @@ import 'package:alifeditor/widgets/IDE.dart';
 import 'package:alifeditor/widgets/Shortcuts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(
@@ -32,7 +31,9 @@ class _AlifRunnerState extends State<AlifRunner> {
   final ValueNotifier<Process?> runningProcess = ValueNotifier(null);
 
   final ValueNotifier<Map<dynamic, dynamic>> selectedFile = ValueNotifier({});
+
   final ValueNotifier<double> fontSize = ValueNotifier<double>(15);
+  final ValueNotifier<bool> autoSave = ValueNotifier<bool>(true);
 
   @override
   void initState() {
@@ -78,14 +79,12 @@ class _AlifRunnerState extends State<AlifRunner> {
       await Process.run('chmod', ['755', aliflang.path]);
       final libDir = alifBinPath!.replaceAll('/libalif.so', '');
 
-      final tempDir = await getTemporaryDirectory();
-      final tempFile = File('${tempDir.path}/${selectedFile.value["Name"]}');
+      final defaultDir = Directory('/storage/emulated/0/Documents/شفرات لغة الف');
+      final tempFile = File('${defaultDir.path}/${selectedFile.value["Name"]}');
       await tempFile.writeAsString(selectedFile.value["Code"] ?? "");
       final codePath = selectedFile.value["Path"] == ""
           ? tempFile.path
           : selectedFile.value["Path"];
-
-      print("----------------------------- $codePath : ${selectedFile.value}");
 
       final process = await Process.start(
         "/system/bin/linker64",
@@ -135,6 +134,7 @@ class _AlifRunnerState extends State<AlifRunner> {
                 runAlifCode: runAlifCode,
                 selectedFile: selectedFile,
                 fontSize: fontSize,
+                autoSave: autoSave,
               ),
               IDE(controller: code, focusNode: editorFocus, fontSize: fontSize),
               KeyShortcuts(controller: code, focusNode: editorFocus),
