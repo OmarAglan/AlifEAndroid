@@ -39,6 +39,11 @@ class OpenedFilesState extends State<OpenedFiles> {
     // متابعة أي تعديل على الشفرة
     widget.currentCode.addListener(() {
       _hasChanges = true;
+      if (widget.autoSave.value) {
+        File(
+          files[selectedFile.value["id"]]["Path"]!,
+        ).writeAsString(files[selectedFile.value["id"]]["Code"] ?? "");
+      }
     });
     _startAutoSave();
     _loadFilesFromStorage();
@@ -57,7 +62,7 @@ class OpenedFilesState extends State<OpenedFiles> {
           "Path": selectedFile.value["Path"],
           "Code": widget.currentCode.text,
         };
-        if(widget.autoSave.value){
+        if (widget.autoSave.value) {
           File(
             files[selectedFile.value["id"]]["Path"]!,
           ).writeAsString(files[selectedFile.value["id"]]["Code"] ?? "");
@@ -136,7 +141,7 @@ class OpenedFilesState extends State<OpenedFiles> {
     // عرض الملفات المفتوحة سابقا
     final savedFiles = prefs.getString('opened_files');
     final decoded = jsonDecode(savedFiles!);
-    if (decoded != null && decoded.isNotEmpty) {
+    if (decoded != null && decoded.length > 0) {
       try {
         if (decoded is List) {
           files = decoded.map<Map<String, String>>((item) {
@@ -149,7 +154,6 @@ class OpenedFilesState extends State<OpenedFiles> {
         }
 
         final lastFile = prefs.getInt("last_file");
-        print("------------------------------ $lastFile");
         if (lastFile != null && lastFile < files.length) _openFile(lastFile);
       } catch (e) {
         print("خطأ في قراءة البيانات المخزنة: $e");
@@ -430,6 +434,16 @@ void onLongPress(
                               ),
                             ),
                           ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          files[i]["Path"] == ""
+                              ? "لا يوجد مسار"
+                              : files[i]["Path"]!.replaceAll(
+                                  "/storage/emulated/0",
+                                  "~",
+                                ),
+                          style: TextStyle(color: Colors.white),
                         ),
                         const SizedBox(height: 16),
                         Row(

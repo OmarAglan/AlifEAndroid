@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:path_provider/path_provider.dart';
 
 class Terminal extends StatefulWidget {
   const Terminal({
@@ -8,7 +9,7 @@ class Terminal extends StatefulWidget {
     required this.inputController,
     required this.output,
     required this.alifBinPath,
-    required this.runningProcess,
+    required this.runAlifProcess,
     required this.onClearOutput,
     required this.onSendInput,
     required this.runAlifCode,
@@ -17,7 +18,7 @@ class Terminal extends StatefulWidget {
   final TextEditingController inputController;
   final ValueNotifier<String> output;
   final String? alifBinPath;
-  final Process? runningProcess;
+  final Process? runAlifProcess;
   final VoidCallback onClearOutput;
   final Function(String) onSendInput;
   final VoidCallback runAlifCode;
@@ -27,6 +28,51 @@ class Terminal extends StatefulWidget {
 }
 
 class _TerminalState extends State<Terminal> {
+  Process? runningProcess;
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void runCommandHandler() async {
+    if (widget.runAlifProcess?.exitCode == null) {
+      if (widget.inputController.text == "clear" ||
+          widget.inputController.text == "مسح") {
+        widget.output.value = "";
+        widget.inputController.clear();
+        FocusScope.of(context).requestFocus(_focusNode);
+        return;
+      } else {
+        final process = await runCommand(
+          widget.inputController.text.split(" "),
+          null,
+          widget.output,
+        );
+
+        if (process != null) {
+          setState(() {
+            runningProcess = process;
+          });
+          process.exitCode.then((_) {
+            if (mounted) {
+              setState(() {
+                runningProcess = null;
+              });
+            }
+          });
+        }
+      }
+    } else {
+      widget.onSendInput(widget.inputController.text);
+    }
+
+    widget.inputController.clear();
+    FocusScope.of(context).requestFocus(_focusNode);
+  }
+
   @override
   Widget build(BuildContext context) {
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
@@ -44,7 +90,7 @@ class _TerminalState extends State<Terminal> {
         ),
         height: totalHeight,
         decoration: BoxDecoration(
-          color: const Color(0xFF0A0830),
+          color: Color(0xFF0A0830),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(25),
             topRight: Radius.circular(25),
@@ -107,8 +153,9 @@ class _TerminalState extends State<Terminal> {
               children: [
                 Expanded(
                   child: TextField(
+                    focusNode: _focusNode,
                     controller: widget.inputController,
-                    onSubmitted: widget.onSendInput,
+                    onSubmitted: (_) => runCommandHandler(),
                     textDirection: TextDirection.rtl,
                     style: const TextStyle(color: Colors.white),
                     decoration: const InputDecoration(
@@ -120,8 +167,7 @@ class _TerminalState extends State<Terminal> {
                   ),
                 ),
                 IconButton(
-                  onPressed: () =>
-                      widget.onSendInput(widget.inputController.text),
+                  onPressed: runCommandHandler,
                   icon: const Icon(LucideIcons.arrowRight, color: Colors.white),
                 ),
               ],
@@ -130,5 +176,45 @@ class _TerminalState extends State<Terminal> {
         ),
       ),
     );
+  }
+}
+
+Future<Process?> runCommand(
+  List<String> command,
+  Map<String, String>? environment,
+  ValueNotifier<String> output,
+) async {
+  try {
+    final appDir = await getApplicationSupportDirectory();
+    final userDir = Directory('${appDir.path}/المستخدم');
+    if (!await userDir.exists()) await userDir.create(recursive: true);
+    await Process.run("chmod", ["755", userDir.path]);
+    output.value += "~ > ${command.join(" ")}\n";
+
+    final process = await Process.start(
+      command[0],
+      command.sublist(1),
+      environment: environment,
+      workingDirectory: userDir.path,
+    );
+
+    // قراءة الـ stdout
+    process.stdout.transform(SystemEncoding().decoder).listen((data) {
+      output.value += data;
+    });
+
+    // قراءة الـ stderr
+    process.stderr.transform(SystemEncoding().decoder).listen((data) {
+      if (!data.toLowerCase().contains("warning")) output.value += "خطأ: $data";
+    });
+
+    // لو فيه خطأ في التنفيذ
+    process.exitCode.then((exitCode) {
+      if (exitCode != 0) output.value += "حدث خطأ في الامر\n[رقم $exitCode]\n";
+    });
+    return process;
+  } catch (e) {
+    output.value += "استثناء أثناء التشغيل: $e\n";
+    return null;
   }
 }

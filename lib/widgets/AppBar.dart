@@ -181,7 +181,7 @@ class _AlifAppBarState extends State<AlifAppBar> {
                           inputController: inputController,
                           output: output,
                           alifBinPath: alifBinPath,
-                          runningProcess: runningProcess.value,
+                          runAlifProcess: runningProcess.value,
                           runAlifCode: runAlifCode,
                           onClearOutput: () => output.value = '',
                           onSendInput: (input) {
@@ -207,7 +207,7 @@ class _AlifAppBarState extends State<AlifAppBar> {
                           inputController: inputController,
                           output: output,
                           alifBinPath: alifBinPath,
-                          runningProcess: runningProcess.value,
+                          runAlifProcess: runningProcess.value,
                           runAlifCode: runAlifCode,
                           onClearOutput: () => output.value = '',
                           onSendInput: (input) {
