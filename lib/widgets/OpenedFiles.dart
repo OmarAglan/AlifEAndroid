@@ -50,7 +50,7 @@ class OpenedFilesState extends State<OpenedFiles> {
 
     // عرض الملفات المفتوحة سابقا
     final savedFiles = prefs.getString('opened_files');
-    final lastFile = prefs.getInt("last_file");
+    final lastFile = prefs.getInt("lastFile");
     if (savedFiles != null) {
       final decoded = jsonDecode(savedFiles);
       try {
@@ -142,21 +142,8 @@ class OpenedFilesState extends State<OpenedFiles> {
 
     final prefs = await SharedPreferences.getInstance();
 
-    // حفظ الملف الحالي قبل تغير المؤشر
-    if (selectedFile.value["id"] != null &&
-        selectedFile.value["id"] >= 0 &&
-        selectedFile.value["id"] < files.length) {
-      try {
-        files[selectedFile.value["id"]]["Code"] = widget.currentCode.text;
-        files[selectedFile.value["id"]]["Path"] = selectedFile.value["Path"];
-        await _saveFilesToStorage();
-      } catch (e) {
-        widget.output.value += "خطأ أثناء حفظ الملف الحالي: $e\n";
-      }
-    }
-
     // تغيير المؤشر للملف الجديد
-    await prefs.setInt("last_file", fileIndex);
+    await prefs.setInt("lastFile", fileIndex);
 
     final openedFile = files[fileIndex];
     widget.currentCode.clear();
@@ -199,7 +186,7 @@ class OpenedFilesState extends State<OpenedFiles> {
     final prefs = await SharedPreferences.getInstance();
     final encoded = jsonEncode(files);
     await prefs.setString('opened_files', encoded);
-    await prefs.setInt("last_file", selectedFile.value["id"] ?? 0);
+    await prefs.setInt("lastFile", selectedFile.value["id"] ?? 0);
     if (widget.autoSave.value) {
       File(
         files[selectedFile.value["id"]]["Path"]!,
@@ -257,34 +244,6 @@ class OpenedFilesState extends State<OpenedFiles> {
     await _saveFilesToStorage();
   }
 
-  void updateFile(int index, String name) async {
-    setState(() {
-      files[index] = {
-        "Name": name,
-        "Path": files[index]["Path"]!,
-        "Code": files[index]["Code"]!,
-      };
-    });
-    if (selectedFile.value["id"] == index) {
-      if (files.isNotEmpty) {
-        selectedFile.value = {
-          "id": index,
-          "Name": files[index]["Name"],
-          "Path": files[index]["Path"],
-          "Code": files[index]["Code"],
-        };
-        widget.currentCode.text = files[index]["Code"] ?? "";
-      } else {
-        selectedFile.value = {"id": 0, "Name": "", "Path": "", "Code": ""};
-        widget.currentCode.clear();
-      }
-    } else if (selectedFile.value["id"] > index) {
-      selectedFile.value["id"]--;
-    }
-
-    await _saveFilesToStorage();
-  }
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -335,7 +294,7 @@ class OpenedFilesState extends State<OpenedFiles> {
                 borderRadius: BorderRadius.circular(15),
                 onTap: () => _openFile(i),
                 onLongPress: () =>
-                    onLongPress(i, context, files, removeFile, updateFile),
+                    onLongPress(i, context, files, removeFile, addOrUpdateFile),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -363,7 +322,7 @@ void onLongPress(
   BuildContext context,
   List<Map<String, String>> files,
   void Function(int) removeFile,
-  void Function(int, String) updateFile,
+  void Function(Map<String, String>) addOrUpdateFile,
 ) {
   final nameController = TextEditingController(text: files[i]["Name"]);
 
@@ -483,7 +442,10 @@ void onLongPress(
                                 if (newName.isNotEmpty) {
                                   nameController.dispose();
                                   Navigator.pop(context);
-                                  updateFile(i, newName);
+                                  addOrUpdateFile({
+                                    ...files[i],
+                                    "Name": newName,
+                                  });
                                 }
                               },
                             ),

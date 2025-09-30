@@ -57,31 +57,54 @@ class _AlifAppBarState extends State<AlifAppBar> {
       if (selectedFile.value["Path"] == "") {
         try {
           final bytes = Uint8List.fromList(utf8.encode(code));
-
           final path = await FileSaver.instance.saveAs(
             name:
                 (selectedFile.value["Name"] == null ||
                     selectedFile.value["Name"].isEmpty)
                 ? 'شفرة'
-                : selectedFile.value["Name"],
+                : selectedFile.value["Name"].toString().replaceAll(RegExp(r'\.(الف|alif|aliflib)$'), ""),
             bytes: bytes,
-            fileExtension: "",
+            fileExtension: "الف",
             mimeType: MimeType.other,
           );
-
           if (path == null || path.isEmpty) {
             output.value += "تم إلغاء الحفظ.\n";
             return;
           }
 
-          selectedFile.value = {
-            "id": selectedFile.value["id"],
-            "Name": selectedFile.value["Name"],
+          final prefs = await SharedPreferences.getInstance();
+          // جلب الملفات
+          final savedFiles = prefs.getString('opened_files');
+          final List<Map<String, String>> filesList = savedFiles != null
+              ? List<Map<String, String>>.from(
+                  jsonDecode(savedFiles).map(
+                    (item) => {
+                      "Name": item["Name"].toString(),
+                      "Path": item["Path"].toString(),
+                      "Code": item["Code"].toString(),
+                    },
+                  ),
+                )
+              : [];
+
+          final fileData = {
+            "Name": selectedFile.value["Name"].toString(),
             "Path": path,
             "Code": code,
           };
+          final existingIndex = filesList.indexWhere((p) => p["Path"] == path);
 
-          setState(() {});
+          if (existingIndex >= 0) {
+            filesList[existingIndex] = fileData;
+          } else {
+            filesList.add(fileData);
+          }
+
+          await prefs.setString('opened_files', jsonEncode(filesList));
+
+          // تحديث واجهة المستخدم
+          _openedFilesKey.currentState?.addOrUpdateFile(fileData);
+          selectedFile.value = {...fileData, "id": filesList.length - 1};
 
           output.value += "تم الحفظ في: $path\n";
         } catch (e) {
@@ -94,7 +117,7 @@ class _AlifAppBarState extends State<AlifAppBar> {
       }
     }
 
-    Future<void> openCode() async {
+    Future<void> openFile() async {
       try {
         showFileManagerModal(context, (selectedPath) async {
           final file = File(selectedPath);
@@ -104,7 +127,6 @@ class _AlifAppBarState extends State<AlifAppBar> {
           setState(() => controller.text = code);
 
           final prefs = await SharedPreferences.getInstance();
-
           // جلب الملفات القديمة
           final savedFiles = prefs.getString('opened_files');
           final List<Map<String, String>> filesList = savedFiles != null
@@ -135,7 +157,6 @@ class _AlifAppBarState extends State<AlifAppBar> {
             filesList.add(fileData);
           }
 
-          // حفظ الملفات
           await prefs.setString('opened_files', jsonEncode(filesList));
 
           // تحديث واجهة المستخدم
@@ -162,7 +183,7 @@ class _AlifAppBarState extends State<AlifAppBar> {
                       color: Colors.white,
                       size: 20,
                     ),
-                    onPressed: openCode,
+                    onPressed: openFile,
                   ),
                   IconButton(
                     icon: const Icon(

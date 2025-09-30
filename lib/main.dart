@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:alifeditor/utils/premissions.dart';
 import 'package:alifeditor/widgets/AppBar.dart';
@@ -40,17 +41,19 @@ class _AlifRunnerState extends State<AlifRunner> {
   @override
   void initState() {
     super.initState();
-    _loadSavedFontSize();
+    _loadSavedSettings();
     setupAlif();
-    requestStoragePermission(context);
+    Future.delayed(const Duration(seconds: 3), () {
+      requestStoragePermission(context);
+    });
   }
 
-  Future<void> _loadSavedFontSize() async {
+  Future<void> _loadSavedSettings() async {
     final prefs = await SharedPreferences.getInstance();
     final savedFontSize = prefs.getDouble('EditorFontSize');
-    if (savedFontSize != null) {
-      fontSize.value = savedFontSize;
-    }
+    if (savedFontSize != null) fontSize.value = savedFontSize;
+    final savedAutoSave = prefs.getBool('EditorAutoSave');
+    if (savedAutoSave != null) autoSave.value = savedAutoSave;
   }
 
   String? alifBinPath;
@@ -102,18 +105,24 @@ class _AlifRunnerState extends State<AlifRunner> {
       await Process.run('chmod', ['755', aliflang.path]);
       final libDir = alifBinPath!.replaceAll('/libalif.so', '');
 
-      final tempDir = status.isDenied
-          ? await getTemporaryDirectory()
-          : Directory('/storage/emulated/0/Documents/شفرات لغة الف');
-      final tempFile = File('${tempDir.path}/${selectedFile.value["Name"]}');
-      await tempFile.writeAsString(selectedFile.value["Code"] ?? "");
-      final codePath = selectedFile.value["Path"] == ""
-          ? tempFile.path
-          : selectedFile.value["Path"];
+      final isNotSaved = status.isDenied || selectedFile.value["Path"] == "";
+      var codePath = File("/");
+
+      if (isNotSaved) {
+        var tempDir = await getTemporaryDirectory();
+        codePath = File('${tempDir.path}/${selectedFile.value["Name"]}');
+        await codePath.writeAsString(selectedFile.value["Code"] ?? "");
+      } else {
+        codePath = File(selectedFile.value["Path"]);
+        final fileContent = await codePath.readAsString();
+        if (fileContent != selectedFile.value["Code"]) {
+          output.value += "تحذير: لم يتم حفظ التعديلات الاخيرة ⚠️\n";
+        }
+      }
 
       final process = await Process.start(
         "/system/bin/linker64",
-        [aliflang.path, codePath],
+        [aliflang.path, codePath.path],
         environment: {'LD_LIBRARY_PATH': libDir},
       );
       runningProcess.value = process;

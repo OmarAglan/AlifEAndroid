@@ -88,7 +88,7 @@ class _SettingsState extends State<Settings> {
                       widget.autoSave.value = value;
                       setState(() {});
                       final prefs = await SharedPreferences.getInstance();
-                      await prefs.setBool('auto_save', value);
+                      await prefs.setBool('EditorAutoSave', value);
                     },
                   ),
                   Text(
