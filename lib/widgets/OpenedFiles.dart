@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OpenedFiles extends StatefulWidget {
@@ -39,100 +40,9 @@ class OpenedFilesState extends State<OpenedFiles> {
     // متابعة أي تعديل على الشفرة
     widget.currentCode.addListener(() {
       _hasChanges = true;
-      if (widget.autoSave.value) {
-        File(
-          files[selectedFile.value["id"]]["Path"]!,
-        ).writeAsString(files[selectedFile.value["id"]]["Code"] ?? "");
-      }
     });
-    _startAutoSave();
     _loadFilesFromStorage();
-  }
-
-  void _startAutoSave() {
-    _autoSaveTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_hasChanges &&
-          selectedFile.value["id"] >= 0 &&
-          selectedFile.value["id"] < files.length) {
-        files[selectedFile.value["id"]]["Code"] = widget.currentCode.text;
-        files[selectedFile.value["id"]]["Path"] = selectedFile.value["Path"];
-        selectedFile.value = {
-          "id": selectedFile.value["id"],
-          "Name": selectedFile.value["Name"],
-          "Path": selectedFile.value["Path"],
-          "Code": widget.currentCode.text,
-        };
-        if (widget.autoSave.value) {
-          File(
-            files[selectedFile.value["id"]]["Path"]!,
-          ).writeAsString(files[selectedFile.value["id"]]["Code"] ?? "");
-        }
-        _saveFilesToStorage();
-        _hasChanges = false;
-      }
-    });
-  }
-
-  void _openFile(int fileIndex) async {
-    if (fileIndex < 0 || fileIndex >= files.length) return;
-
-    final defaultDir = Directory('/storage/emulated/0/Documents/شفرات لغة الف');
-    if (!await defaultDir.exists()) await defaultDir.create(recursive: true);
-
-    final tempFile = File('${defaultDir.path}/${files[fileIndex]["Name"]}');
-    await tempFile.writeAsString(files[fileIndex]["Code"] ?? "");
-
-    final prefs = await SharedPreferences.getInstance();
-
-    // حفظ الملف الحالي قبل تغير المؤشر
-    if (selectedFile.value["id"] != null &&
-        selectedFile.value["id"] >= 0 &&
-        selectedFile.value["id"] < files.length) {
-      try {
-        files[selectedFile.value["id"]]["Code"] = widget.currentCode.text;
-        files[selectedFile.value["id"]]["Path"] = selectedFile.value["Path"];
-        await _saveFilesToStorage();
-      } catch (e) {
-        widget.output.value += "خطأ أثناء حفظ الملف الحالي: $e\n";
-      }
-    }
-
-    // تغيير المؤشر للملف الجديد
-    await prefs.setInt("last_file", fileIndex);
-
-    final openedFile = files[fileIndex];
-    widget.currentCode.clear();
-    widget.currentCode.text = openedFile["Code"] ?? "";
-    selectedFile.value = {
-      "id": fileIndex,
-      "Name": openedFile["Name"],
-      "Path": openedFile["Path"] ?? "",
-      "Code": openedFile["Code"] ?? "",
-    };
-
-    setState(() {});
-
-    // القرائة من الملف
-    // if (selectedFile["Path"] != null && selectedFile["Path"]!.isNotEmpty) {
-    //   try {
-    //     final file = File(selectedFile["Path"]!);
-    //     if (await file.exists()) {
-    //       final code = await file.readAsString();
-
-    //       widget.currentCode.text = code;
-    //       selectedFile["Code"] = code;
-    //     } else {
-    //       widget.currentCode.text = selectedFile["Code"] ?? "";
-    //     }
-    //   } catch (e) {
-    //     widget.output.value += "خطأ أثناء فتح الملف: $e\n";
-    //     widget.currentCode.text = selectedFile["Code"] ?? "";
-    //   }
-    // } else {}
-    widget.currentCode.text = openedFile["Code"] ?? "";
-
-    await _saveFilesToStorage();
-    widget.onFileSelected?.call(fileIndex);
+    _startAutoSave();
   }
 
   Future<void> _loadFilesFromStorage() async {
@@ -140,8 +50,9 @@ class OpenedFilesState extends State<OpenedFiles> {
 
     // عرض الملفات المفتوحة سابقا
     final savedFiles = prefs.getString('opened_files');
-    final decoded = jsonDecode(savedFiles!);
-    if (decoded != null && decoded.length > 0) {
+    final lastFile = prefs.getInt("last_file");
+    if (savedFiles != null) {
+      final decoded = jsonDecode(savedFiles);
       try {
         if (decoded is List) {
           files = decoded.map<Map<String, String>>((item) {
@@ -153,8 +64,13 @@ class OpenedFilesState extends State<OpenedFiles> {
           }).toList();
         }
 
-        final lastFile = prefs.getInt("last_file");
-        if (lastFile != null && lastFile < files.length) _openFile(lastFile);
+        selectedFile.value = {
+          "id": lastFile,
+          "Name": files[lastFile!]["Name"],
+          "Path": files[lastFile]["Path"],
+          "Code": files[lastFile]["Code"],
+        };
+        _openFile(lastFile);
       } catch (e) {
         print("خطأ في قراءة البيانات المخزنة: $e");
       }
@@ -186,6 +102,79 @@ class OpenedFilesState extends State<OpenedFiles> {
     }
   }
 
+  void _startAutoSave() {
+    _autoSaveTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_hasChanges &&
+          selectedFile.value["id"] >= 0 &&
+          selectedFile.value["id"] < files.length) {
+        files[selectedFile.value["id"]]["Code"] = widget.currentCode.text;
+        files[selectedFile.value["id"]]["Path"] = selectedFile.value["Path"];
+        selectedFile.value = {
+          "id": selectedFile.value["id"],
+          "Name": selectedFile.value["Name"],
+          "Path": selectedFile.value["Path"],
+          "Code": widget.currentCode.text,
+        };
+        if (widget.autoSave.value) {
+          File(
+            files[selectedFile.value["id"]]["Path"]!,
+          ).writeAsString(files[selectedFile.value["id"]]["Code"] ?? "");
+        }
+        _saveFilesToStorage();
+        _hasChanges = false;
+      }
+    });
+  }
+
+  void _openFile(int fileIndex) async {
+    if (fileIndex < 0 || fileIndex >= files.length) return;
+    var status = await Permission.manageExternalStorage.status;
+
+    if (!status.isDenied) {
+      final defaultDir = Directory(
+        '/storage/emulated/0/Documents/شفرات لغة الف',
+      );
+      if (!await defaultDir.exists()) await defaultDir.create(recursive: true);
+
+      final tempFile = File('${defaultDir.path}/${files[fileIndex]["Name"]}');
+      await tempFile.writeAsString(files[fileIndex]["Code"] ?? "");
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+
+    // حفظ الملف الحالي قبل تغير المؤشر
+    if (selectedFile.value["id"] != null &&
+        selectedFile.value["id"] >= 0 &&
+        selectedFile.value["id"] < files.length) {
+      try {
+        files[selectedFile.value["id"]]["Code"] = widget.currentCode.text;
+        files[selectedFile.value["id"]]["Path"] = selectedFile.value["Path"];
+        await _saveFilesToStorage();
+      } catch (e) {
+        widget.output.value += "خطأ أثناء حفظ الملف الحالي: $e\n";
+      }
+    }
+
+    // تغيير المؤشر للملف الجديد
+    await prefs.setInt("last_file", fileIndex);
+
+    final openedFile = files[fileIndex];
+    widget.currentCode.clear();
+    widget.currentCode.text = openedFile["Code"] ?? "";
+    selectedFile.value = {
+      "id": fileIndex,
+      "Name": openedFile["Name"],
+      "Path": openedFile["Path"] ?? "",
+      "Code": openedFile["Code"] ?? "",
+    };
+
+    setState(() {});
+    widget.currentCode.text = openedFile["Code"] ?? "";
+
+    await _saveFilesToStorage();
+    widget.onFileSelected?.call(fileIndex);
+  }
+
   void addOrUpdateFile(Map<String, String> file) {
     final existingIndex = files.indexWhere((f) => f['Path'] == file['Path']);
     setState(() {
@@ -211,6 +200,11 @@ class OpenedFilesState extends State<OpenedFiles> {
     final encoded = jsonEncode(files);
     await prefs.setString('opened_files', encoded);
     await prefs.setInt("last_file", selectedFile.value["id"] ?? 0);
+    if (widget.autoSave.value) {
+      File(
+        files[selectedFile.value["id"]]["Path"]!,
+      ).writeAsString(files[selectedFile.value["id"]]["Code"] ?? "");
+    }
   }
 
   void createFile({String name = "", String code = ""}) {
@@ -252,7 +246,7 @@ class OpenedFilesState extends State<OpenedFiles> {
           };
           widget.currentCode.text = files[index - 1]["Code"] ?? "";
         } else {
-          selectedFile.value = {"id": -1, "Name": "", "Path": "", "Code": ""};
+          selectedFile.value = {"id": 0, "Name": "", "Path": "", "Code": ""};
           widget.currentCode.clear();
         }
       } else if (selectedFile.value["id"] > index) {
@@ -281,7 +275,7 @@ class OpenedFilesState extends State<OpenedFiles> {
         };
         widget.currentCode.text = files[index]["Code"] ?? "";
       } else {
-        selectedFile.value = {"id": -1, "Name": "", "Path": "", "Code": ""};
+        selectedFile.value = {"id": 0, "Name": "", "Path": "", "Code": ""};
         widget.currentCode.clear();
       }
     } else if (selectedFile.value["id"] > index) {
@@ -457,6 +451,22 @@ void onLongPress(
                               label: const Text(
                                 'حذف',
                                 style: TextStyle(color: Colors.red),
+                              ),
+                              onPressed: () {
+                                nameController.dispose();
+                                Navigator.pop(context);
+                                removeFile(i);
+                              },
+                            ),
+                            const SizedBox(width: 8),
+                            TextButton.icon(
+                              icon: const Icon(
+                                LucideIcons.x,
+                                color: Colors.amber,
+                              ),
+                              label: const Text(
+                                'إغلاق',
+                                style: TextStyle(color: Colors.amber),
                               ),
                               onPressed: () {
                                 nameController.dispose();

@@ -1,31 +1,85 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 Future<bool> requestStoragePermission(BuildContext context) async {
   var status = await Permission.manageExternalStorage.status;
   if (status.isGranted) return true;
-  final result = await showDialog<bool>(
+  final result = await showModalBottomSheet<bool>(
     context: context,
     builder: (context) {
-      return Directionality(
-        textDirection: TextDirection.rtl,
-        child: AlertDialog(
-          title: Text("الوصول للتخزين", style: TextStyle(color: Colors.white)),
-          content: Text(
-            "يحتاج التطبيق الإذن للوصول للملفات لتعديل ملفات شفرة ألف",
-            style: TextStyle(color: Colors.white),
+      return SafeArea(
+        child: Container(
+          padding: EdgeInsets.all(20),
+          height: 300,
+          decoration: BoxDecoration(
+            color: Color(0xFF0A0830),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(25),
+              topRight: Radius.circular(25),
+            ),
           ),
-          backgroundColor: Color(0xFF081433),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: Text("رفض", style: TextStyle(color: Colors.white)),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: Text("منح الإذن", style: TextStyle(color: Colors.white)),
-            ),
-          ],
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                children: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      LucideIcons.folderCog,
+                      size: 40,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    "الوصول للتخزين",
+                    style: TextStyle(color: Colors.white, fontSize: 22),
+                  ),
+                  Text(
+                    "يحتاج التطبيق الإذن للوصول للملفات لتعديل ملفات شفرة ألف",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                ],
+              ),
+
+              Column(
+                children: [
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(Colors.white),
+                    ),
+                    onPressed: () => Navigator.pop(context, true),
+                    child: IntrinsicWidth(
+                      stepWidth: double.infinity,
+                      child: Center(
+                        child: Text(
+                          "منح الإذن",
+                          style: TextStyle(
+                            color: Color(0xFF0A0830),
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: IntrinsicWidth(
+                      stepWidth: double.infinity,
+                      child: Center(
+                        child: Text(
+                          "رفض",
+                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       );
     },

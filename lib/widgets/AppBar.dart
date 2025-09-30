@@ -54,36 +54,43 @@ class _AlifAppBarState extends State<AlifAppBar> {
     ValueNotifier<Map<dynamic, dynamic>> selectedFile = widget.selectedFile;
 
     Future<void> saveCode(String code) async {
-      try {
-        final bytes = Uint8List.fromList(utf8.encode(code));
+      if (selectedFile.value["Path"] == "") {
+        try {
+          final bytes = Uint8List.fromList(utf8.encode(code));
 
-        final path = await FileSaver.instance.saveAs(
-          name:
-              (selectedFile.value["Name"] == null ||
-                  selectedFile.value["Name"].isEmpty)
-              ? 'شفرة'
-              : selectedFile.value["Name"],
-          bytes: bytes,
-          fileExtension: "alif",
-          mimeType: MimeType.other,
-        );
+          final path = await FileSaver.instance.saveAs(
+            name:
+                (selectedFile.value["Name"] == null ||
+                    selectedFile.value["Name"].isEmpty)
+                ? 'شفرة'
+                : selectedFile.value["Name"],
+            bytes: bytes,
+            fileExtension: "",
+            mimeType: MimeType.other,
+          );
 
-        if (path == null || path.isEmpty) {
-          output.value += "تم إلغاء الحفظ.\n";
-          return;
-        }
+          if (path == null || path.isEmpty) {
+            output.value += "تم إلغاء الحفظ.\n";
+            return;
+          }
 
-        if (selectedFile.value["Path"] == "") {
           selectedFile.value = {
             "id": selectedFile.value["id"],
             "Name": selectedFile.value["Name"],
             "Path": path,
             "Code": code,
           };
+
+          setState(() {});
+
+          output.value += "تم الحفظ في: $path\n";
+        } catch (e) {
+          output.value += "خطأ أثناء الحفظ: $e\n";
         }
-        output.value += "تم الحفظ في: $path\n";
-      } catch (e) {
-        output.value += "خطأ أثناء الحفظ: $e\n";
+      } else {
+        File(
+          selectedFile.value["Path"]!,
+        ).writeAsString(selectedFile.value["Code"]);
       }
     }
 
