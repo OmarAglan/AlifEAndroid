@@ -62,7 +62,10 @@ class _AlifAppBarState extends State<AlifAppBar> {
                 (selectedFile.value["Name"] == null ||
                     selectedFile.value["Name"].isEmpty)
                 ? 'شفرة'
-                : selectedFile.value["Name"].toString().replaceAll(RegExp(r'\.(الف|alif|aliflib)$'), ""),
+                : selectedFile.value["Name"].toString().replaceAll(
+                    RegExp(r'\.(الف|alif|aliflib)$'),
+                    "",
+                  ),
             bytes: bytes,
             fileExtension: "الف",
             mimeType: MimeType.other,
@@ -103,7 +106,7 @@ class _AlifAppBarState extends State<AlifAppBar> {
           await prefs.setString('opened_files', jsonEncode(filesList));
 
           // تحديث واجهة المستخدم
-          _openedFilesKey.currentState?.addOrUpdateFile(fileData);
+          _openedFilesKey.currentState?.addOrUpdateFile(fileData, "");
           selectedFile.value = {...fileData, "id": filesList.length - 1};
 
           output.value += "تم الحفظ في: $path\n";
@@ -124,8 +127,6 @@ class _AlifAppBarState extends State<AlifAppBar> {
           final code = await file.readAsString();
           final fileName = selectedPath.split(Platform.pathSeparator).last;
 
-          setState(() => controller.text = code);
-
           final prefs = await SharedPreferences.getInstance();
           // جلب الملفات القديمة
           final savedFiles = prefs.getString('opened_files');
@@ -141,27 +142,30 @@ class _AlifAppBarState extends State<AlifAppBar> {
                 )
               : [];
 
-          // تحديث الملف أو إضافته
-          final fileData = {
-            "Name": fileName,
-            "Path": selectedPath,
-            "Code": code,
-          };
           final existingIndex = filesList.indexWhere(
             (f) => f["Path"] == selectedPath,
           );
 
           if (existingIndex >= 0) {
-            filesList[existingIndex] = fileData;
+            selectedFile.value = {
+              ...filesList[existingIndex],
+              "id": existingIndex,
+            };
+            setState(() => controller.text = filesList[existingIndex]["Code"].toString());
           } else {
+            final fileData = {
+              "Name": fileName,
+              "Path": selectedPath,
+              "Code": code,
+            };
+
             filesList.add(fileData);
+            await prefs.setString('opened_files', jsonEncode(filesList));
+            // تحديث واجهة المستخدم
+            _openedFilesKey.currentState?.addOrUpdateFile(fileData, "");
+            selectedFile.value = {...fileData, "id": filesList.length - 1};
+            setState(() => controller.text = code);
           }
-
-          await prefs.setString('opened_files', jsonEncode(filesList));
-
-          // تحديث واجهة المستخدم
-          _openedFilesKey.currentState?.addOrUpdateFile(fileData);
-          selectedFile.value = {...fileData, "id": filesList.length - 1};
         });
       } catch (e) {
         output.value += "خطأ أثناء الفتح: $e\n";

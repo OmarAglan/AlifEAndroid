@@ -43,9 +43,7 @@ class _AlifRunnerState extends State<AlifRunner> {
     super.initState();
     _loadSavedSettings();
     setupAlif();
-    Future.delayed(const Duration(seconds: 3), () {
-      requestStoragePermission(context);
-    });
+    requestStoragePermission(context);
   }
 
   Future<void> _loadSavedSettings() async {
