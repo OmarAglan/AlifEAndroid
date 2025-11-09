@@ -41,9 +41,11 @@ class _AlifRunnerState extends State<AlifRunner> {
   @override
   void initState() {
     super.initState();
-    _loadSavedSettings();
-    setupAlif();
-    requestStoragePermission(context);
+    Future.microtask(() async {
+      await _loadSavedSettings();
+      await requestStoragePermission(context);
+      await setupAlif();
+    });
   }
 
   Future<void> _loadSavedSettings() async {

@@ -68,23 +68,7 @@ class OpenedFilesState extends State<OpenedFiles> {
         debugPrint("خطأ في قراءة الملفات المخزنة: $e");
       }
     } else {
-      createFile(
-        name: "الأعداد_الاولية.الف",
-        code: """
-# برنامج لإيجاد الأعداد الأولية
-دالة هل_اولي(عدد):
-    اذا عدد < 2: ارجع
-    اذا عدد == 2: اطبع(عدد); ارجع
-    اذا ليس عدد \\\\ 2: ارجع
-    لاجل مقسوم في مدى(3, صحيح(\\^عدد) + 1, 2):
-        اذا ليس عدد \\\\ مقسوم: ارجع
-    اطبع(عدد)
-
-اطبع("أدخل عدد:")
-ن = صحيح(ادخل())
-لاجل ب في مدى(ن): هل_اولي(ب)
-""",
-      );
+      createFile(name: defFile["Name"]!, code: defFile["Code"]!);
     }
   }
 
@@ -147,6 +131,7 @@ class OpenedFilesState extends State<OpenedFiles> {
 
   void createFile({String name = "", String code = ""}) {
     final newFile = {
+      "id": (files.length - 1).toString(),
       "Name": name.isEmpty ? "ملف_جديد_${files.length + 1}.الف" : name,
       "Path": "",
       "Code": code,
@@ -165,35 +150,43 @@ class OpenedFilesState extends State<OpenedFiles> {
   }
 
   void addOrUpdateFile(Map<String, String> file, String type) {
-    final existingIndex = files.indexWhere((f) => f['Path'] == file['Path'] && file["Path"] != "");
-    setState(() {
-      if (existingIndex >= 0 || type == "Update") {
+    final existingIndex = files.indexWhere(
+      (f) =>
+          f["Path"] != "" ? f['Path'] == file['Path'] : f["id"] == file["id"],
+    );
+    print(type);
+    print(existingIndex);
+    if (existingIndex >= 0) {
+      if (type == "Update") {
+        File(file["Path"]!).rename(file["Name"]!);
         files[existingIndex] = file;
       } else if (type == "Close" || type == "Delete") {
-        setState(() {
-          files.removeAt(existingIndex);
-          if (files.isNotEmpty) {
-            final newIndex = (existingIndex > 0) ? existingIndex - 1 : 0;
-            final newFile = files[newIndex];
-            selectedFile.value = {
-              "id": newIndex,
-              "Name": newFile["Name"],
-              "Path": newFile["Path"],
-              "Code": newFile["Code"],
-            };
-            widget.currentCode.text = newFile["Code"] ?? "";
-            if (type == "Delete") {
-              File(file["Path"]!).delete();
-            }
-          } else {
-            selectedFile.value = {"id": 0, "Name": "", "Path": "", "Code": ""};
-            widget.currentCode.clear();
+        files.removeAt(existingIndex);
+        if (files.isNotEmpty) {
+          final newIndex = (existingIndex > 0) ? existingIndex - 1 : 0;
+          final newFile = files[newIndex];
+          selectedFile.value = {
+            "id": newIndex,
+            "Name": newFile["Name"],
+            "Path": newFile["Path"],
+            "Code": newFile["Code"],
+          };
+          setState(() {});
+          if (type == "Delete") File(file["Path"]!).delete();
+          widget.currentCode.text = newFile["Code"] ?? "";
+          if (files[existingIndex]["Name"] != newFile["Name"]) {
+            File(newFile["Path"]!).rename(newFile["Name"]!);
           }
-        });
+        } else {
+          createFile(name: defFile["Name"]!, code: defFile["Code"]!);
+        }
       } else {
-        files.add(file);
+        createFile(name: defFile["Name"]!, code: defFile["Code"]!);
       }
-    });
+    } else {
+      files.add(file);
+    }
+    setState(() {});
     _saveFilesToStorage();
   }
 
@@ -266,22 +259,29 @@ class OpenedFilesState extends State<OpenedFiles> {
         child: InkWell(
           borderRadius: BorderRadius.circular(15),
           onTap: () => _openFile(i),
-          onLongPress: () => onLongPress(i, context, files, addOrUpdateFile),
+          onLongPress: () {
+            print("Long Pressed $i");
+            onLongPress(i, context, files, addOrUpdateFile);
+          },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
                 Container(
-                  width: 7,
-                  height: 7,
+                  width: 5,
+                  height: 5,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: files[i]["Saved"] != null
-                        ? Colors.white
+                    color: files[i]["Saved"] != null || files[i]["Path"] == ""
+                        ? Colors.white70
                         : Colors.transparent,
                   ),
                 ),
-                SizedBox(width: files[i]["Saved"] != null ? 5 : 0),
+                SizedBox(
+                  width: files[i]["Saved"] != null || files[i]["Path"] == ""
+                      ? 5
+                      : 0,
+                ),
                 Text(
                   files[i]["Name"]!,
                   style: TextStyle(
@@ -371,14 +371,19 @@ Widget _buildFileOptions(
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            TextButton.icon(
-              icon: const Icon(LucideIcons.trash, color: Colors.red),
-              label: const Text('حذف', style: TextStyle(color: Colors.red)),
-              onPressed: () {
-                Navigator.pop(context);
-                addOrUpdateFile(files[i], "Delete");
-              },
-            ),
+            ?files[i]["Path"] != ""
+                ? TextButton.icon(
+                    icon: const Icon(LucideIcons.trash, color: Colors.red),
+                    label: const Text(
+                      'حذف',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      addOrUpdateFile(files[i], "Delete");
+                    },
+                  )
+                : null,
             TextButton.icon(
               icon: const Icon(LucideIcons.x, color: Colors.amber),
               label: const Text('إغلاق', style: TextStyle(color: Colors.amber)),
@@ -400,7 +405,6 @@ Widget _buildFileOptions(
 
                   if (oldPath.isNotEmpty) {
                     final dir = oldPath.substring(0, oldPath.lastIndexOf("/"));
-                    // هنا بتحافظ على الامتداد زي ما هو
                     final extension = oldPath.contains(".")
                         ? oldPath.substring(oldPath.lastIndexOf("."))
                         : "";
@@ -421,3 +425,21 @@ Widget _buildFileOptions(
     ),
   );
 }
+
+const Map<String, String> defFile = {
+  "Name": "الأعداد_الاولية.الف",
+  "Code": """
+# برنامج لإيجاد الأعداد الأولية
+دالة هل_اولي(عدد):
+    اذا عدد < 2: ارجع
+    اذا عدد == 2: اطبع(عدد); ارجع
+    اذا ليس عدد \\\\ 2: ارجع
+    لاجل مقسوم في مدى(3, صحيح(\\^عدد) + 1, 2):
+        اذا ليس عدد \\\\ مقسوم: ارجع
+    اطبع(عدد)
+
+اطبع("*- هذا البرنامج يقوم بإيجاد الأعداد الأولية ضمن المدى المدخل له -*")
+ن = صحيح(ادخل("ادخل عدد: "))
+لاجل ب في مدى(ن): هل_اولي(ب)
+""",
+};
