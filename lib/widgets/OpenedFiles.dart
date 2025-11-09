@@ -149,7 +149,7 @@ class OpenedFilesState extends State<OpenedFiles> {
     _saveFilesToStorage();
   }
 
-  void addOrUpdateFile(Map<String, String> file, String type) {
+  void addOrUpdateFile(Map<String, String> file, String type) async {
     final existingIndex = files.indexWhere(
       (f) =>
           f["Path"] != "" ? f['Path'] == file['Path'] : f["id"] == file["id"],
@@ -158,8 +158,21 @@ class OpenedFilesState extends State<OpenedFiles> {
     print(existingIndex);
     if (existingIndex >= 0) {
       if (type == "Update") {
-        File(file["Path"]!).rename(file["Name"]!);
-        files[existingIndex] = file;
+        try {
+          final oldFile = File(file["Path"]!);
+          final dir = oldFile.parent.path;
+          final newPath = "$dir/${file["Name"]}";
+
+          if (await oldFile.exists()) {
+            await oldFile.copy(newPath);
+            await oldFile.delete();
+          }
+
+          file["Path"] = newPath;
+          files[existingIndex] = file;
+        } catch (e) {
+          print(e);
+        }
       } else if (type == "Close" || type == "Delete") {
         files.removeAt(existingIndex);
         if (files.isNotEmpty) {
@@ -259,10 +272,7 @@ class OpenedFilesState extends State<OpenedFiles> {
         child: InkWell(
           borderRadius: BorderRadius.circular(15),
           onTap: () => _openFile(i),
-          onLongPress: () {
-            print("Long Pressed $i");
-            onLongPress(i, context, files, addOrUpdateFile);
-          },
+          onLongPress: () => onLongPress(i, context, files, addOrUpdateFile),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
@@ -400,22 +410,11 @@ Widget _buildFileOptions(
                 if (newName.isNotEmpty) {
                   Navigator.pop(context);
 
-                  final oldPath = files[i]["Path"] ?? "";
-                  String newPath = oldPath;
+                  // جهز نسخة جديدة من الملف مع الاسم الجديد
+                  final updatedFile = {...files[i], "Name": newName};
 
-                  if (oldPath.isNotEmpty) {
-                    final dir = oldPath.substring(0, oldPath.lastIndexOf("/"));
-                    final extension = oldPath.contains(".")
-                        ? oldPath.substring(oldPath.lastIndexOf("."))
-                        : "";
-                    newPath = "$dir/$newName$extension";
-                  }
-
-                  addOrUpdateFile({
-                    ...files[i],
-                    "Name": newName,
-                    "Path": newPath,
-                  }, "Update");
+                  // استدعي الدالة اللي صححناها
+                  addOrUpdateFile(updatedFile, "Update");
                 }
               },
             ),
