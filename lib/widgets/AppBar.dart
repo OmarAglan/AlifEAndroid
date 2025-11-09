@@ -90,24 +90,30 @@ class _AlifAppBarState extends State<AlifAppBar> {
                 )
               : [];
 
+          print(filesList);
+
           final fileData = {
             "Name": selectedFile.value["Name"].toString(),
             "Path": path,
             "Code": code,
           };
-          final existingIndex = filesList.indexWhere((p) => p["Path"] == path);
-
-          if (existingIndex >= 0) {
-            filesList[existingIndex] = fileData;
-          } else {
-            filesList.add(fileData);
-          }
+          filesList[filesList.indexWhere(
+                (p) => p["Name"] == selectedFile.value["Name"].toString(),
+              )] =
+              fileData;
 
           await prefs.setString('opened_files', jsonEncode(filesList));
 
           // تحديث واجهة المستخدم
-          _openedFilesKey.currentState?.addOrUpdateFile(fileData, "");
-          selectedFile.value = {...fileData, "id": filesList.length - 1};
+          _openedFilesKey.currentState?.files = filesList;
+          setState(
+            () => selectedFile.value = {
+              ...selectedFile.value,
+              "Path": path,
+              "Code": code,
+            },
+          );
+          print(filesList);
 
           output.value += "تم الحفظ في: $path\n";
         } catch (e) {
@@ -151,7 +157,10 @@ class _AlifAppBarState extends State<AlifAppBar> {
               ...filesList[existingIndex],
               "id": existingIndex,
             };
-            setState(() => controller.text = filesList[existingIndex]["Code"].toString());
+            setState(
+              () =>
+                  controller.text = filesList[existingIndex]["Code"].toString(),
+            );
           } else {
             final fileData = {
               "Name": fileName,

@@ -154,8 +154,6 @@ class OpenedFilesState extends State<OpenedFiles> {
       (f) =>
           f["Path"] != "" ? f['Path'] == file['Path'] : f["id"] == file["id"],
     );
-    print(type);
-    print(existingIndex);
     if (existingIndex >= 0) {
       if (type == "Update") {
         try {
@@ -409,11 +407,7 @@ Widget _buildFileOptions(
                 final newName = nameController.text.trim();
                 if (newName.isNotEmpty) {
                   Navigator.pop(context);
-
-                  // جهز نسخة جديدة من الملف مع الاسم الجديد
                   final updatedFile = {...files[i], "Name": newName};
-
-                  // استدعي الدالة اللي صححناها
                   addOrUpdateFile(updatedFile, "Update");
                 }
               },
