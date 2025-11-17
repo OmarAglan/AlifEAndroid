@@ -2,13 +2,18 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-
 Future<void> showFileManagerModal(
   BuildContext context,
   void Function(String) onFileSelected, {
   String? startPath,
 }) async {
-  final rootPath = startPath ?? "/storage/emulated/0";
+  final rootPath =
+      startPath ??
+      (Platform.isAndroid
+          ? "/storage/emulated/0"
+          : Platform.isLinux
+          ? "${Platform.environment['HOME']}"
+          : "");
 
   final directory = Directory(rootPath);
 
@@ -20,10 +25,8 @@ Future<void> showFileManagerModal(
   }
 
   List<FileSystemEntity> items = directory.listSync().where((entity) {
-    // لو فولدر سيبه زي ما هو
     if (FileSystemEntity.isDirectorySync(entity.path)) return true;
 
-    // لو ملف، خليه يظهر لو بينتهي بالامتدادات اللي عايزها
     final name = entity.path.toLowerCase();
     return name.endsWith('.alif') ||
         name.endsWith('.الف') ||
@@ -70,7 +73,10 @@ Future<void> showFileManagerModal(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      rootPath.replaceAll("/storage/emulated/0", "~"),
+                      rootPath.replaceAll(
+                        RegExp(r"^(/storage/emulated/0|/home)"),
+                        "~",
+                      ),
                       style: const TextStyle(color: Colors.white, fontSize: 16),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -79,7 +85,6 @@ Future<void> showFileManagerModal(
                       onPressed: () {
                         final parentPath = Directory(rootPath).parent.path;
 
-                        // لو احنا في الجذر /storage/emulated/0 منرجعش
                         if (parentPath == rootPath || parentPath == "/") return;
 
                         Navigator.pop(context);
@@ -124,7 +129,6 @@ Future<void> showFileManagerModal(
                               ),
                               onTap: () {
                                 if (isDir) {
-                                  // فتح نفس الدالة لكن بالمسار الجديد
                                   Navigator.pop(context);
                                   showFileManagerModal(
                                     context,
@@ -132,7 +136,6 @@ Future<void> showFileManagerModal(
                                     startPath: entity.path,
                                   );
                                 } else {
-                                  // لو ملف رجّع المسار
                                   Navigator.pop(context);
                                   onFileSelected(entity.path);
                                 }

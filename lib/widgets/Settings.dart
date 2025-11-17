@@ -31,7 +31,6 @@ class _SettingsState extends State<Settings> {
           padding: const EdgeInsets.all(10),
           child: Column(
             children: [
-              // حجم الخط
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -78,7 +77,6 @@ class _SettingsState extends State<Settings> {
                 ],
               ),
               SizedBox(height: 10),
-              // الحفظ التلقائي
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

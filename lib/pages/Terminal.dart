@@ -198,17 +198,14 @@ Future<Process?> runCommand(
       workingDirectory: userDir.path,
     );
 
-    // قراءة الـ stdout
     process.stdout.transform(SystemEncoding().decoder).listen((data) {
       output.value += data;
     });
 
-    // قراءة الـ stderr
     process.stderr.transform(SystemEncoding().decoder).listen((data) {
       if (!data.toLowerCase().contains("warning")) output.value += "خطأ: $data";
     });
 
-    // لو فيه خطأ في التنفيذ
     process.exitCode.then((exitCode) {
       if (exitCode != 0) output.value += "حدث خطأ في الامر\n[رقم $exitCode]\n";
     });

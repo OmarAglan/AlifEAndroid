@@ -94,9 +94,10 @@ class _IDEState extends State<IDE> {
             data: CodeThemeData(styles: {...alifDarkTheme}),
             child: CodeField(
               gutterStyle: GutterStyle(
+                width: 70,
                 showErrors: false,
                 showFoldingHandles: false,
-                width: 66,
+                textAlign: TextAlign.center,
               ),
               controller: codeController,
               focusNode: widget.focusNode,

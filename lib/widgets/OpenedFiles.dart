@@ -101,12 +101,25 @@ class OpenedFilesState extends State<OpenedFiles> {
   Future<void> _openFile(int fileIndex) async {
     if (fileIndex < 0 || fileIndex >= files.length) return;
 
-    final status = await Permission.manageExternalStorage.status;
-    if (!status.isDenied) {
-      final defaultDir = Directory(
-        '/storage/emulated/0/Documents/شفرات لغة الف',
-      );
-      if (!await defaultDir.exists()) await defaultDir.create(recursive: true);
+    Directory defaultDir;
+
+    if (Platform.isAndroid) {
+      final status = await Permission.manageExternalStorage.status;
+      if (!status.isDenied) {
+        defaultDir = Directory('/storage/emulated/0/Documents/شفرات لغة الف');
+        if (!await defaultDir.exists())
+          await defaultDir.create(recursive: true);
+
+        final tempFile = File('${defaultDir.path}/${files[fileIndex]["Name"]}');
+        await tempFile.writeAsString(files[fileIndex]["Code"] ?? "");
+      }
+    } else if (Platform.isLinux) {
+      final home = Platform.environment['HOME']!;
+      defaultDir = Directory('$home/Documents/شفرات لغة الف');
+
+      if (!await defaultDir.exists()) {
+        await defaultDir.create(recursive: true);
+      }
 
       final tempFile = File('${defaultDir.path}/${files[fileIndex]["Name"]}');
       await tempFile.writeAsString(files[fileIndex]["Code"] ?? "");
