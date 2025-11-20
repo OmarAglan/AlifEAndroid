@@ -53,6 +53,46 @@ class S {
   static S? maybeOf(BuildContext context) {
     return Localizations.of<S>(context, S);
   }
+
+  /// `Taif IDE`
+  String get title {
+    return Intl.message('Taif IDE', name: 'title', desc: '', args: []);
+  }
+
+  /// `Terminal`
+  String get terminal {
+    return Intl.message('Terminal', name: 'terminal', desc: '', args: []);
+  }
+
+  /// `Settings`
+  String get settings {
+    return Intl.message('Settings', name: 'settings', desc: '', args: []);
+  }
+
+  /// `New File`
+  String get new_file {
+    return Intl.message('New File', name: 'new_file', desc: '', args: []);
+  }
+
+  /// `Open File`
+  String get open_file {
+    return Intl.message('Open File', name: 'open_file', desc: '', args: []);
+  }
+
+  /// `Save`
+  String get save {
+    return Intl.message('Save', name: 'save', desc: '', args: []);
+  }
+
+  /// `Save As`
+  String get save_as {
+    return Intl.message('Save As', name: 'save_as', desc: '', args: []);
+  }
+
+  /// `Close`
+  String get close {
+    return Intl.message('Close', name: 'close', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

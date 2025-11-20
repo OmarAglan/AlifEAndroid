@@ -1,3 +1,5 @@
+import 'package:alifeditor/core/theme/Colors.dart';
+import 'package:alifeditor/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:input_quantity/input_quantity.dart';
@@ -19,21 +21,40 @@ class _SettingsState extends State<Settings> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(LucideIcons.settings, color: Colors.white, size: 25),
-            SizedBox(width: 5),
             Text(
-              "الإعدادات",
-              style: TextStyle(color: Colors.white, fontSize: 25),
+              S.of(context).settings,
+              style: TextStyle(color: ThemeColors.foreground, fontSize: 25),
             ),
+            SizedBox(width: 5),
+            Icon(LucideIcons.settings, color: ThemeColors.foreground, size: 25),
           ],
         ),
         Padding(
-          padding: const EdgeInsets.all(10),
+          padding: EdgeInsets.all(10),
           child: Column(
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  Row(
+                    children: [
+                      Text(
+                        "حجم الخط",
+                        style: TextStyle(
+                          color: ThemeColors.foreground,
+                          fontSize: 20,
+                        ),
+                      ),
+                      SizedBox(width: 5),
+                      Text(
+                        "(15)",
+                        style: TextStyle(
+                          color: ThemeColors.secondary,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
                   ScaleTransition(
                     scale: AlwaysStoppedAnimation(1.1),
                     child: InputQty(
@@ -42,7 +63,7 @@ class _SettingsState extends State<Settings> {
                       minVal: 10,
                       steps: 1,
                       qtyFormProps: QtyFormProps(
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: ThemeColors.foreground),
                         enableTyping: false,
                       ),
                       decoration: QtyDecorationProps(border: InputBorder.none),
@@ -61,25 +82,19 @@ class _SettingsState extends State<Settings> {
                       },
                     ),
                   ),
-                  Row(
-                    children: [
-                      Text(
-                        "(15)",
-                        style: TextStyle(color: Colors.grey, fontSize: 15),
-                      ),
-                      SizedBox(width: 5),
-                      Text(
-                        "حجم الخط",
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                    ],
-                  ),
                 ],
               ),
               SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  Text(
+                    "الحفظ التلقائي",
+                    style: TextStyle(
+                      color: ThemeColors.foreground,
+                      fontSize: 20,
+                    ),
+                  ),
                   Switch(
                     value: widget.autoSave.value,
                     onChanged: (value) async {
@@ -88,10 +103,6 @@ class _SettingsState extends State<Settings> {
                       final prefs = await SharedPreferences.getInstance();
                       await prefs.setBool('EditorAutoSave', value);
                     },
-                  ),
-                  Text(
-                    "الحفظ التلقائي",
-                    style: TextStyle(color: Colors.white, fontSize: 20),
                   ),
                 ],
               ),

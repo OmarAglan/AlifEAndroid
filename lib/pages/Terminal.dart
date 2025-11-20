@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:alifeditor/core/theme/Colors.dart';
+import 'package:alifeditor/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:path_provider/path_provider.dart';
@@ -90,7 +92,7 @@ class _TerminalState extends State<Terminal> {
         ),
         height: totalHeight,
         decoration: BoxDecoration(
-          color: Color(0xFF0A0830),
+          color: ThemeColors.background,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(25),
             topRight: Radius.circular(25),
@@ -100,33 +102,33 @@ class _TerminalState extends State<Terminal> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
+              padding: EdgeInsets.symmetric(horizontal: 5),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'الطرفية',
+                  Text(
+                    S.of(context).terminal,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: ThemeColors.foreground,
                     ),
                   ),
                   Row(
                     children: [
                       IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.clear_all_rounded,
-                          color: Colors.white,
+                          color: ThemeColors.foreground,
                           size: 30,
                         ),
                         onPressed: widget.onClearOutput,
                       ),
                       IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           LucideIcons.play,
                           size: 20,
-                          color: Colors.white,
+                          color: ThemeColors.foreground,
                         ),
                         onPressed: widget.runAlifCode,
                       ),
@@ -140,10 +142,16 @@ class _TerminalState extends State<Terminal> {
                 valueListenable: widget.output,
                 builder: (context, value, _) => SingleChildScrollView(
                   reverse: true,
-                  child: SelectableText(
-                    value.isEmpty ? '' : value,
-                    style: const TextStyle(fontSize: 14, color: Colors.white),
-                    textAlign: TextAlign.right,
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: SelectableText(
+                      value.isEmpty ? '' : value,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: ThemeColors.foreground,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
                   ),
                 ),
               ),
@@ -155,17 +163,20 @@ class _TerminalState extends State<Terminal> {
                     focusNode: _focusNode,
                     controller: widget.inputController,
                     onSubmitted: (_) => runCommandHandler(),
-                    style: const TextStyle(color: Colors.white),
-                    decoration: const InputDecoration(
+                    style: TextStyle(color: ThemeColors.foreground),
+                    decoration: InputDecoration(
                       hintText: "ادخل هنا",
-                      hintStyle: TextStyle(color: Colors.grey),
+                      hintStyle: TextStyle(color: ThemeColors.secondary),
                       border: InputBorder.none,
                     ),
                   ),
                 ),
                 IconButton(
                   onPressed: runCommandHandler,
-                  icon: const Icon(LucideIcons.arrowRight, color: Colors.white),
+                  icon: Icon(
+                    LucideIcons.arrowRight,
+                    color: ThemeColors.foreground,
+                  ),
                 ),
               ],
             ),

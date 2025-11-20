@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:alifeditor/core/theme/Colors.dart';
 import 'package:alifeditor/generated/l10n.dart';
 import 'package:alifeditor/utils/premissions.dart';
 import 'package:alifeditor/widgets/AppBar.dart';
@@ -24,7 +25,10 @@ void main() => runApp(
     ],
     supportedLocales: S.delegate.supportedLocales,
     title: "مُحرر طيف",
-    theme: ThemeData(fontFamily: 'Tajawal'),
+    theme: ThemeData(
+      fontFamily: 'Tajawal',
+      scaffoldBackgroundColor: ThemeColors.background,
+    ),
     home: AlifRunner(),
   ),
 );
@@ -158,9 +162,8 @@ class _AlifRunnerState extends State<AlifRunner> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: const Color(0xFF081433),
         body: DecoratedBox(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             image: DecorationImage(
               image: AssetImage("assets/Background.webp"),
               fit: BoxFit.cover,

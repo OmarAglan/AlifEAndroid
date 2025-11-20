@@ -1,3 +1,4 @@
+import 'package:alifeditor/core/theme/Colors.dart';
 import 'package:alifeditor/widgets/Settings.dart';
 import "package:flutter/material.dart";
 import 'package:url_launcher/url_launcher.dart';
@@ -19,7 +20,7 @@ class _AboutState extends State<About> {
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
       height: 300,
       decoration: BoxDecoration(
-        color: const Color(0xFF0A0830),
+        color: ThemeColors.background,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(25),
           topRight: Radius.circular(25),
@@ -36,11 +37,18 @@ class _AboutState extends State<About> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(LucideIcons.cpu, color: Colors.grey, size: 13),
+                      Icon(
+                        LucideIcons.cpu,
+                        color: ThemeColors.secondary,
+                        size: 13,
+                      ),
                       SizedBox(width: 5),
                       Text(
                         "لغة ألف نـ5 النسخة 5.1.0",
-                        style: TextStyle(color: Colors.grey, fontSize: 13),
+                        style: TextStyle(
+                          color: ThemeColors.secondary,
+                          fontSize: 13,
+                        ),
                       ),
                     ],
                   ),
@@ -48,11 +56,18 @@ class _AboutState extends State<About> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(LucideIcons.info, color: Colors.grey, size: 13),
+                      Icon(
+                        LucideIcons.info,
+                        color: ThemeColors.secondary,
+                        size: 13,
+                      ),
                       SizedBox(width: 5),
                       Text(
                         "محرر طيف النسخة 1.0.0 (تجريبية)",
-                        style: TextStyle(color: Colors.grey, fontSize: 13),
+                        style: TextStyle(
+                          color: ThemeColors.secondary,
+                          fontSize: 13,
+                        ),
                       ),
                     ],
                   ),
@@ -64,22 +79,32 @@ class _AboutState extends State<About> {
                   TextButton.icon(
                     icon: Icon(
                       LucideIcons.github,
-                      color: Colors.grey,
+                      color: ThemeColors.secondary,
                       size: 13,
                     ),
                     onPressed: () =>
                         _launchUrl("https://github.com/iskepr/AlifEAndroid"),
                     label: Text(
                       "الشفرة على جيت هاب",
-                      style: TextStyle(color: Colors.grey, fontSize: 13),
+                      style: TextStyle(
+                        color: ThemeColors.secondary,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                   TextButton.icon(
-                    icon: Icon(LucideIcons.earth, color: Colors.grey, size: 13),
+                    icon: Icon(
+                      LucideIcons.earth,
+                      color: ThemeColors.secondary,
+                      size: 13,
+                    ),
                     onPressed: () => _launchUrl("https://iskepr.github.io/"),
                     label: Text(
                       "تطـوير محـمـد ســكـيبر",
-                      style: TextStyle(color: Colors.grey, fontSize: 13),
+                      style: TextStyle(
+                        color: ThemeColors.secondary,
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                 ],

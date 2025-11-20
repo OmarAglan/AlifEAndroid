@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:alifeditor/core/theme/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -51,7 +52,7 @@ Future<void> showFileManagerModal(
         child: Container(
           height: MediaQuery.of(context).size.height * 0.8,
           decoration: BoxDecoration(
-            color: const Color(0xFF0A0830),
+            color: ThemeColors.background,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(25),
               topRight: Radius.circular(25),
@@ -60,9 +61,9 @@ Future<void> showFileManagerModal(
           child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0A0830),
+                  color: ThemeColors.background,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(25),
                     topRight: Radius.circular(25),
@@ -77,11 +78,17 @@ Future<void> showFileManagerModal(
                         RegExp(r"^(/storage/emulated/0|/home)"),
                         "~",
                       ),
-                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                      style: TextStyle(
+                        color: ThemeColors.foreground,
+                        fontSize: 16,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                     IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      icon: Icon(
+                        Icons.arrow_back,
+                        color: ThemeColors.foreground,
+                      ),
                       onPressed: () {
                         final parentPath = Directory(rootPath).parent.path;
 
@@ -111,17 +118,19 @@ Future<void> showFileManagerModal(
                           return ListTile(
                             leading: Icon(
                               isDir ? LucideIcons.folder : LucideIcons.fileCode,
-                              color: isDir ? Color(0xFFDAB744) : Colors.white,
+                              color: isDir
+                                  ? Color(0xFFDAB744)
+                                  : ThemeColors.foreground,
                             ),
                             title: Text(
                               name,
-                              style: const TextStyle(color: Colors.white),
+                              style: TextStyle(color: ThemeColors.foreground),
                             ),
                             subtitle: Text(
                               isDir
                                   ? "عدد الملفات ${Directory(entity.path).listSync().length}"
                                   : "الحجم ${formatFileSize(File(entity.path).statSync().size)}",
-                              style: const TextStyle(color: Colors.grey),
+                              style: TextStyle(color: ThemeColors.secondary),
                             ),
                             onTap: () {
                               if (isDir) {
@@ -141,7 +150,7 @@ Future<void> showFileManagerModal(
                       )
                     : Text(
                         "لا يوجد ملفات للغة ألف في هذا المجلد",
-                        style: TextStyle(color: Colors.grey),
+                        style: TextStyle(color: ThemeColors.secondary),
                       ),
               ),
             ],

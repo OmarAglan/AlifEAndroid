@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:alifeditor/core/theme/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class OpenedFiles extends StatefulWidget {
-  const OpenedFiles({
+  OpenedFiles({
     super.key,
     required this.currentCode,
     required this.output,
@@ -73,7 +74,7 @@ class OpenedFilesState extends State<OpenedFiles> {
   }
 
   void _startAutoSave() {
-    _autoSaveTimer = Timer.periodic(const Duration(seconds: 1), (_) async {
+    _autoSaveTimer = Timer.periodic(Duration(seconds: 1), (_) async {
       if (!_hasChanges ||
           selectedFile.value["id"] == null ||
           selectedFile.value["id"] >= files.length)
@@ -233,7 +234,7 @@ class OpenedFilesState extends State<OpenedFiles> {
       height: 50,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         itemCount: files.length + 1,
         itemBuilder: (context, i) {
           if (i == files.length) {
@@ -252,9 +253,9 @@ class OpenedFilesState extends State<OpenedFiles> {
       child: InkWell(
         borderRadius: BorderRadius.circular(15),
         onTap: createFile,
-        child: const Padding(
+        child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Icon(Icons.add, color: Colors.white),
+          child: Icon(Icons.add, color: ThemeColors.foreground),
         ),
       ),
     );
@@ -263,28 +264,25 @@ class OpenedFilesState extends State<OpenedFiles> {
   Widget _buildFileTab(int i) {
     final sel = selectedFile.value["id"] == i;
     return Container(
-      margin: const EdgeInsets.all(4),
+      margin: EdgeInsets.all(4),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-        border: sel ? Border.all(color: const Color(0x509F45D3)) : null,
+        border: sel
+            ? Border.all(color: ThemeColors.primary.withOpacity(.1))
+            : null,
         boxShadow: sel
-            ? [
-                BoxShadow(
-                  color: Colors.purpleAccent.withOpacity(0.5),
-                  blurRadius: 5,
-                ),
-              ]
+            ? [BoxShadow(color: ThemeColors.primary, blurRadius: 5)]
             : [],
       ),
       child: Material(
-        color: sel ? const Color(0x10FFFFFF) : Colors.transparent,
+        color: sel ? Color(0x10FFFFFF) : Colors.transparent,
         borderRadius: BorderRadius.circular(15),
         child: InkWell(
           borderRadius: BorderRadius.circular(15),
           onTap: () => _openFile(i),
           onLongPress: () => onLongPress(i, context, files, addOrUpdateFile),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
                 Container(
@@ -293,7 +291,7 @@ class OpenedFilesState extends State<OpenedFiles> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     color: files[i]["Saved"] != null || files[i]["Path"] == ""
-                        ? Colors.white70
+                        ? ThemeColors.foreground
                         : Colors.transparent,
                   ),
                 ),
@@ -305,7 +303,7 @@ class OpenedFilesState extends State<OpenedFiles> {
                 Text(
                   files[i]["Name"]!,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: ThemeColors.foreground,
                     fontWeight: sel ? FontWeight.w500 : FontWeight.normal,
                   ),
                 ),
@@ -352,50 +350,47 @@ Widget _buildFileOptions(
   TextEditingController nameController,
 ) {
   return Container(
-    padding: const EdgeInsets.all(16),
-    decoration: const BoxDecoration(
+    padding: EdgeInsets.all(16),
+    decoration: BoxDecoration(
       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      color: Color(0xFF081433),
+      color: ThemeColors.background,
     ),
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
+        Text(
           "تعديل الملف",
           style: TextStyle(
-            color: Colors.white,
+            color: ThemeColors.foreground,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         TextField(
           controller: nameController,
           textAlign: TextAlign.right,
-          style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(
+          style: TextStyle(color: ThemeColors.foreground),
+          decoration: InputDecoration(
             labelText: "اسم الملف",
-            labelStyle: TextStyle(color: Colors.white70),
+            labelStyle: TextStyle(color: ThemeColors.foreground),
           ),
         ),
 
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         Text(
           files[i]["Path"]?.replaceAll("/storage/emulated/0", "~") ??
               "لا يوجد مسار",
-          style: const TextStyle(color: Colors.white70),
+          style: TextStyle(color: ThemeColors.foreground),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             ?files[i]["Path"] != ""
                 ? TextButton.icon(
-                    icon: const Icon(LucideIcons.trash, color: Colors.red),
-                    label: const Text(
-                      'حذف',
-                      style: TextStyle(color: Colors.red),
-                    ),
+                    icon: Icon(LucideIcons.trash, color: Colors.red),
+                    label: Text('حذف', style: TextStyle(color: Colors.red)),
                     onPressed: () {
                       Navigator.pop(context);
                       addOrUpdateFile(files[i], "Delete");
@@ -403,16 +398,16 @@ Widget _buildFileOptions(
                   )
                 : null,
             TextButton.icon(
-              icon: const Icon(LucideIcons.x, color: Colors.amber),
-              label: const Text('إغلاق', style: TextStyle(color: Colors.amber)),
+              icon: Icon(LucideIcons.x, color: Colors.amber),
+              label: Text('إغلاق', style: TextStyle(color: Colors.amber)),
               onPressed: () {
                 Navigator.pop(context);
                 addOrUpdateFile(files[i], "Close");
               },
             ),
             ElevatedButton.icon(
-              icon: const Icon(LucideIcons.save, size: 20),
-              label: const Text('حفظ التغييرات'),
+              icon: Icon(LucideIcons.save, size: 20),
+              label: Text('حفظ التغييرات'),
               onPressed: () {
                 final newName = nameController.text.trim();
                 if (newName.isNotEmpty) {
@@ -429,7 +424,7 @@ Widget _buildFileOptions(
   );
 }
 
-const Map<String, String> defFile = {
+Map<String, String> defFile = {
   "Name": "الأعداد_الاولية.الف",
   "Code": """
 # برنامج لإيجاد الأعداد الأولية

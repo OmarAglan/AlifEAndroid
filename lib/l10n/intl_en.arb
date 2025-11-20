@@ -1,1 +1,10 @@
-{}
+{
+    "title": "Taif IDE",
+    "terminal": "Terminal",
+    "settings": "Settings",
+    "new_file": "New File",
+    "open_file": "Open File",
+    "save": "Save",
+    "save_as": "Save As",
+    "close": "Close"
+}

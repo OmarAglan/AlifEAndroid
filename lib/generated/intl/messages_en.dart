@@ -21,5 +21,14 @@ class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
   final messages = _notInlinedMessages(_notInlinedMessages);
-  static Map<String, Function> _notInlinedMessages(_) => <String, Function>{};
+  static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "close": MessageLookupByLibrary.simpleMessage("Close"),
+    "new_file": MessageLookupByLibrary.simpleMessage("New File"),
+    "open_file": MessageLookupByLibrary.simpleMessage("Open File"),
+    "save": MessageLookupByLibrary.simpleMessage("Save"),
+    "save_as": MessageLookupByLibrary.simpleMessage("Save As"),
+    "settings": MessageLookupByLibrary.simpleMessage("Settings"),
+    "terminal": MessageLookupByLibrary.simpleMessage("Terminal"),
+    "title": MessageLookupByLibrary.simpleMessage("Taif IDE"),
+  };
 }

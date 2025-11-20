@@ -1,3 +1,4 @@
+import 'package:alifeditor/core/theme/Colors.dart';
 import 'package:flutter/material.dart';
 
 class KeyShortcuts extends StatelessWidget {
@@ -27,23 +28,19 @@ class KeyShortcuts extends StatelessWidget {
 
   Widget _buildButton(String label, {String? insert}) {
     return Padding(
-      padding: const EdgeInsets.all(1),
+      padding: EdgeInsets.all(1),
       child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          minWidth: 0,
-          maxWidth: 37,
-          maxHeight: 30,
-        ),
+        constraints: BoxConstraints(minWidth: 0, maxWidth: 37, maxHeight: 30),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0x601A2340),
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 4),
+            backgroundColor: Color(0x601A2340),
+            foregroundColor: ThemeColors.foreground,
+            padding: EdgeInsets.symmetric(horizontal: 4),
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            textStyle: const TextStyle(fontSize: 18),
+            textStyle: TextStyle(fontSize: 18),
           ),
           onPressed: () => _insertText(insert ?? label),
           child: Text(label, textAlign: TextAlign.center),
@@ -55,7 +52,7 @@ class KeyShortcuts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 5),
+      margin: EdgeInsets.symmetric(vertical: 5),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(

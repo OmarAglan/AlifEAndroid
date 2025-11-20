@@ -1,3 +1,4 @@
+import 'package:alifeditor/core/theme/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -13,7 +14,7 @@ Future<bool> requestStoragePermission(BuildContext context) async {
           padding: EdgeInsets.all(20),
           height: 300,
           decoration: BoxDecoration(
-            color: Color(0xFF0A0830),
+            color: ThemeColors.background,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(25),
               topRight: Radius.circular(25),
@@ -29,16 +30,22 @@ Future<bool> requestStoragePermission(BuildContext context) async {
                     icon: Icon(
                       LucideIcons.folderCog,
                       size: 40,
-                      color: Colors.white,
+                      color: ThemeColors.foreground,
                     ),
                   ),
                   Text(
                     "الوصول للتخزين",
-                    style: TextStyle(color: Colors.white, fontSize: 22),
+                    style: TextStyle(
+                      color: ThemeColors.foreground,
+                      fontSize: 22,
+                    ),
                   ),
                   Text(
                     "يحتاج التطبيق الإذن للوصول للملفات لتعديل ملفات شفرة ألف",
-                    style: TextStyle(color: Colors.white, fontSize: 20),
+                    style: TextStyle(
+                      color: ThemeColors.foreground,
+                      fontSize: 20,
+                    ),
                   ),
                 ],
               ),
@@ -47,7 +54,9 @@ Future<bool> requestStoragePermission(BuildContext context) async {
                 children: [
                   ElevatedButton(
                     style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(Colors.white),
+                      backgroundColor: WidgetStateProperty.all(
+                        ThemeColors.foreground,
+                      ),
                     ),
                     onPressed: () => Navigator.pop(context, true),
                     child: IntrinsicWidth(
@@ -56,7 +65,7 @@ Future<bool> requestStoragePermission(BuildContext context) async {
                         child: Text(
                           "منح الإذن",
                           style: TextStyle(
-                            color: Color(0xFF0A0830),
+                            color: ThemeColors.background,
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
@@ -71,7 +80,10 @@ Future<bool> requestStoragePermission(BuildContext context) async {
                       child: Center(
                         child: Text(
                           "رفض",
-                          style: TextStyle(color: Colors.white, fontSize: 20),
+                          style: TextStyle(
+                            color: ThemeColors.foreground,
+                            fontSize: 20,
+                          ),
                         ),
                       ),
                     ),

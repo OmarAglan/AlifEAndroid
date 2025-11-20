@@ -42,7 +42,7 @@ class _IDEState extends State<IDE> {
       language: alif,
       patternMap: enableSyntaxHighlighting
           ? {}
-          : {'': const TextStyle(color: Colors.transparent)},
+          : {'': TextStyle(color: Colors.transparent)},
     );
 
     codeController.addListener(() {

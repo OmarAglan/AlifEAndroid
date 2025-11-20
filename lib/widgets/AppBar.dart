@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:alifeditor/core/theme/Colors.dart';
+import 'package:alifeditor/generated/l10n.dart';
 import 'package:alifeditor/pages/About.dart';
 import 'package:alifeditor/utils/filePicker.dart';
 import 'package:alifeditor/widgets/OpenedFiles.dart';
@@ -183,7 +185,7 @@ class _AlifAppBarState extends State<AlifAppBar> {
 
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.only(top: 10, right: 10, left: 10),
+        padding: EdgeInsets.only(top: 10, right: 10, left: 10),
         child: Column(
           children: [
             Row(
@@ -201,9 +203,9 @@ class _AlifAppBarState extends State<AlifAppBar> {
                     );
                   },
                   child: Text(
-                    "مُحرر طيف",
+                    S.of(context).title,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: ThemeColors.foreground,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -212,9 +214,9 @@ class _AlifAppBarState extends State<AlifAppBar> {
                 Row(
                   children: [
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         LucideIcons.terminal,
-                        color: Colors.white,
+                        color: ThemeColors.foreground,
                         size: 20,
                       ),
                       onPressed: () {
@@ -238,9 +240,9 @@ class _AlifAppBarState extends State<AlifAppBar> {
                       },
                     ),
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         LucideIcons.play,
-                        color: Colors.white,
+                        color: ThemeColors.foreground,
                         size: 20,
                       ),
                       onPressed: () => {
@@ -266,17 +268,17 @@ class _AlifAppBarState extends State<AlifAppBar> {
                       },
                     ),
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         LucideIcons.save,
-                        color: Colors.white,
+                        color: ThemeColors.foreground,
                         size: 20,
                       ),
                       onPressed: () => saveCode(controller.text),
                     ),
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         LucideIcons.folderOpen,
-                        color: Colors.white,
+                        color: ThemeColors.foreground,
                         size: 20,
                       ),
                       onPressed: openFile,
