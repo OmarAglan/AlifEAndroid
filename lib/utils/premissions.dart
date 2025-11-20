@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:alifeditor/core/theme/Colors.dart';
 import 'package:alifeditor/widgets/BottomSheet.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +7,8 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 Future<bool> requestStoragePermission(BuildContext context) async {
+  if (Platform.isLinux) return true;
+
   var status = await Permission.manageExternalStorage.status;
   if (status.isGranted) return true;
   final result = await showModalBottomSheet<bool>(
@@ -34,7 +38,6 @@ Future<bool> requestStoragePermission(BuildContext context) async {
                 ),
               ],
             ),
-
             Column(
               children: [
                 ElevatedButton(

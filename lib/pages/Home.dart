@@ -56,11 +56,12 @@ class _HomeState extends State<Home> {
     try {
       final appDir = await getApplicationSupportDirectory();
       final alifDir = Directory('${appDir.path}/alif');
+      Directory libDir = Directory('');
 
       if (Platform.isAndroid) {
         if (!await alifDir.exists()) await alifDir.create(recursive: true);
         final arm64Dir = Directory('${alifDir.path}/arm64-v8a');
-        final libDir = Directory('${alifDir.path}/library');
+        libDir = Directory('${alifDir.path}/library');
 
         if (!await arm64Dir.exists()) await arm64Dir.create(recursive: true);
         if (!await libDir.exists()) await libDir.create(recursive: true);
@@ -83,10 +84,35 @@ class _HomeState extends State<Home> {
         }
 
         alifBinPath = '${arm64Dir.path}/libalif.so';
-        output.value += ("تم تحميل لغة ألف اصدار 5.1.0\n");
+      } else if (Platform.isLinux) {
+        final langDir = Directory('${alifDir.path}/lang');
+        if (!await langDir.exists()) await langDir.create(recursive: true);
+
+        final filesToCopy = [
+          'aliflang/linux/amd64',
+          'aliflang/library/التبادل.aliflib',
+          'aliflang/library/نظام_التشغيل.aliflib',
+        ];
+
+        if (!File("${langDir.path}/amd64").existsSync()) {
+          for (final fileName in filesToCopy) {
+            final data = await rootBundle.load('assets/$fileName');
+            final bytes = data.buffer.asUint8List();
+
+            final targetPath = fileName.contains('linux')
+                ? '${langDir.path}/${fileName.split('/').last}'
+                : '${langDir.path}/${fileName.split('/').last}';
+
+            final file = File(targetPath);
+            await file.writeAsBytes(bytes, flush: true);
+          }
+        }
+
+        alifBinPath = '${langDir.path}/amd64';
       } else {
         output.value += ("$appDir \n $alifDir \n");
       }
+      output.value += "تم تحميل لغة ألف اصدار 5.1.0\n";
     } catch (e, s) {
       output.value += ("خطأ أثناء تجهيز ملفات لغة ألف: $e\n$s");
     }
@@ -98,11 +124,12 @@ class _HomeState extends State<Home> {
       output.value += ("خطأ: لغة ألف ليست متاحة\n");
       return;
     }
-    var status = await Permission.manageExternalStorage.status;
+
     try {
       final aliflang = File(alifBinPath!);
 
       if (Platform.isAndroid) {
+        var status = await Permission.manageExternalStorage.status;
         await Process.run('chmod', ['755', aliflang.path]);
         final libDir = alifBinPath!.replaceAll('/libalif.so', '');
 
@@ -138,6 +165,50 @@ class _HomeState extends State<Home> {
         process.exitCode.then((exitCode) {
           if (exitCode != 0) {
             output.value += ("حدث خطأ في الشفرة\n[رقم $exitCode]\n");
+          }
+        });
+      } else if (Platform.isLinux) {
+        await Process.run('chmod', ['+x', aliflang.path]);
+
+        final isNotSaved = file["Path"] == "";
+        late File codePath;
+
+        if (isNotSaved) {
+          final tempDir = await getTemporaryDirectory();
+          final tmpFolder = Directory('${tempDir.path}/aliflang');
+
+          if (!await tmpFolder.exists()) {
+            await tmpFolder.create(recursive: true);
+          }
+
+          codePath = File('${tmpFolder.path}/${file["Name"]}');
+          await codePath.writeAsString(file["Code"] ?? "");
+        } else {
+          codePath = File(file["Path"]);
+          final fileContent = await codePath.readAsString();
+          if (fileContent != file["Code"]) {
+            output.value +=
+                ("تَحْذِير: لَمْ تَتِمّ حِفْظ التَّعْدِيلات الأَخِيرَة\n");
+          }
+        }
+
+        final process = await Process.start(aliflang.path, [codePath.path]);
+        runningProcess.value = process;
+
+        process.stdout.transform(SystemEncoding().decoder).listen((data) {
+          output.value += data;
+        });
+
+        process.stderr.transform(SystemEncoding().decoder).listen((data) {
+          if (!data.toLowerCase().contains("warning")) {
+            output.value += ("خَطَأ: $data");
+          }
+        });
+
+        process.exitCode.then((exitCode) {
+          if (exitCode != 0) {
+            output.value +=
+                ("حَدَثَ خَطَأ فِي الشَّفْرَة\n[رَقْم $exitCode]\n");
           }
         });
       } else {
