@@ -1,4 +1,5 @@
 import 'package:alifeditor/core/theme/Colors.dart';
+import 'package:alifeditor/widgets/BottomSheet.dart';
 import 'package:alifeditor/widgets/Settings.dart';
 import "package:flutter/material.dart";
 import 'package:url_launcher/url_launcher.dart';
@@ -16,102 +17,96 @@ class About extends StatefulWidget {
 class _AboutState extends State<About> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-      height: 300,
-      decoration: BoxDecoration(
-        color: ThemeColors.background,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(25),
-          topRight: Radius.circular(25),
+    return MyBottomsheet(
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Settings(fontSize: widget.fontSize, autoSave: widget.autoSave),
+            Column(
+              children: [
+                Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          LucideIcons.cpu,
+                          color: ThemeColors.secondary,
+                          size: 13,
+                        ),
+                        SizedBox(width: 5),
+                        Text(
+                          "لغة ألف نـ5 النسخة 5.1.0",
+                          style: TextStyle(
+                            color: ThemeColors.secondary,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          LucideIcons.info,
+                          color: ThemeColors.secondary,
+                          size: 13,
+                        ),
+                        SizedBox(width: 5),
+                        Text(
+                          "محرر طيف النسخة 1.0.0 (تجريبية)",
+                          style: TextStyle(
+                            color: ThemeColors.secondary,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton.icon(
+                      icon: Icon(
+                        LucideIcons.github,
+                        color: ThemeColors.secondary,
+                        size: 13,
+                      ),
+                      onPressed: () =>
+                          _launchUrl("https://github.com/iskepr/AlifEAndroid"),
+                      label: Text(
+                        "الشفرة على جيت هاب",
+                        style: TextStyle(
+                          color: ThemeColors.secondary,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                    TextButton.icon(
+                      icon: Icon(
+                        LucideIcons.earth,
+                        color: ThemeColors.secondary,
+                        size: 13,
+                      ),
+                      onPressed: () => _launchUrl("https://iskepr.github.io/"),
+                      label: Text(
+                        "تطـوير محـمـد ســكـيبر",
+                        style: TextStyle(
+                          color: ThemeColors.secondary,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
         ),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Settings(fontSize: widget.fontSize, autoSave: widget.autoSave),
-          Column(
-            children: [
-              Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        LucideIcons.cpu,
-                        color: ThemeColors.secondary,
-                        size: 13,
-                      ),
-                      SizedBox(width: 5),
-                      Text(
-                        "لغة ألف نـ5 النسخة 5.1.0",
-                        style: TextStyle(
-                          color: ThemeColors.secondary,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        LucideIcons.info,
-                        color: ThemeColors.secondary,
-                        size: 13,
-                      ),
-                      SizedBox(width: 5),
-                      Text(
-                        "محرر طيف النسخة 1.0.0 (تجريبية)",
-                        style: TextStyle(
-                          color: ThemeColors.secondary,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton.icon(
-                    icon: Icon(
-                      LucideIcons.github,
-                      color: ThemeColors.secondary,
-                      size: 13,
-                    ),
-                    onPressed: () =>
-                        _launchUrl("https://github.com/iskepr/AlifEAndroid"),
-                    label: Text(
-                      "الشفرة على جيت هاب",
-                      style: TextStyle(
-                        color: ThemeColors.secondary,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ),
-                  TextButton.icon(
-                    icon: Icon(
-                      LucideIcons.earth,
-                      color: ThemeColors.secondary,
-                      size: 13,
-                    ),
-                    onPressed: () => _launchUrl("https://iskepr.github.io/"),
-                    label: Text(
-                      "تطـوير محـمـد ســكـيبر",
-                      style: TextStyle(
-                        color: ThemeColors.secondary,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

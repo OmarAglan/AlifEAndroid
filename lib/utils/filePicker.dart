@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:alifeditor/core/theme/Colors.dart';
+import 'package:alifeditor/widgets/BottomSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -49,113 +50,100 @@ Future<void> showFileManagerModal(
     context: context,
     isScrollControlled: true,
     builder: (context) {
-      return SafeArea(
-        child: Container(
-          height: MediaQuery.of(context).size.height * 0.8,
-          decoration: BoxDecoration(
-            color: ThemeColors.background,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(25),
-              topRight: Radius.circular(25),
-            ),
-          ),
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: ThemeColors.background,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(25),
-                    topRight: Radius.circular(25),
-                  ),
+      return MyBottomsheet(
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: ThemeColors.background,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(25),
+                  topRight: Radius.circular(25),
                 ),
-                width: double.infinity,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      rootPath.replaceAll(
-                        RegExp(r"^(/storage/emulated/0|/home)"),
-                        "~",
-                      ),
-                      style: TextStyle(
-                        color: ThemeColors.foreground,
-                        fontSize: 16,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+              ),
+              width: double.infinity,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    rootPath.replaceAll(
+                      RegExp(r"^(/storage/emulated/0|/home)"),
+                      "~",
                     ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.arrow_back,
-                        color: ThemeColors.foreground,
-                      ),
-                      onPressed: () {
-                        final parentPath = Directory(rootPath).parent.path;
+                    style: TextStyle(
+                      color: ThemeColors.foreground,
+                      fontSize: 16,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.arrow_back, color: ThemeColors.foreground),
+                    onPressed: () {
+                      final parentPath = Directory(rootPath).parent.path;
 
-                        if (parentPath == rootPath || parentPath == "/") return;
+                      if (parentPath == rootPath || parentPath == "/") return;
 
-                        Navigator.pop(context);
-                        showFileManagerModal(
-                          context,
-                          onFileSelected,
-                          startPath: parentPath,
+                      Navigator.pop(context);
+                      showFileManagerModal(
+                        context,
+                        onFileSelected,
+                        startPath: parentPath,
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: items.isNotEmpty
+                  ? ListView.builder(
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        final entity = items[index];
+                        final isDir = FileSystemEntity.isDirectorySync(
+                          entity.path,
+                        );
+                        final name = entity.path.split("/").last;
+                        return ListTile(
+                          leading: Icon(
+                            isDir ? LucideIcons.folder : LucideIcons.fileCode,
+                            color: isDir
+                                ? Color(0xFFDAB744)
+                                : ThemeColors.foreground,
+                          ),
+                          title: Text(
+                            name,
+                            style: TextStyle(color: ThemeColors.foreground),
+                          ),
+                          subtitle: Text(
+                            isDir
+                                ? "عدد الملفات ${Directory(entity.path).listSync().length}"
+                                : "الحجم ${formatFileSize(File(entity.path).statSync().size)}",
+                            style: TextStyle(color: ThemeColors.secondary),
+                          ),
+                          onTap: () {
+                            if (isDir) {
+                              Navigator.pop(context);
+                              showFileManagerModal(
+                                context,
+                                onFileSelected,
+                                startPath: entity.path,
+                              );
+                            } else {
+                              Navigator.pop(context);
+                              onFileSelected(entity.path);
+                            }
+                          },
                         );
                       },
+                    )
+                  : Text(
+                      "لا يوجد ملفات للغة ألف في هذا المجلد",
+                      style: TextStyle(color: ThemeColors.secondary),
                     ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: items.isNotEmpty
-                    ? ListView.builder(
-                        itemCount: items.length,
-                        itemBuilder: (context, index) {
-                          final entity = items[index];
-                          final isDir = FileSystemEntity.isDirectorySync(
-                            entity.path,
-                          );
-                          final name = entity.path.split("/").last;
-                          return ListTile(
-                            leading: Icon(
-                              isDir ? LucideIcons.folder : LucideIcons.fileCode,
-                              color: isDir
-                                  ? Color(0xFFDAB744)
-                                  : ThemeColors.foreground,
-                            ),
-                            title: Text(
-                              name,
-                              style: TextStyle(color: ThemeColors.foreground),
-                            ),
-                            subtitle: Text(
-                              isDir
-                                  ? "عدد الملفات ${Directory(entity.path).listSync().length}"
-                                  : "الحجم ${formatFileSize(File(entity.path).statSync().size)}",
-                              style: TextStyle(color: ThemeColors.secondary),
-                            ),
-                            onTap: () {
-                              if (isDir) {
-                                Navigator.pop(context);
-                                showFileManagerModal(
-                                  context,
-                                  onFileSelected,
-                                  startPath: entity.path,
-                                );
-                              } else {
-                                Navigator.pop(context);
-                                onFileSelected(entity.path);
-                              }
-                            },
-                          );
-                        },
-                      )
-                    : Text(
-                        "لا يوجد ملفات للغة ألف في هذا المجلد",
-                        style: TextStyle(color: ThemeColors.secondary),
-                      ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       );
     },

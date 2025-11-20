@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:alifeditor/core/theme/Colors.dart';
 import 'package:alifeditor/generated/l10n.dart';
+import 'package:alifeditor/widgets/BottomSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:path_provider/path_provider.dart';
@@ -77,27 +78,9 @@ class _TerminalState extends State<Terminal> {
 
   @override
   Widget build(BuildContext context) {
-    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
-    final baseHeight = MediaQuery.of(context).size.height * 0.6;
-    final extraHeight = keyboardHeight > 0 ? keyboardHeight / 1.5 : 0;
-    final totalHeight = baseHeight + extraHeight;
-
-    return SafeArea(
-      child: Container(
-        padding: EdgeInsets.only(
-          top: 10,
-          right: 10,
-          left: 10,
-          bottom: keyboardHeight,
-        ),
-        height: totalHeight,
-        decoration: BoxDecoration(
-          color: ThemeColors.background,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(25),
-            topRight: Radius.circular(25),
-          ),
-        ),
+    return MyBottomsheet(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
