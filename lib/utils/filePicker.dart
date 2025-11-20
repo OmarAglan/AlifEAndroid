@@ -98,56 +98,51 @@ Future<void> showFileManagerModal(
                   ],
                 ),
               ),
-              Directionality(
-                textDirection: TextDirection.rtl,
-                child: Expanded(
-                  child: items.isNotEmpty
-                      ? ListView.builder(
-                          itemCount: items.length,
-                          itemBuilder: (context, index) {
-                            final entity = items[index];
-                            final isDir = FileSystemEntity.isDirectorySync(
-                              entity.path,
-                            );
-                            final name = entity.path.split("/").last;
-                            return ListTile(
-                              leading: Icon(
-                                isDir
-                                    ? LucideIcons.folder
-                                    : LucideIcons.fileCode,
-                                color: isDir ? Color(0xFFDAB744) : Colors.white,
-                              ),
-                              title: Text(
-                                name,
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                              subtitle: Text(
-                                isDir
-                                    ? "عدد الملفات ${Directory(entity.path).listSync().length}"
-                                    : "الحجم ${formatFileSize(File(entity.path).statSync().size)}",
-                                style: const TextStyle(color: Colors.grey),
-                              ),
-                              onTap: () {
-                                if (isDir) {
-                                  Navigator.pop(context);
-                                  showFileManagerModal(
-                                    context,
-                                    onFileSelected,
-                                    startPath: entity.path,
-                                  );
-                                } else {
-                                  Navigator.pop(context);
-                                  onFileSelected(entity.path);
-                                }
-                              },
-                            );
-                          },
-                        )
-                      : Text(
-                          "لا يوجد ملفات للغة ألف في هذا المجلد",
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                ),
+              Expanded(
+                child: items.isNotEmpty
+                    ? ListView.builder(
+                        itemCount: items.length,
+                        itemBuilder: (context, index) {
+                          final entity = items[index];
+                          final isDir = FileSystemEntity.isDirectorySync(
+                            entity.path,
+                          );
+                          final name = entity.path.split("/").last;
+                          return ListTile(
+                            leading: Icon(
+                              isDir ? LucideIcons.folder : LucideIcons.fileCode,
+                              color: isDir ? Color(0xFFDAB744) : Colors.white,
+                            ),
+                            title: Text(
+                              name,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                            subtitle: Text(
+                              isDir
+                                  ? "عدد الملفات ${Directory(entity.path).listSync().length}"
+                                  : "الحجم ${formatFileSize(File(entity.path).statSync().size)}",
+                              style: const TextStyle(color: Colors.grey),
+                            ),
+                            onTap: () {
+                              if (isDir) {
+                                Navigator.pop(context);
+                                showFileManagerModal(
+                                  context,
+                                  onFileSelected,
+                                  startPath: entity.path,
+                                );
+                              } else {
+                                Navigator.pop(context);
+                                onFileSelected(entity.path);
+                              }
+                            },
+                          );
+                        },
+                      )
+                    : Text(
+                        "لا يوجد ملفات للغة ألف في هذا المجلد",
+                        style: TextStyle(color: Colors.grey),
+                      ),
               ),
             ],
           ),

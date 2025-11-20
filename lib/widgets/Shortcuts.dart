@@ -58,7 +58,6 @@ class KeyShortcuts extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 5),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        reverse: true,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [

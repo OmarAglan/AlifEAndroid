@@ -104,6 +104,14 @@ class _TerminalState extends State<Terminal> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  const Text(
+                    'الطرفية',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                   Row(
                     children: [
                       IconButton(
@@ -124,14 +132,6 @@ class _TerminalState extends State<Terminal> {
                       ),
                     ],
                   ),
-                  const Text(
-                    'الطرفية',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -143,7 +143,6 @@ class _TerminalState extends State<Terminal> {
                   child: SelectableText(
                     value.isEmpty ? '' : value,
                     style: const TextStyle(fontSize: 14, color: Colors.white),
-                    textDirection: TextDirection.rtl,
                     textAlign: TextAlign.right,
                   ),
                 ),
@@ -156,11 +155,9 @@ class _TerminalState extends State<Terminal> {
                     focusNode: _focusNode,
                     controller: widget.inputController,
                     onSubmitted: (_) => runCommandHandler(),
-                    textDirection: TextDirection.rtl,
                     style: const TextStyle(color: Colors.white),
                     decoration: const InputDecoration(
                       hintText: "ادخل هنا",
-                      hintTextDirection: TextDirection.rtl,
                       hintStyle: TextStyle(color: Colors.grey),
                       border: InputBorder.none,
                     ),

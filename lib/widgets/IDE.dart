@@ -87,25 +87,22 @@ class _IDEState extends State<IDE> {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: SingleChildScrollView(
-          child: CodeTheme(
-            data: CodeThemeData(styles: {...alifDarkTheme}),
-            child: CodeField(
-              gutterStyle: GutterStyle(
-                width: 70,
-                showErrors: false,
-                showFoldingHandles: false,
-                textAlign: TextAlign.center,
-              ),
-              controller: codeController,
-              focusNode: widget.focusNode,
-              textStyle: TextStyle(
-                fontFamily: 'Tajawal',
-                fontSize: fontSize.value,
-                height: 1.4,
-              ),
+      child: SingleChildScrollView(
+        child: CodeTheme(
+          data: CodeThemeData(styles: {...alifDarkTheme}),
+          child: CodeField(
+            gutterStyle: GutterStyle(
+              width: 70,
+              showErrors: false,
+              showFoldingHandles: false,
+              textAlign: TextAlign.center,
+            ),
+            controller: codeController,
+            focusNode: widget.focusNode,
+            textStyle: TextStyle(
+              fontFamily: 'Tajawal',
+              fontSize: fontSize.value,
+              height: 1.4,
             ),
           ),
         ),

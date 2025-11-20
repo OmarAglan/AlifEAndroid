@@ -181,121 +181,123 @@ class _AlifAppBarState extends State<AlifAppBar> {
       }
     }
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 10, right: 10, left: 10),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(
-                      LucideIcons.folderOpen,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    onPressed: openFile,
-                  ),
-                  IconButton(
-                    icon: const Icon(
-                      LucideIcons.save,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    onPressed: () => saveCode(controller.text),
-                  ),
-                  IconButton(
-                    icon: const Icon(
-                      LucideIcons.play,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    onPressed: () => {
-                      output.value = '',
-                      runAlifCode(),
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        builder: (context) => Terminal(
-                          inputController: inputController,
-                          output: output,
-                          alifBinPath: alifBinPath,
-                          runAlifProcess: runningProcess.value,
-                          runAlifCode: runAlifCode,
-                          onClearOutput: () => output.value = '',
-                          onSendInput: (input) {
-                            runningProcess.value?.stdin.writeln(input);
-                            output.value += "$input\n";
-                            inputController.clear();
-                          },
-                        ),
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 10, right: 10, left: 10),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (context) => About(
+                        fontSize: widget.fontSize,
+                        autoSave: widget.autoSave,
                       ),
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(
-                      LucideIcons.terminal,
+                    );
+                  },
+                  child: Text(
+                    "مُحرر طيف",
+                    style: TextStyle(
                       color: Colors.white,
-                      size: 20,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        builder: (context) => Terminal(
-                          inputController: inputController,
-                          output: output,
-                          alifBinPath: alifBinPath,
-                          runAlifProcess: runningProcess.value,
-                          runAlifCode: runAlifCode,
-                          onClearOutput: () => output.value = '',
-                          onSendInput: (input) {
-                            runningProcess.value?.stdin.writeln(input);
-                            output.value += "$input\n";
-                            inputController.clear();
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-              TextButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    builder: (context) => About(
-                      fontSize: widget.fontSize,
-                      autoSave: widget.autoSave,
-                    ),
-                  );
-                },
-                child: Text(
-                  "مُحرر طيف",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-            ],
-          ),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(
+                        LucideIcons.terminal,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (context) => Terminal(
+                            inputController: inputController,
+                            output: output,
+                            alifBinPath: alifBinPath,
+                            runAlifProcess: runningProcess.value,
+                            runAlifCode: runAlifCode,
+                            onClearOutput: () => output.value = '',
+                            onSendInput: (input) {
+                              runningProcess.value?.stdin.writeln(input);
+                              output.value += "$input\n";
+                              inputController.clear();
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        LucideIcons.play,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      onPressed: () => {
+                        output.value = '',
+                        runAlifCode(),
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (context) => Terminal(
+                            inputController: inputController,
+                            output: output,
+                            alifBinPath: alifBinPath,
+                            runAlifProcess: runningProcess.value,
+                            runAlifCode: runAlifCode,
+                            onClearOutput: () => output.value = '',
+                            onSendInput: (input) {
+                              runningProcess.value?.stdin.writeln(input);
+                              output.value += "$input\n";
+                              inputController.clear();
+                            },
+                          ),
+                        ),
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        LucideIcons.save,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      onPressed: () => saveCode(controller.text),
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        LucideIcons.folderOpen,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      onPressed: openFile,
+                    ),
+                  ],
+                ),
+              ],
+            ),
 
-          OpenedFiles(
-            key: _openedFilesKey,
-            currentCode: controller,
-            output: output,
-            selectedFile: selectedFile,
-            autoSave: widget.autoSave,
-            onFileSelected: (index) {
-              selectedFile.value = {...selectedFile.value, "id": index};
-            },
-          ),
-        ],
+            OpenedFiles(
+              key: _openedFilesKey,
+              currentCode: controller,
+              output: output,
+              selectedFile: selectedFile,
+              autoSave: widget.autoSave,
+              onFileSelected: (index) {
+                selectedFile.value = {...selectedFile.value, "id": index};
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

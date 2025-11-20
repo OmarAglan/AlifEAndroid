@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:alifeditor/generated/l10n.dart';
 import 'package:alifeditor/utils/premissions.dart';
 import 'package:alifeditor/widgets/AppBar.dart';
 import 'package:alifeditor/widgets/IDE.dart';
 import 'package:alifeditor/widgets/Shortcuts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,6 +15,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() => runApp(
   MaterialApp(
     debugShowCheckedModeBanner: false,
+    locale: Locale("ar"),
+    localizationsDelegates: [
+      S.delegate,
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: S.delegate.supportedLocales,
     title: "مُحرر طيف",
     theme: ThemeData(fontFamily: 'Tajawal'),
     home: AlifRunner(),

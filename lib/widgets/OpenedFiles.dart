@@ -233,7 +233,6 @@ class OpenedFilesState extends State<OpenedFiles> {
       height: 50,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        reverse: true,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         itemCount: files.length + 1,
         itemBuilder: (context, i) {
@@ -370,18 +369,16 @@ Widget _buildFileOptions(
           ),
         ),
         const SizedBox(height: 16),
-        Directionality(
-          textDirection: TextDirection.rtl,
-          child: TextField(
-            controller: nameController,
-            textAlign: TextAlign.right,
-            style: const TextStyle(color: Colors.white),
-            decoration: const InputDecoration(
-              labelText: "اسم الملف",
-              labelStyle: TextStyle(color: Colors.white70),
-            ),
+        TextField(
+          controller: nameController,
+          textAlign: TextAlign.right,
+          style: const TextStyle(color: Colors.white),
+          decoration: const InputDecoration(
+            labelText: "اسم الملف",
+            labelStyle: TextStyle(color: Colors.white70),
           ),
         ),
+
         const SizedBox(height: 16),
         Text(
           files[i]["Path"]?.replaceAll("/storage/emulated/0", "~") ??
