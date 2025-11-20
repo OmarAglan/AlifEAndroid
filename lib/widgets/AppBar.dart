@@ -291,7 +291,6 @@ class _AlifAppBarState extends State<AlifAppBar> {
             OpenedFiles(
               key: _openedFilesKey,
               currentCode: controller,
-              output: output,
               selectedFile: selectedFile,
               autoSave: widget.autoSave,
               onFileSelected: (index) {

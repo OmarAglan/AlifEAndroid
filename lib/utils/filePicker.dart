@@ -36,8 +36,9 @@ Future<void> showFileManagerModal(
 
   String formatFileSize(int bytes) {
     if (bytes < 1024) return "$bytes بايت";
-    if (bytes < 1024 * 1024)
+    if (bytes < 1024 * 1024) {
       return "${(bytes / 1024).toStringAsFixed(2)} كيلو بايت";
+    }
     if (bytes < 1024 * 1024 * 1024) {
       return "${(bytes / (1024 * 1024)).toStringAsFixed(2)} ميجا بايت";
     }

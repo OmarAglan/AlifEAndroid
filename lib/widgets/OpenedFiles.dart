@@ -11,14 +11,12 @@ class OpenedFiles extends StatefulWidget {
   OpenedFiles({
     super.key,
     required this.currentCode,
-    required this.output,
     required this.selectedFile,
     this.onFileSelected,
     required this.autoSave,
   });
 
   final TextEditingController currentCode;
-  final ValueNotifier<String> output;
   final ValueNotifier<Map<dynamic, dynamic>> selectedFile;
   final ValueChanged<int>? onFileSelected;
   final ValueNotifier<bool> autoSave;

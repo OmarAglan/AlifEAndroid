@@ -51,36 +51,38 @@ class KeyShortcuts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 5),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            _buildButton("⏎", insert: "/س"),
-            _buildButton("[", insert: "]"),
-            _buildButton("]", insert: "["),
-            _buildButton("{", insert: "}"),
-            _buildButton("}", insert: "{"),
-            _buildButton(","),
-            _buildButton("\\"),
-            _buildButton("*"),
-            _buildButton("^"),
-            _buildButton("<", insert: ">"),
-            _buildButton(">", insert: "<"),
-            _buildButton("#"),
-            _buildButton("+"),
-            _buildButton("-"),
-            _buildButton("(", insert: ")"),
-            _buildButton(")", insert: "("),
-            _buildButton("_"),
-            _buildButton("="),
-            _buildButton(":"),
-            _buildButton("'"),
-            _buildButton('"'),
-            _buildButton("↹", insert: "    "),
-          ],
+    return SafeArea(
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 5),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              _buildButton("⏎", insert: "/س"),
+              _buildButton("[", insert: "]"),
+              _buildButton("]", insert: "["),
+              _buildButton("{", insert: "}"),
+              _buildButton("}", insert: "{"),
+              _buildButton(","),
+              _buildButton("\\"),
+              _buildButton("*"),
+              _buildButton("^"),
+              _buildButton("<", insert: ">"),
+              _buildButton(">", insert: "<"),
+              _buildButton("#"),
+              _buildButton("+"),
+              _buildButton("-"),
+              _buildButton("(", insert: ")"),
+              _buildButton(")", insert: "("),
+              _buildButton("_"),
+              _buildButton("="),
+              _buildButton(":"),
+              _buildButton("'"),
+              _buildButton('"'),
+              _buildButton("↹", insert: "    "),
+            ],
+          ),
         ),
       ),
     );
