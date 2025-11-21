@@ -1,54 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_code_editor/flutter_code_editor.dart';
-import 'package:alifeditor/utils/IdeTheme.dart';
-import 'package:alifeditor/utils/alif.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:taif/core/data/ideData.dart';
+import 'package:taif/utils/ide/Theme.dart';
+import 'package:taif/utils/ide/alif.dart';
 
 class IDE extends StatefulWidget {
-  const IDE({
-    super.key,
-    required this.controller,
-    required this.focusNode,
-    required this.fontSize,
-  });
-  final TextEditingController controller;
-  final FocusNode focusNode;
-  final ValueNotifier<double> fontSize;
+  const IDE({super.key});
 
   @override
   State<IDE> createState() => _IDEState();
 }
 
 class _IDEState extends State<IDE> {
-  bool enableSyntaxHighlighting = false;
   late CodeController codeController;
-
-  late ValueNotifier<double> fontSize;
-  late VoidCallback _fontSizeListener;
 
   @override
   void initState() {
     super.initState();
-    fontSize = widget.fontSize;
-    _fontSizeListener = () => setState(() {});
-    fontSize.addListener(_fontSizeListener);
-    _createCodeController();
-    loadSettings();
-  }
+    final data = Provider.of<IdeData>(context, listen: false);
 
-  void _createCodeController() {
-    codeController = CodeController(
-      text: widget.controller.text,
-      language: alif,
-      patternMap: enableSyntaxHighlighting
-          ? {}
-          : {'': TextStyle(color: Colors.transparent)},
-    );
+    codeController = CodeController(text: data.code.text, language: alif);
 
     codeController.addListener(() {
-      if (widget.controller.text != codeController.text ||
-          widget.controller.selection != codeController.selection) {
-        widget.controller.value = widget.controller.value.copyWith(
+      if (data.code.text != codeController.text ||
+          data.code.selection != codeController.selection) {
+        data.code.value = data.code.value.copyWith(
           text: codeController.text,
           selection: codeController.selection,
           composing: TextRange.empty,
@@ -56,36 +33,28 @@ class _IDEState extends State<IDE> {
       }
     });
 
-    widget.controller.addListener(() {
-      if (codeController.text != widget.controller.text ||
-          codeController.selection != widget.controller.selection) {
+    data.code.addListener(() {
+      if (codeController.text != data.code.text ||
+          codeController.selection != data.code.selection) {
         codeController.value = codeController.value.copyWith(
-          text: widget.controller.text,
-          selection: widget.controller.selection,
+          text: data.code.text,
+          selection: data.code.selection,
           composing: TextRange.empty,
         );
       }
     });
   }
 
-  void loadSettings() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      enableSyntaxHighlighting =
-          prefs.getBool('enable_syntax_highlighting') ?? true;
-      _createCodeController();
-    });
-  }
-
   @override
   void dispose() {
-    fontSize.removeListener(_fontSizeListener);
     codeController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final data = Provider.of<IdeData>(context);
+
     return Expanded(
       child: SingleChildScrollView(
         child: CodeTheme(
@@ -98,10 +67,10 @@ class _IDEState extends State<IDE> {
               textAlign: TextAlign.center,
             ),
             controller: codeController,
-            focusNode: widget.focusNode,
+            focusNode: data.focusNode,
             textStyle: TextStyle(
               fontFamily: 'Tajawal',
-              fontSize: fontSize.value,
+              fontSize: data.fontSize.toDouble(),
               height: 1.4,
             ),
           ),

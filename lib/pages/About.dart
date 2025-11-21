@@ -1,20 +1,13 @@
-import 'package:alifeditor/core/theme/Colors.dart';
-import 'package:alifeditor/widgets/BottomSheet.dart';
-import 'package:alifeditor/widgets/Settings.dart';
+import 'package:taif/core/theme/Colors.dart';
+import 'package:taif/widgets/BottomSheet.dart';
+import 'package:taif/widgets/Settings.dart';
 import "package:flutter/material.dart";
 import 'package:url_launcher/url_launcher.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-class About extends StatefulWidget {
-  const About({super.key, required this.fontSize, required this.autoSave});
-  final ValueNotifier<double> fontSize;
-  final ValueNotifier<bool> autoSave;
+class About extends StatelessWidget {
+  const About({super.key});
 
-  @override
-  State<About> createState() => _AboutState();
-}
-
-class _AboutState extends State<About> {
   @override
   Widget build(BuildContext context) {
     return MyBottomsheet(
@@ -23,7 +16,7 @@ class _AboutState extends State<About> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Settings(fontSize: widget.fontSize, autoSave: widget.autoSave),
+            Settings(),
             Column(
               children: [
                 Column(

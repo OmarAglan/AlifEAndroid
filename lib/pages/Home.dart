@@ -1,16 +1,16 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:taif/core/data/ideData.dart';
+import 'package:taif/utils/files/loadSavedFiles.dart';
 
-import 'package:alifeditor/utils/premissions.dart';
-import 'package:alifeditor/widgets/AppBar.dart';
-import 'package:alifeditor/widgets/IDE.dart';
-import 'package:alifeditor/widgets/Shortcuts.dart';
+import 'package:taif/utils/premissions.dart';
+import 'package:taif/utils/setup.dart';
+import 'package:taif/widgets/AppBar.dart';
+import 'package:taif/widgets/IDE.dart';
+import 'package:taif/widgets/Shortcuts.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -20,203 +20,24 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  TextEditingController code = TextEditingController(text: "");
-  final FocusNode editorFocus = FocusNode();
-  TextEditingController inputController = TextEditingController();
-  final ValueNotifier<Process?> runningProcess = ValueNotifier(null);
-  final ValueNotifier<String> output = ValueNotifier("");
-
-  final ValueNotifier<Map<dynamic, dynamic>> selectedFile = ValueNotifier({});
-
-  final ValueNotifier<double> fontSize = ValueNotifier<double>(15);
-  final ValueNotifier<bool> autoSave = ValueNotifier<bool>(true);
-
-  late Future<void> setupFuture;
   @override
   void initState() {
     super.initState();
     Future.microtask(() async {
+      await loadFilesFromStorage(context);
       await _loadSavedSettings();
       await requestStoragePermission(context);
-      await setupAlif();
+      await setupAlif(context);
     });
   }
 
   Future<void> _loadSavedSettings() async {
+    final data = Provider.of<IdeData>(context, listen: false);
     final prefs = await SharedPreferences.getInstance();
-    final savedFontSize = prefs.getDouble('EditorFontSize');
-    if (savedFontSize != null) fontSize.value = savedFontSize;
+    final savedFontSize = prefs.getInt('EditorFontSize');
+    if (savedFontSize != null) data.setFontSize(savedFontSize);
     final savedAutoSave = prefs.getBool('EditorAutoSave');
-    if (savedAutoSave != null) autoSave.value = savedAutoSave;
-  }
-
-  String? alifBinPath;
-
-  Future<void> setupAlif() async {
-    try {
-      final appDir = await getApplicationSupportDirectory();
-      final alifDir = Directory('${appDir.path}/alif');
-      Directory libDir = Directory('');
-
-      if (Platform.isAndroid) {
-        if (!await alifDir.exists()) await alifDir.create(recursive: true);
-        final arm64Dir = Directory('${alifDir.path}/arm64-v8a');
-        libDir = Directory('${alifDir.path}/library');
-
-        if (!await arm64Dir.exists()) await arm64Dir.create(recursive: true);
-        if (!await libDir.exists()) await libDir.create(recursive: true);
-
-        final filesToCopy = [
-          'aliflang/arm64-v8a/libalif.so',
-          'aliflang/arm64-v8a/libc++_shared.so',
-          'aliflang/library/التبادل.aliflib',
-          'aliflang/library/نظام_التشغيل.aliflib',
-        ];
-
-        for (final fileName in filesToCopy) {
-          final data = await rootBundle.load('assets/$fileName');
-          final bytes = data.buffer.asUint8List();
-          final targetPath = fileName.contains('arm64-v8a')
-              ? '${arm64Dir.path}/${fileName.split('/').last}'
-              : '${libDir.path}/${fileName.split('/').last}';
-          final file = File(targetPath);
-          await file.writeAsBytes(bytes, flush: true);
-        }
-
-        alifBinPath = '${arm64Dir.path}/libalif.so';
-      } else if (Platform.isLinux) {
-        final langDir = Directory('${alifDir.path}/lang');
-        if (!await langDir.exists()) await langDir.create(recursive: true);
-
-        final filesToCopy = [
-          'aliflang/linux/amd64',
-          'aliflang/library/التبادل.aliflib',
-          'aliflang/library/نظام_التشغيل.aliflib',
-        ];
-
-        if (!File("${langDir.path}/amd64").existsSync()) {
-          for (final fileName in filesToCopy) {
-            final data = await rootBundle.load('assets/$fileName');
-            final bytes = data.buffer.asUint8List();
-
-            final targetPath = fileName.contains('linux')
-                ? '${langDir.path}/${fileName.split('/').last}'
-                : '${langDir.path}/${fileName.split('/').last}';
-
-            final file = File(targetPath);
-            await file.writeAsBytes(bytes, flush: true);
-          }
-        }
-
-        alifBinPath = '${langDir.path}/amd64';
-      } else {
-        output.value += ("$appDir \n $alifDir \n");
-      }
-      output.value += "تم تحميل لغة ألف اصدار 5.1.0\n";
-    } catch (e, s) {
-      output.value += ("خطأ أثناء تجهيز ملفات لغة ألف: $e\n$s");
-    }
-  }
-
-  Future<void> runAlifCode() async {
-    final file = selectedFile.value;
-    if (alifBinPath == null) {
-      output.value += ("خطأ: لغة ألف ليست متاحة\n");
-      return;
-    }
-
-    try {
-      final aliflang = File(alifBinPath!);
-
-      if (Platform.isAndroid) {
-        var status = await Permission.manageExternalStorage.status;
-        await Process.run('chmod', ['755', aliflang.path]);
-        final libDir = alifBinPath!.replaceAll('/libalif.so', '');
-
-        final isNotSaved = status.isDenied || file["Path"] == "";
-        var codePath = File("/");
-
-        if (isNotSaved) {
-          var tempDir = await getTemporaryDirectory();
-          codePath = File('${tempDir.path}/${file["Name"]}');
-          await codePath.writeAsString(file["Code"] ?? "");
-        } else {
-          codePath = File(file["Path"]);
-          final fileContent = await codePath.readAsString();
-          if (fileContent != file["Code"]) {
-            output.value += ("تحذير: لم يتم حفظ التعديلات الاخيرة ⚠️\n");
-          }
-        }
-
-        final process = await Process.start(
-          "/system/bin/linker64",
-          [aliflang.path, codePath.path],
-          environment: {'LD_LIBRARY_PATH': libDir},
-        );
-        runningProcess.value = process;
-        process.stdout.transform(SystemEncoding().decoder).listen((data) {
-          output.value += (data);
-        });
-        process.stderr.transform(SystemEncoding().decoder).listen((data) {
-          if (!data.toLowerCase().contains("warning")) {
-            output.value += ("خطأ: $data");
-          }
-        });
-        process.exitCode.then((exitCode) {
-          if (exitCode != 0) {
-            output.value += ("حدث خطأ في الشفرة\n[رقم $exitCode]\n");
-          }
-        });
-      } else if (Platform.isLinux) {
-        await Process.run('chmod', ['+x', aliflang.path]);
-
-        final isNotSaved = file["Path"] == "";
-        late File codePath;
-
-        if (isNotSaved) {
-          final tempDir = await getTemporaryDirectory();
-          final tmpFolder = Directory('${tempDir.path}/aliflang');
-
-          if (!await tmpFolder.exists()) {
-            await tmpFolder.create(recursive: true);
-          }
-
-          codePath = File('${tmpFolder.path}/${file["Name"]}');
-          await codePath.writeAsString(file["Code"] ?? "");
-        } else {
-          codePath = File(file["Path"]);
-          final fileContent = await codePath.readAsString();
-          if (fileContent != file["Code"]) {
-            output.value +=
-                ("تَحْذِير: لَمْ تَتِمّ حِفْظ التَّعْدِيلات الأَخِيرَة\n");
-          }
-        }
-
-        final process = await Process.start(aliflang.path, [codePath.path]);
-        runningProcess.value = process;
-
-        process.stdout.transform(SystemEncoding().decoder).listen((data) {
-          output.value += data;
-        });
-
-        process.stderr.transform(SystemEncoding().decoder).listen((data) {
-          if (!data.toLowerCase().contains("warning")) {
-            output.value += ("خَطَأ: $data");
-          }
-        });
-
-        process.exitCode.then((exitCode) {
-          if (exitCode != 0) {
-            output.value +=
-                ("حَدَثَ خَطَأ فِي الشَّفْرَة\n[رَقْم $exitCode]\n");
-          }
-        });
-      } else {
-        output.value += "النظام غير مدعوم\n";
-      }
-    } catch (e, s) {
-      output.value += ("استثناء أثناء التشغيل: $e\n$s");
-    }
+    if (savedAutoSave != null) data.setAutoSave(savedAutoSave);
   }
 
   @override
@@ -230,23 +51,7 @@ class _HomeState extends State<Home> {
             alignment: Alignment.topLeft,
           ),
         ),
-        child: Column(
-          children: [
-            AlifAppBar(
-              controller: code,
-              inputController: inputController,
-              output: output,
-              alifBinPath: alifBinPath,
-              runningProcess: runningProcess,
-              runAlifCode: runAlifCode,
-              selectedFile: selectedFile,
-              fontSize: fontSize,
-              autoSave: autoSave,
-            ),
-            IDE(controller: code, focusNode: editorFocus, fontSize: fontSize),
-            KeyShortcuts(controller: code, focusNode: editorFocus),
-          ],
-        ),
+        child: Column(children: [AlifAppBar(), IDE(), KeyShortcuts()]),
       ),
     );
   }

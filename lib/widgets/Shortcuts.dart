@@ -1,32 +1,32 @@
-import 'package:alifeditor/core/theme/Colors.dart';
+import 'package:flutter_code_editor/flutter_code_editor.dart';
+import 'package:provider/provider.dart';
+import 'package:taif/core/data/ideData.dart';
+import 'package:taif/core/theme/Colors.dart';
 import 'package:flutter/material.dart';
 
 class KeyShortcuts extends StatelessWidget {
-  final TextEditingController controller;
-  final FocusNode focusNode;
+  KeyShortcuts({super.key});
 
-  const KeyShortcuts({
-    super.key,
-    required this.controller,
-    required this.focusNode,
-  });
+  void _insertText(BuildContext context, String value) {
+    final data = Provider.of<IdeData>(context, listen: false);
 
-  void _insertText(String value) {
-    final text = controller.text;
-    final selection = controller.selection;
+    final old = data.code;
+    final text = old.text;
+    final selection = old.selection;
 
     final newText = text.replaceRange(selection.start, selection.end, value);
     final newPos = selection.start + value.length;
 
-    controller.value = controller.value.copyWith(
+    old.value = old.value.copyWith(
       text: newText,
       selection: TextSelection.collapsed(offset: newPos),
+      composing: TextRange.empty,
     );
 
-    focusNode.requestFocus();
+    data.focusNode.requestFocus();
   }
 
-  Widget _buildButton(String label, {String? insert}) {
+  Widget _buildButton(BuildContext context, String label, {String? insert}) {
     return Padding(
       padding: EdgeInsets.all(1),
       child: ConstrainedBox(
@@ -42,7 +42,7 @@ class KeyShortcuts extends StatelessWidget {
             ),
             textStyle: TextStyle(fontSize: 18),
           ),
-          onPressed: () => _insertText(insert ?? label),
+          onPressed: () => _insertText(context, insert ?? label),
           child: Text(label, textAlign: TextAlign.center),
         ),
       ),
@@ -59,28 +59,28 @@ class KeyShortcuts extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              _buildButton("⏎", insert: "/س"),
-              _buildButton("[", insert: "]"),
-              _buildButton("]", insert: "["),
-              _buildButton("{", insert: "}"),
-              _buildButton("}", insert: "{"),
-              _buildButton(","),
-              _buildButton("\\"),
-              _buildButton("*"),
-              _buildButton("^"),
-              _buildButton("<", insert: ">"),
-              _buildButton(">", insert: "<"),
-              _buildButton("#"),
-              _buildButton("+"),
-              _buildButton("-"),
-              _buildButton("(", insert: ")"),
-              _buildButton(")", insert: "("),
-              _buildButton("_"),
-              _buildButton("="),
-              _buildButton(":"),
-              _buildButton("'"),
-              _buildButton('"'),
-              _buildButton("↹", insert: "    "),
+              _buildButton(context, "⏎", insert: "/س"),
+              _buildButton(context, "["),
+              _buildButton(context, "]"),
+              _buildButton(context, "{"),
+              _buildButton(context, "}"),
+              _buildButton(context, ","),
+              _buildButton(context, "\\"),
+              _buildButton(context, "*"),
+              _buildButton(context, "^"),
+              _buildButton(context, "<"),
+              _buildButton(context, ">"),
+              _buildButton(context, "#"),
+              _buildButton(context, "+"),
+              _buildButton(context, "-"),
+              _buildButton(context, "("),
+              _buildButton(context, ")"),
+              _buildButton(context, "_"),
+              _buildButton(context, "="),
+              _buildButton(context, ":"),
+              _buildButton(context, "'"),
+              _buildButton(context, '"'),
+              _buildButton(context, "↹", insert: "    "),
             ],
           ),
         ),

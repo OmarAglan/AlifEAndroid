@@ -1,83 +1,56 @@
 import 'dart:io';
-import 'package:alifeditor/core/theme/Colors.dart';
-import 'package:alifeditor/generated/l10n.dart';
-import 'package:alifeditor/widgets/BottomSheet.dart';
+import 'package:provider/provider.dart';
+import 'package:taif/core/data/ideData.dart';
+import 'package:taif/core/theme/Colors.dart';
+import 'package:taif/generated/l10n.dart';
+import 'package:taif/utils/runAlif.dart';
+import 'package:taif/widgets/BottomSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:path_provider/path_provider.dart';
 
-class Terminal extends StatefulWidget {
-  const Terminal({
-    super.key,
-    required this.inputController,
-    required this.output,
-    required this.alifBinPath,
-    required this.runAlifProcess,
-    required this.onClearOutput,
-    required this.onSendInput,
-    required this.runAlifCode,
-  });
-
-  final TextEditingController inputController;
-  final ValueNotifier<String> output;
-  final String? alifBinPath;
-  final Process? runAlifProcess;
-  final VoidCallback onClearOutput;
-  final Function(String) onSendInput;
-  final VoidCallback runAlifCode;
-
-  @override
-  State<Terminal> createState() => _TerminalState();
-}
-
-class _TerminalState extends State<Terminal> {
-  Process? runningProcess;
+class Terminal extends StatelessWidget {
+  Terminal({super.key});
+  TextEditingController inputController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    super.dispose();
-  }
-
-  void runCommandHandler() async {
-    if (widget.runAlifProcess?.exitCode == null) {
-      if (widget.inputController.text == "clear" ||
-          widget.inputController.text == "مسح") {
-        widget.output.value = "";
-        widget.inputController.clear();
+  void runCommandHandler(IdeData data, BuildContext context) async {
+    if (data.runningProcess?.exitCode == null) {
+      if (inputController.text == "clear" || inputController.text == "مسح") {
+        data.clearOutput();
+        inputController.clear();
         FocusScope.of(context).requestFocus(_focusNode);
         return;
       } else {
-        final process = await runCommand(
-          widget.inputController.text.split(" "),
-          null,
-          widget.output,
-        );
-
-        if (process != null) {
-          setState(() {
-            runningProcess = process;
-          });
-          process.exitCode.then((_) {
-            if (mounted) {
-              setState(() {
-                runningProcess = null;
-              });
-            }
-          });
-        }
+        // final process = await runCommand(
+        //   inputController.text.split(" "),
+        //   null,
+        //   output,
+        // );
+        // if (process != null) {
+        //   setState(() {
+        //     runningProcess = process;
+        //   });
+        //   process.exitCode.then((_) {
+        //     if (mounted) {
+        //       setState(() {
+        //         runningProcess = null;
+        //       });
+        //     }
+        //   });
+        // }
       }
     } else {
-      widget.onSendInput(widget.inputController.text);
+      data.sendOutput(inputController.text);
     }
-
-    widget.inputController.clear();
+    inputController.clear();
     FocusScope.of(context).requestFocus(_focusNode);
   }
 
   @override
   Widget build(BuildContext context) {
+    final data = Provider.of<IdeData>(context, listen: false);
+
     return MyBottomsheet(
       child: Padding(
         padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 5),
@@ -105,7 +78,7 @@ class _TerminalState extends State<Terminal> {
                           color: ThemeColors.foreground,
                           size: 30,
                         ),
-                        onPressed: widget.onClearOutput,
+                        onPressed: data.clearOutput,
                       ),
                       IconButton(
                         icon: Icon(
@@ -113,7 +86,7 @@ class _TerminalState extends State<Terminal> {
                           size: 20,
                           color: ThemeColors.foreground,
                         ),
-                        onPressed: widget.runAlifCode,
+                        onPressed: () => runAlifCode(context),
                       ),
                     ],
                   ),
@@ -121,14 +94,13 @@ class _TerminalState extends State<Terminal> {
               ),
             ),
             Expanded(
-              child: ValueListenableBuilder<String>(
-                valueListenable: widget.output,
-                builder: (context, value, _) => SingleChildScrollView(
-                  reverse: true,
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: SelectableText(
-                      value.isEmpty ? '' : value,
+              child: SingleChildScrollView(
+                reverse: true,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Consumer<IdeData>(
+                    builder: (context, data, child) => SelectableText(
+                      data.output,
                       style: TextStyle(
                         fontSize: 14,
                         color: ThemeColors.foreground,
@@ -144,8 +116,8 @@ class _TerminalState extends State<Terminal> {
                 Expanded(
                   child: TextField(
                     focusNode: _focusNode,
-                    controller: widget.inputController,
-                    onSubmitted: (_) => runCommandHandler(),
+                    controller: inputController,
+                    onSubmitted: (_) => runCommandHandler(data, context),
                     style: TextStyle(color: ThemeColors.foreground),
                     decoration: InputDecoration(
                       hintText: "ادخل هنا",
@@ -155,7 +127,7 @@ class _TerminalState extends State<Terminal> {
                   ),
                 ),
                 IconButton(
-                  onPressed: runCommandHandler,
+                  onPressed: () => runCommandHandler(data, context),
                   icon: Icon(
                     LucideIcons.arrowRight,
                     color: ThemeColors.foreground,

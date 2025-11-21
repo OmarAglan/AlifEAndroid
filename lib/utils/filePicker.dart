@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:alifeditor/core/theme/Colors.dart';
-import 'package:alifeditor/widgets/BottomSheet.dart';
+import 'package:taif/core/theme/Colors.dart';
+import 'package:taif/widgets/BottomSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 

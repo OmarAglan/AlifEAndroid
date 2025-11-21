@@ -22,7 +22,9 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "autoSave": MessageLookupByLibrary.simpleMessage("الحفظ التلقائي"),
     "close": MessageLookupByLibrary.simpleMessage("اغلاق"),
+    "fontSize": MessageLookupByLibrary.simpleMessage("حجم الخط"),
     "new_file": MessageLookupByLibrary.simpleMessage("ملف جديد"),
     "open_file": MessageLookupByLibrary.simpleMessage("فتح ملف"),
     "save": MessageLookupByLibrary.simpleMessage("حفظ"),

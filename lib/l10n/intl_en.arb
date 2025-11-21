@@ -6,5 +6,7 @@
     "open_file": "Open File",
     "save": "Save",
     "save_as": "Save As",
-    "close": "Close"
+    "close": "Close",
+    "fontSize": "Font Size",
+    "autoSave": "Auto Save"
 }

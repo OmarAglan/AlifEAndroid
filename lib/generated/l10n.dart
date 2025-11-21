@@ -93,6 +93,16 @@ class S {
   String get close {
     return Intl.message('Close', name: 'close', desc: '', args: []);
   }
+
+  /// `Font Size`
+  String get fontSize {
+    return Intl.message('Font Size', name: 'fontSize', desc: '', args: []);
+  }
+
+  /// `Auto Save`
+  String get autoSave {
+    return Intl.message('Auto Save', name: 'autoSave', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

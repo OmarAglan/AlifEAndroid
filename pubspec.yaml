@@ -1,50 +1,52 @@
-name: alifeditor
+name: taif
 description: "مُحرر لغة ألف"
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.8.1
+    sdk: ^3.8.1
 
 dependencies:
-  flutter:
-    sdk: flutter
+    flutter:
+        sdk: flutter
 
-  cupertino_icons: ^1.0.8
-  file_picker: ^10.2.0
-  lucide_icons_flutter: ^3.0.7
-  file_selector: ^1.0.3
-  file_saver: ^0.3.1
-  shared_preferences: ^2.5.3
-  path_provider: ^2.1.2
-  permission_handler: ^11.3.0
-  highlight: ^0.7.0
-  flutter_code_editor: ^0.3.4
-  url_launcher: ^6.2.5
-  input_quantity: ^2.5.1
+    cupertino_icons: ^1.0.8
+    file_picker: ^10.2.0
+    lucide_icons_flutter: ^3.0.7
+    file_selector: ^1.0.3
+    file_saver: ^0.3.1
+    shared_preferences: ^2.5.3
+    path_provider: ^2.1.2
+    permission_handler: ^11.3.0
+    highlight: ^0.7.0
+    flutter_code_editor: ^0.3.4
+    url_launcher: ^6.2.5
+    input_quantity: ^2.5.1
 
-  flutter_localizations:
-    sdk: flutter
+    flutter_localizations:
+        sdk: flutter
+    provider: ^6.1.5+1
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+    flutter_test:
+        sdk: flutter
 
-  flutter_lints: ^5.0.0
+    flutter_lints: ^5.0.0
 
 flutter:
-  uses-material-design: true
+    uses-material-design: true
 
-  assets:
-    - assets/
-    - assets/aliflang/
-    - assets/aliflang/arm64-v8a/libalif.so
-    - assets/aliflang/arm64-v8a/libc++_shared.so
-    - assets/aliflang/library/
-    - assets/aliflang/linux/amd64
+    assets:
+        - assets/
+        - assets/aliflang/
+        - assets/aliflang/arm64-v8a/libalif.so
+        - assets/aliflang/arm64-v8a/libc++_shared.so
+        - assets/aliflang/library/
+        - assets/aliflang/linux/amd64
 
-  fonts:
-    - family: Tajawal
-      fonts:
-        - asset: assets/Tajawal.ttf
+    fonts:
+        - family: Tajawal
+          fonts:
+              - asset: assets/Tajawal.ttf
+
 flutter_intl:
-  enabled: true
+    enabled: true
