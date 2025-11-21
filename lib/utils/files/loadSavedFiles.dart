@@ -32,14 +32,10 @@ Future<void> loadFilesFromStorage(BuildContext context) async {
         openFile(lastFile, context);
       }
     } catch (e) {
-      debugPrint("خطأ في قراءة الملفات المخزنة: $e");
+      print("خطأ في قراءة الملفات المخزنة: $e");
     }
   } else {
-    createFile(
-      name: defFile["Name"]!,
-      code: defFile["Code"]!,
-      context: context,
-    );
+    createFile(name: defFile["Name"], code: defFile["Code"], context: context);
   }
 }
 

@@ -1,4 +1,3 @@
-import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:provider/provider.dart';
 import 'package:taif/core/data/ideData.dart';
 import 'package:taif/core/theme/Colors.dart';

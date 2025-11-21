@@ -14,9 +14,9 @@ Future<void> openFile(int fileID, BuildContext context) async {
   data.setSelectedFile(
     SelectedFile(
       id: fileID,
-      code: openedFile["Name"],
+      name: openedFile["Name"],
+      code: openedFile["Code"],
       path: openedFile["Path"],
-      name: openedFile["Code"],
     ),
   );
   data.editCode(openedFile["Code"]);

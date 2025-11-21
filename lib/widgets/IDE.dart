@@ -13,41 +13,50 @@ class IDE extends StatefulWidget {
 }
 
 class _IDEState extends State<IDE> {
-  late CodeController codeController;
+  CodeController? codeController;
 
   @override
   void initState() {
     super.initState();
     final data = Provider.of<IdeData>(context, listen: false);
 
-    codeController = CodeController(text: data.code.text, language: alif);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
 
-    codeController.addListener(() {
-      if (data.code.text != codeController.text ||
-          data.code.selection != codeController.selection) {
-        data.code.value = data.code.value.copyWith(
-          text: codeController.text,
-          selection: codeController.selection,
-          composing: TextRange.empty,
-        );
-      }
-    });
+      codeController = CodeController(text: data.code.text, language: alif);
 
-    data.code.addListener(() {
-      if (codeController.text != data.code.text ||
-          codeController.selection != data.code.selection) {
-        codeController.value = codeController.value.copyWith(
-          text: data.code.text,
-          selection: data.code.selection,
-          composing: TextRange.empty,
-        );
-      }
+      codeController!.addListener(() {
+        if (data.code.text != codeController!.text ||
+            data.code.selection != codeController!.selection) {
+          data.selectedFile.code = codeController!.text;
+          data.editCode(
+            codeController!.text,
+            selection: codeController!.selection,
+          );
+        }
+      });
+
+      data.code.addListener(() {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted || codeController == null) return;
+          if (codeController!.text != data.code.text ||
+              codeController!.selection != data.code.selection) {
+            codeController!.value = codeController!.value.copyWith(
+              text: data.code.text,
+              selection: data.code.selection,
+              composing: TextRange.empty,
+            );
+          }
+        });
+      });
+
+      setState(() {});
     });
   }
 
   @override
   void dispose() {
-    codeController.dispose();
+    codeController?.dispose();
     super.dispose();
   }
 
@@ -59,21 +68,23 @@ class _IDEState extends State<IDE> {
       child: SingleChildScrollView(
         child: CodeTheme(
           data: CodeThemeData(styles: {...alifDarkTheme}),
-          child: CodeField(
-            gutterStyle: GutterStyle(
-              width: 70,
-              showErrors: false,
-              showFoldingHandles: false,
-              textAlign: TextAlign.center,
-            ),
-            controller: codeController,
-            focusNode: data.focusNode,
-            textStyle: TextStyle(
-              fontFamily: 'Tajawal',
-              fontSize: data.fontSize.toDouble(),
-              height: 1.4,
-            ),
-          ),
+          child: codeController == null
+              ? SizedBox(height: 200)
+              : CodeField(
+                  gutterStyle: GutterStyle(
+                    width: 70,
+                    showErrors: false,
+                    showFoldingHandles: false,
+                    textAlign: TextAlign.center,
+                  ),
+                  controller: codeController!,
+                  focusNode: data.focusNode,
+                  textStyle: TextStyle(
+                    fontFamily: 'Tajawal',
+                    fontSize: data.fontSize.toDouble(),
+                    height: 1.4,
+                  ),
+                ),
         ),
       ),
     );

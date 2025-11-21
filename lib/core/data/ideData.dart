@@ -5,16 +5,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taif/core/data/dataTypes.dart';
 
 class IdeData extends ChangeNotifier {
-  late SharedPreferences _prefs;
+  SharedPreferences? _prefs;
   IdeData() {
     _init();
   }
 
   Future<void> _init() async {
     _prefs = await SharedPreferences.getInstance();
-    _lastFile = _prefs.getInt("lastFile") ?? 0;
-    _autoSave = _prefs.getBool("autoSave") ?? true;
-    _fontSize = _prefs.getInt("fontSize") ?? 16;
+    _lastFile = _prefs?.getInt("lastFile") ?? 0;
+    _autoSave = _prefs?.getBool("autoSave") ?? true;
+    _fontSize = _prefs?.getInt("fontSize") ?? 16;
     notifyListeners();
   }
 
@@ -28,8 +28,8 @@ class IdeData extends ChangeNotifier {
 
   // output
   String output = "";
-  void addOutput(String text) {
-    output += "$text\n";
+  void addOutput(String text, {bool newLine = true}) {
+    output += "$text${newLine ? "\n" : ""}";
     notifyListeners();
   }
 
@@ -67,8 +67,13 @@ class IdeData extends ChangeNotifier {
   }
 
   TextEditingController code = TextEditingController();
-  void editCode(newCode) {
-    code.text = newCode;
+  void editCode(String newCode, {TextSelection? selection}) {
+    if (code.text != newCode) {
+      code.text = newCode;
+    }
+    if (selection != null) {
+      code.selection = selection;
+    }
     notifyListeners();
   }
 
@@ -78,7 +83,8 @@ class IdeData extends ChangeNotifier {
 
   Future<void> setLastFile(int value) async {
     _lastFile = value;
-    await _prefs.setInt("lastFile", value);
+    _prefs ??= await SharedPreferences.getInstance();
+    await _prefs!.setInt("lastFile", value);
     notifyListeners();
   }
 
@@ -87,7 +93,8 @@ class IdeData extends ChangeNotifier {
 
   Future<void> setAutoSave(bool value) async {
     _autoSave = value;
-    await _prefs.setBool("autoSave", value);
+    _prefs ??= await SharedPreferences.getInstance();
+    await _prefs!.setBool("autoSave", value);
     notifyListeners();
   }
 
@@ -96,7 +103,8 @@ class IdeData extends ChangeNotifier {
 
   Future<void> setFontSize(int value) async {
     _fontSize = value;
-    await _prefs.setInt("fontSize", value);
+    _prefs ??= await SharedPreferences.getInstance();
+    await _prefs!.setInt("fontSize", value);
     notifyListeners();
   }
 }

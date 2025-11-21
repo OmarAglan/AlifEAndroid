@@ -76,12 +76,12 @@ Future<void> runAlifCode(BuildContext context) async {
 
       final process = await Process.start(aliflang.path, [
         isSaved ? "" : "-ص",
-        isSaved ? codePath.path : file.code.toString(),
+        isSaved ? file.path : "'${file.code}'",
       ]);
       data.editProcess(process);
 
       process.stdout.transform(SystemEncoding().decoder).listen((result) {
-        data.addOutput(result);
+        data.addOutput(result, newLine: false);
       });
 
       process.stderr.transform(SystemEncoding().decoder).listen((result) {
