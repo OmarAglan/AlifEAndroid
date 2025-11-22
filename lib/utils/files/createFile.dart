@@ -16,6 +16,7 @@ void createFile({
     "Name": name.isEmpty ? "ملف_جديد_${data.files.length + 1}.الف" : name,
     "Path": path,
     "Code": code,
+    "Saved": false,
   };
   data.addFile(newFile);
   openFile(data.files.length - 1, context);

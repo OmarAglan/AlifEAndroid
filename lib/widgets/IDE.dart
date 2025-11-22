@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:provider/provider.dart';
 import 'package:taif/core/data/ideData.dart';
+import 'package:taif/utils/files/saveFile.dart';
 import 'package:taif/utils/ide/Theme.dart';
 import 'package:taif/utils/ide/alif.dart';
 
@@ -15,6 +16,8 @@ class IDE extends StatefulWidget {
 class _IDEState extends State<IDE> {
   CodeController? codeController;
 
+  bool isSyncing = false; // عشان نِمْنَع اللّoop
+
   @override
   void initState() {
     super.initState();
@@ -26,26 +29,50 @@ class _IDEState extends State<IDE> {
       codeController = CodeController(text: data.code.text, language: alif);
 
       codeController!.addListener(() {
+        if (isSyncing) return;
         if (data.code.text != codeController!.text ||
             data.code.selection != codeController!.selection) {
+          isSyncing = true;
+
           data.selectedFile.code = codeController!.text;
           data.editCode(
             codeController!.text,
             selection: codeController!.selection,
           );
+
+          data.files[data.selectedFile.id]["Code"] = codeController!.text;
+
+          if (data.autoSave) {
+            if (data.selectedFile.path.isNotEmpty) {
+              saveFileToStorage(context);
+            } else {
+              saveFilesLocal(context);
+            }
+          } else {
+            if (data.selectedFile.id < 0 || data.files.isEmpty) return;
+            data.files[data.selectedFile.id]["Saved"] = false;
+          }
+
+          isSyncing = false;
         }
       });
 
       data.code.addListener(() {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted || codeController == null) return;
+          if (isSyncing) return;
+
           if (codeController!.text != data.code.text ||
               codeController!.selection != data.code.selection) {
+            isSyncing = true;
+
             codeController!.value = codeController!.value.copyWith(
               text: data.code.text,
               selection: data.code.selection,
               composing: TextRange.empty,
             );
+
+            isSyncing = false;
           }
         });
       });

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -20,9 +21,23 @@ class IdeData extends ChangeNotifier {
 
   FocusNode focusNode = FocusNode();
 
+  // files
+  List<Map<String, dynamic>> savedFiles = [];
+  void setSavedFiles(List<Map<String, dynamic>> files) {
+    savedFiles = files;
+    notifyListeners();
+  }
+
   List<Map<String, dynamic>> files = [];
-  void addFile(Map<String, dynamic> file) {
+  void addFile(Map<String, dynamic> file) async {
     files.add(file);
+    _prefs ??= await SharedPreferences.getInstance();
+    await _prefs!.setString("opened_files", jsonEncode(files));
+    notifyListeners();
+  }
+
+  void setFiles(List<Map<String, dynamic>> files) {
+    this.files = files;
     notifyListeners();
   }
 

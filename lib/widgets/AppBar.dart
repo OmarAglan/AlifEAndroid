@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:provider/provider.dart';
 import 'package:taif/core/data/ideData.dart';
@@ -9,59 +8,15 @@ import 'package:taif/pages/Terminal.dart';
 import 'package:taif/utils/filePicker.dart';
 import 'package:taif/utils/files/createFile.dart';
 import 'package:taif/utils/files/openFile.dart';
+import 'package:taif/utils/files/saveFile.dart';
 import 'package:taif/utils/runAlif.dart';
 import 'package:taif/widgets/OpenedFiles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:file_saver/file_saver.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class AlifAppBar extends StatelessWidget {
   AlifAppBar({super.key});
-
-  Future<void> saveFileToStorage(BuildContext context) async {
-    final data = Provider.of<IdeData>(context, listen: false);
-    final code = data.code.text;
-    final filesList = data.files;
-
-    if (data.selectedFile.path == "") {
-      try {
-        final bytes = Uint8List.fromList(utf8.encode(code));
-        final path = await FileSaver.instance.saveAs(
-          name:
-              (data.selectedFile.name == null || data.selectedFile.name.isEmpty)
-              ? 'شفرة'
-              : data.selectedFile.name.toString().replaceAll(
-                  RegExp(r'\.(الف|alif|aliflib)$'),
-                  "",
-                ),
-          bytes: bytes,
-          fileExtension: "الف",
-          mimeType: MimeType.other,
-        );
-        if (path == null || path.isEmpty) {
-          data.addOutput("تم إلغاء الحفظ.");
-          return;
-        }
-
-        final fileData = {
-          "Name": data.selectedFile.name,
-          "Path": path,
-          "Code": code,
-        };
-        filesList[filesList.indexWhere(
-              (p) => p["Name"] == data.selectedFile.name,
-            )] =
-            fileData;
-
-        data.addOutput("تم الحفظ في: $path");
-      } catch (e) {
-        data.addOutput("خطأ أثناء الحفظ: $e");
-      }
-    } else {
-      File(data.selectedFile.path).writeAsString(data.selectedFile.code);
-    }
-  }
 
   Future<void> openFileFromStorage(BuildContext context) async {
     final data = Provider.of<IdeData>(context, listen: false);
@@ -158,6 +113,8 @@ class AlifAppBar extends StatelessWidget {
                         size: 20,
                       ),
                       onPressed: () => saveFileToStorage(context),
+                      onLongPress: () =>
+                          saveFileToStorage(context, asNew: true),
                     ),
                     IconButton(
                       icon: Icon(

@@ -21,8 +21,7 @@ class OpenedFiles extends StatelessWidget {
                 children: List.generate(data.files.length, (id) {
                   bool sel = data.selectedFile.id == id;
                   final files = data.files;
-                  bool isNotSaved =
-                      files[id]["Saved"] != null || files[id]["Path"] == "";
+                  bool isNotSaved = !files[id]["Saved"];
                   return GestureDetector(
                     onTap: () => openFile(id, context),
                     // onLongPress: () =>

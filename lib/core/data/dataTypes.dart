@@ -3,6 +3,7 @@ class SelectedFile {
   String name;
   String path;
   String code;
+  bool saved = false;
 
   SelectedFile({
     required this.id,
