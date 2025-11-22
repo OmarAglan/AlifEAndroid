@@ -21,9 +21,11 @@ Future<void> loadFilesFromStorage(BuildContext context) async {
         data.files = decoded
             .map<Map<String, dynamic>>(
               (item) => {
-                "Name": item["Name"].toString(),
-                "Path": item["Path"].toString(),
-                "Code": item["Code"].toString(),
+                "id": item["id"],
+                "Name": item["Name"],
+                "Path": item["Path"],
+                "Code": item["Code"],
+                "Saved": item["Saved"],
               },
             )
             .toList();

@@ -22,12 +22,6 @@ class IdeData extends ChangeNotifier {
   FocusNode focusNode = FocusNode();
 
   // files
-  List<Map<String, dynamic>> savedFiles = [];
-  void setSavedFiles(List<Map<String, dynamic>> files) {
-    savedFiles = files;
-    notifyListeners();
-  }
-
   List<Map<String, dynamic>> files = [];
   void addFile(Map<String, dynamic> file) async {
     files.add(file);
