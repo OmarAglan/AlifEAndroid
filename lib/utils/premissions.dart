@@ -15,6 +15,8 @@ Future<bool> requestStoragePermission(BuildContext context) async {
     context: context,
     builder: (context) {
       return MyBottomsheet(
+        padding: EdgeInsets.all(10),
+        height: 300,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -30,10 +32,15 @@ Future<bool> requestStoragePermission(BuildContext context) async {
                 ),
                 Text(
                   "الوصول للتخزين",
-                  style: TextStyle(color: ThemeColors.foreground, fontSize: 22),
+                  style: TextStyle(
+                    color: ThemeColors.foreground,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Text(
                   "يحتاج التطبيق الإذن للوصول للملفات لتعديل ملفات شفرة ألف",
+                  textAlign: TextAlign.center,
                   style: TextStyle(color: ThemeColors.foreground, fontSize: 20),
                 ),
               ],

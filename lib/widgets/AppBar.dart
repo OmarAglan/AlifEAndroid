@@ -10,7 +10,7 @@ import 'package:taif/utils/files/createFile.dart';
 import 'package:taif/utils/files/openFile.dart';
 import 'package:taif/utils/files/saveFile.dart';
 import 'package:taif/utils/runAlif.dart';
-import 'package:taif/widgets/OpenedFiles.dart';
+import 'package:taif/widgets/OpenedFiles/openedFiles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';

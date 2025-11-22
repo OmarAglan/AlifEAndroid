@@ -7,6 +7,10 @@
     "save": "Save",
     "save_as": "Save As",
     "close": "Close",
+    "delete": "Delete",
     "fontSize": "Font Size",
-    "autoSave": "Auto Save"
+    "autoSave": "Auto Save",
+    "editFile": "Edit File",
+    "noPath": "No Path",
+    "fileName": "File Name"
 }

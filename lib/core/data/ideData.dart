@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taif/core/data/dataTypes.dart';
+import 'package:taif/utils/files/openFile.dart';
+import 'package:taif/utils/files/saveFile.dart';
 
 class IdeData extends ChangeNotifier {
   SharedPreferences? _prefs;
@@ -32,6 +34,39 @@ class IdeData extends ChangeNotifier {
 
   void setFiles(List<Map<String, dynamic>> files) {
     this.files = files;
+    notifyListeners();
+  }
+
+  void updateFile(
+    BuildContext context,
+    int id,
+    String type, {
+    String? newName,
+  }) async {
+    final file = files[id];
+    if (type == "reName") {
+      file["Name"] = newName;
+      if (file["Path"] != "") {
+        final oldFile = File(file["Path"]!);
+        final dir = oldFile.parent.path;
+        final newPath = "$dir/${file["Name"]}";
+
+        if (await oldFile.exists()) {
+          await oldFile.copy(newPath);
+          await oldFile.delete();
+        }
+
+        file["Path"] = newPath;
+      }
+      openFile(id, context);
+    } else if (type == "delete" || type == "close") {
+      files.removeAt(id);
+      openFile(id - 1, context);
+      if (type == "delete" || file["Path"] != "") {
+        File(file["Path"]!).delete();
+      }
+    }
+    saveFilesLocal(context);
     notifyListeners();
   }
 

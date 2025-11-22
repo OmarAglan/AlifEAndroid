@@ -94,6 +94,11 @@ class S {
     return Intl.message('Close', name: 'close', desc: '', args: []);
   }
 
+  /// `Delete`
+  String get delete {
+    return Intl.message('Delete', name: 'delete', desc: '', args: []);
+  }
+
   /// `Font Size`
   String get fontSize {
     return Intl.message('Font Size', name: 'fontSize', desc: '', args: []);
@@ -102,6 +107,21 @@ class S {
   /// `Auto Save`
   String get autoSave {
     return Intl.message('Auto Save', name: 'autoSave', desc: '', args: []);
+  }
+
+  /// `Edit File`
+  String get editFile {
+    return Intl.message('Edit File', name: 'editFile', desc: '', args: []);
+  }
+
+  /// `No Path`
+  String get noPath {
+    return Intl.message('No Path', name: 'noPath', desc: '', args: []);
+  }
+
+  /// `File Name`
+  String get fileName {
+    return Intl.message('File Name', name: 'fileName', desc: '', args: []);
   }
 }
 

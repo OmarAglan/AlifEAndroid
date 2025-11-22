@@ -53,7 +53,12 @@ class Terminal extends StatelessWidget {
 
     return MyBottomsheet(
       child: Padding(
-        padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 5),
+        padding: EdgeInsets.only(
+          top: 10,
+          left: 10,
+          right: 10,
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [

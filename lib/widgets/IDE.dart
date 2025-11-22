@@ -16,7 +16,7 @@ class IDE extends StatefulWidget {
 class _IDEState extends State<IDE> {
   CodeController? codeController;
 
-  bool isSyncing = false; // عشان نِمْنَع اللّoop
+  bool isSyncing = false;
 
   @override
   void initState() {
@@ -107,7 +107,6 @@ class _IDEState extends State<IDE> {
                   controller: codeController!,
                   focusNode: data.focusNode,
                   textStyle: TextStyle(
-                    fontFamily: 'Tajawal',
                     fontSize: data.fontSize.toDouble(),
                     height: 1.4,
                   ),

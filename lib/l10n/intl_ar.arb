@@ -7,6 +7,10 @@
     "save": "حفظ",
     "save_as": "حفظ ك",
     "close": "اغلاق",
+    "delete": "حذف",
     "fontSize": "حجم الخط",
-    "autoSave": "الحفظ التلقائي"
+    "autoSave": "الحفظ التلقائي",
+    "editFile": "تعديل الملف",
+    "noPath": "لا يوجد مسار",
+    "fileName": "اسم الملف"
 }

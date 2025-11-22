@@ -24,8 +24,12 @@ class MessageLookup extends MessageLookupByLibrary {
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "autoSave": MessageLookupByLibrary.simpleMessage("Auto Save"),
     "close": MessageLookupByLibrary.simpleMessage("Close"),
+    "delete": MessageLookupByLibrary.simpleMessage("Delete"),
+    "editFile": MessageLookupByLibrary.simpleMessage("Edit File"),
+    "fileName": MessageLookupByLibrary.simpleMessage("File Name"),
     "fontSize": MessageLookupByLibrary.simpleMessage("Font Size"),
     "new_file": MessageLookupByLibrary.simpleMessage("New File"),
+    "noPath": MessageLookupByLibrary.simpleMessage("No Path"),
     "open_file": MessageLookupByLibrary.simpleMessage("Open File"),
     "save": MessageLookupByLibrary.simpleMessage("Save"),
     "save_as": MessageLookupByLibrary.simpleMessage("Save As"),
