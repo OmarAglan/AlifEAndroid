@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:taif/core/theme/Colors.dart';
+import 'package:taif/core/theme/Text.dart';
 import 'package:taif/widgets/BottomSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -41,7 +42,7 @@ Future<bool> requestStoragePermission(BuildContext context) async {
                 Text(
                   "يحتاج التطبيق الإذن للوصول للملفات لتعديل ملفات شفرة ألف",
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: ThemeColors.foreground, fontSize: 20),
+                  style: ThemeText.title,
                 ),
               ],
             ),
@@ -72,15 +73,7 @@ Future<bool> requestStoragePermission(BuildContext context) async {
                   onPressed: () => Navigator.pop(context, false),
                   child: IntrinsicWidth(
                     stepWidth: double.infinity,
-                    child: Center(
-                      child: Text(
-                        "رفض",
-                        style: TextStyle(
-                          color: ThemeColors.foreground,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ),
+                    child: Center(child: Text("رفض", style: ThemeText.title)),
                   ),
                 ),
               ],

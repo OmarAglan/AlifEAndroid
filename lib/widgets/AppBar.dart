@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:provider/provider.dart';
 import 'package:taif/core/data/ideData.dart';
 import 'package:taif/core/theme/Colors.dart';
+import 'package:taif/core/theme/Text.dart';
 import 'package:taif/generated/l10n.dart';
 import 'package:taif/pages/About.dart';
 import 'package:taif/pages/Terminal.dart';
@@ -9,14 +10,13 @@ import 'package:taif/utils/filePicker.dart';
 import 'package:taif/utils/files/createFile.dart';
 import 'package:taif/utils/files/openFile.dart';
 import 'package:taif/utils/files/saveFile.dart';
-import 'package:taif/utils/runAlif.dart';
+import 'package:taif/utils/runCommand.dart';
 import 'package:taif/widgets/OpenedFiles/openedFiles.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class AlifAppBar extends StatelessWidget {
-  AlifAppBar({super.key});
+  const AlifAppBar({super.key});
 
   Future<void> openFileFromStorage(BuildContext context) async {
     final data = Provider.of<IdeData>(context, listen: false);
@@ -48,7 +48,6 @@ class AlifAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final data = Provider.of<IdeData>(context, listen: false);
     return SafeArea(
       child: Column(
         children: [
@@ -61,18 +60,10 @@ class AlifAppBar extends StatelessWidget {
                   onPressed: () {
                     showModalBottomSheet(
                       context: context,
-                      isScrollControlled: true,
                       builder: (context) => About(),
                     );
                   },
-                  child: Text(
-                    S.of(context).title,
-                    style: TextStyle(
-                      color: ThemeColors.foreground,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: Text(S.of(context).title, style: ThemeText.title),
                 ),
                 Row(
                   children: [
@@ -90,21 +81,23 @@ class AlifAppBar extends StatelessWidget {
                         );
                       },
                     ),
-                    IconButton(
-                      icon: Icon(
-                        LucideIcons.play,
-                        color: ThemeColors.foreground,
-                        size: 20,
-                      ),
-                      onPressed: () => {
-                        data.clearOutput(),
-                        runAlifCode(context),
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          builder: (context) => Terminal(),
+                    Consumer(
+                      builder: (context, IdeData data, child) => IconButton(
+                        icon: Icon(
+                          LucideIcons.play,
+                          color: ThemeColors.foreground,
+                          size: 20,
                         ),
-                      },
+                        onPressed: () => {
+                          data.clearOutput(),
+                          runCommand(context, "الف"),
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            builder: (context) => Terminal(),
+                          ),
+                        },
+                      ),
                     ),
                     IconButton(
                       icon: Icon(

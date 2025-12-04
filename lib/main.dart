@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
-void main() => runApp(Taif());
+void main() => runApp(const Taif());
 
 class Taif extends StatelessWidget {
   const Taif({super.key});

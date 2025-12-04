@@ -1,10 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:taif/core/data/ideData.dart';
 import 'package:taif/core/theme/Colors.dart';
+import 'package:taif/core/theme/Text.dart';
 import 'package:taif/generated/l10n.dart';
 import 'package:taif/widgets/BottomSheet.dart';
 
@@ -21,22 +20,11 @@ class Editsheet extends StatelessWidget {
       text: data.files[id]["Name"],
     );
     return MyBottomsheet(
-      padding: EdgeInsets.only(
-        top: 10,
-        right: 10,
-        left: 10,
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
+      padding: EdgeInsets.all(20),
       child: Column(
+        spacing: 16,
         children: [
-          Text(
-            texts.editFile,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          Text(texts.editFile, style: ThemeText.title),
           const SizedBox(height: 16),
           TextField(
             controller: controller,
@@ -51,21 +39,15 @@ class Editsheet extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 16),
           SelectableText(
             data.files[id]["Path"] == ""
                 ? texts.noPath
                 : data.files[id]["Path"]!.replaceAll(
-                    RegExp(
-                      r'^(/storage/emulated/0|/home/' +
-                          Platform.environment['HOME']! +
-                          r'/)',
-                    ),
+                    "/storage/emulated/0",
                     '~',
                   ),
             style: TextStyle(color: Colors.white),
           ),
-          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [

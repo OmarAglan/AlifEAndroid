@@ -69,7 +69,7 @@ Future<void> setupAlif(BuildContext context) async {
     } else {
       data.addOutput("$appDir \n $alifDir");
     }
-    data.addOutput("تم تحميل لغة ألف اصدار 5.1.0");
+    data.addOutput("تم تحميل لغة ألف اصدار 5.2.0");
   } catch (e, s) {
     data.addOutput("خطأ أثناء تجهيز ملفات لغة ألف: $e\n$s");
   }

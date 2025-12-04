@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:taif/core/theme/Colors.dart';
+import 'package:taif/core/theme/Text.dart';
 import 'package:taif/widgets/BottomSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -71,10 +72,7 @@ Future<void> showFileManagerModal(
                       RegExp(r"^(/storage/emulated/0|/home)"),
                       "~",
                     ),
-                    style: TextStyle(
-                      color: ThemeColors.foreground,
-                      fontSize: 16,
-                    ),
+                    style: ThemeText.mid,
                     overflow: TextOverflow.ellipsis,
                   ),
                   IconButton(

@@ -1,6 +1,7 @@
 import 'package:provider/provider.dart';
 import 'package:taif/core/data/ideData.dart';
 import 'package:taif/core/theme/Colors.dart';
+import 'package:taif/core/theme/Text.dart';
 import 'package:taif/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -23,7 +24,7 @@ class Settings extends StatelessWidget {
               texts.settings,
               style: TextStyle(color: ThemeColors.foreground, fontSize: 25),
             ),
-            SizedBox(width: 5),
+            const SizedBox(width: 5),
             Icon(LucideIcons.settings, color: ThemeColors.foreground, size: 25),
           ],
         ),
@@ -36,21 +37,9 @@ class Settings extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text(
-                        texts.fontSize,
-                        style: TextStyle(
-                          color: ThemeColors.foreground,
-                          fontSize: 20,
-                        ),
-                      ),
-                      SizedBox(width: 5),
-                      Text(
-                        "(15)",
-                        style: TextStyle(
-                          color: ThemeColors.secondary,
-                          fontSize: 15,
-                        ),
-                      ),
+                      Text(texts.fontSize, style: ThemeText.title),
+                      const SizedBox(width: 5),
+                      Text("(15)", style: ThemeText.smallG),
                     ],
                   ),
                   ScaleTransition(
@@ -80,17 +69,11 @@ class Settings extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    texts.autoSave,
-                    style: TextStyle(
-                      color: ThemeColors.foreground,
-                      fontSize: 20,
-                    ),
-                  ),
+                  Text(texts.autoSave, style: ThemeText.title),
                   Consumer<IdeData>(
                     builder: (context, data, child) => Switch(
                       value: data.autoSave,

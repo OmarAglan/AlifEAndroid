@@ -51,7 +51,10 @@ class _HomeState extends State<Home> {
             alignment: Alignment.topLeft,
           ),
         ),
-        child: Column(children: [AlifAppBar(), IDE(), KeyShortcuts()]),
+        child: Column(
+          spacing: 1,
+          children: [AlifAppBar(), IDE(), KeyShortcuts()],
+        ),
       ),
     );
   }

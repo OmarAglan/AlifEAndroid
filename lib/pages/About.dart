@@ -1,4 +1,5 @@
 import 'package:taif/core/theme/Colors.dart';
+import 'package:taif/core/theme/Text.dart';
 import 'package:taif/widgets/BottomSheet.dart';
 import 'package:taif/widgets/Settings.dart';
 import "package:flutter/material.dart";
@@ -12,7 +13,7 @@ class About extends StatelessWidget {
   Widget build(BuildContext context) {
     return MyBottomsheet(
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: EdgeInsets.all(10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -27,19 +28,16 @@ class About extends StatelessWidget {
                         Icon(
                           LucideIcons.cpu,
                           color: ThemeColors.secondary,
-                          size: 13,
+                          size: ThemeText.smallF,
                         ),
-                        SizedBox(width: 5),
+                        const SizedBox(width: 5),
                         Text(
-                          "لغة ألف نـ5 النسخة 5.1.0",
-                          style: TextStyle(
-                            color: ThemeColors.secondary,
-                            fontSize: 13,
-                          ),
+                          "لغة ألف نـ5 النسخة 5.2.0",
+                          style: ThemeText.smallG,
                         ),
                       ],
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -48,13 +46,10 @@ class About extends StatelessWidget {
                           color: ThemeColors.secondary,
                           size: 13,
                         ),
-                        SizedBox(width: 5),
+                        const SizedBox(width: 5),
                         Text(
                           "محرر طيف النسخة 1.0.0 (تجريبية)",
-                          style: TextStyle(
-                            color: ThemeColors.secondary,
-                            fontSize: 13,
-                          ),
+                          style: ThemeText.smallG,
                         ),
                       ],
                     ),
@@ -73,10 +68,7 @@ class About extends StatelessWidget {
                           _launchUrl("https://github.com/iskepr/AlifEAndroid"),
                       label: Text(
                         "الشفرة على جيت هاب",
-                        style: TextStyle(
-                          color: ThemeColors.secondary,
-                          fontSize: 13,
-                        ),
+                        style: ThemeText.smallG,
                       ),
                     ),
                     TextButton.icon(
@@ -88,10 +80,7 @@ class About extends StatelessWidget {
                       onPressed: () => _launchUrl("https://iskepr.github.io/"),
                       label: Text(
                         "تطـوير محـمـد ســكـيبر",
-                        style: TextStyle(
-                          color: ThemeColors.secondary,
-                          fontSize: 13,
-                        ),
+                        style: ThemeText.smallG,
                       ),
                     ),
                   ],

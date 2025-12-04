@@ -101,6 +101,11 @@ class IdeData extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearRunningProcess() {
+    runningProcess = null;
+    notifyListeners();
+  }
+
   // selected file
   late SelectedFile _selectedFile;
   SelectedFile get selectedFile => _selectedFile;
@@ -118,6 +123,14 @@ class IdeData extends ChangeNotifier {
     if (selection != null) {
       code.selection = selection;
     }
+    notifyListeners();
+  }
+
+  // search
+  bool searchActive = false;
+
+  void openSearch() {
+    searchActive = true;
     notifyListeners();
   }
 
