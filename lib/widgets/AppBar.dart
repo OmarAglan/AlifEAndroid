@@ -11,7 +11,6 @@ import 'package:taif/utils/files/createFile.dart';
 import 'package:taif/utils/files/openFile.dart';
 import 'package:taif/utils/files/saveFile.dart';
 import 'package:taif/utils/runCommand.dart';
-import 'package:taif/widgets/OpenedFiles/openedFiles.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -49,6 +48,7 @@ class AlifAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      bottom: false,
       child: Column(
         children: [
           Padding(
@@ -81,24 +81,23 @@ class AlifAppBar extends StatelessWidget {
                         );
                       },
                     ),
-                    Consumer(
-                      builder: (context, IdeData data, child) => IconButton(
-                        icon: Icon(
-                          LucideIcons.play,
-                          color: ThemeColors.foreground,
-                          size: 20,
-                        ),
-                        onPressed: () => {
-                          data.clearOutput(),
-                          runCommand(context, "الف"),
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            builder: (context) => Terminal(),
-                          ),
-                        },
+                    IconButton(
+                      icon: Icon(
+                        LucideIcons.play,
+                        color: ThemeColors.foreground,
+                        size: 20,
                       ),
+                      onPressed: () => {
+                        context.read<IdeData>().clearOutput(),
+                        runCommand(context, "الف"),
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (context) => Terminal(),
+                        ),
+                      },
                     ),
+
                     IconButton(
                       icon: Icon(
                         LucideIcons.save,
@@ -122,7 +121,6 @@ class AlifAppBar extends StatelessWidget {
               ],
             ),
           ),
-          OpenedFiles(),
         ],
       ),
     );

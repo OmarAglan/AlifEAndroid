@@ -22,14 +22,12 @@ Future<bool> requestStoragePermission(BuildContext context) async {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Column(
+              spacing: 10,
               children: [
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    LucideIcons.folderCog,
-                    size: 40,
-                    color: ThemeColors.foreground,
-                  ),
+                Icon(
+                  LucideIcons.folderCog,
+                  size: 40,
+                  color: ThemeColors.foreground,
                 ),
                 Text(
                   "الوصول للتخزين",
@@ -55,8 +53,8 @@ Future<bool> requestStoragePermission(BuildContext context) async {
                     ),
                   ),
                   onPressed: () => Navigator.pop(context, true),
-                  child: IntrinsicWidth(
-                    stepWidth: double.infinity,
+                  child: SizedBox(
+                    width: double.infinity,
                     child: Center(
                       child: Text(
                         "منح الإذن",

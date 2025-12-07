@@ -8,8 +8,10 @@ import 'package:taif/utils/files/loadSavedFiles.dart';
 
 import 'package:taif/utils/premissions.dart';
 import 'package:taif/utils/setup.dart';
+import 'package:taif/utils/updateApp.dart';
 import 'package:taif/widgets/AppBar.dart';
 import 'package:taif/widgets/IDE.dart';
+import 'package:taif/widgets/OpenedFiles/openedFiles.dart';
 import 'package:taif/widgets/Shortcuts.dart';
 
 class Home extends StatefulWidget {
@@ -28,6 +30,7 @@ class _HomeState extends State<Home> {
       await _loadSavedSettings();
       await requestStoragePermission(context);
       await setupAlif(context);
+      await checkUpdate(context);
     });
   }
 
@@ -53,7 +56,7 @@ class _HomeState extends State<Home> {
         ),
         child: Column(
           spacing: 1,
-          children: [AlifAppBar(), IDE(), KeyShortcuts()],
+          children: [AlifAppBar(), OpenedFiles(), IDE(), KeyShortcuts()],
         ),
       ),
     );

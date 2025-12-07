@@ -56,6 +56,7 @@ class KeyShortcuts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      top: false,
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 5),
         child: SingleChildScrollView(
