@@ -26,7 +26,9 @@ class _EditorViewState extends State<EditorView> {
     super.initState();
     final ideData = Provider.of<IdeData>(context, listen: false);
     init(context, ideData);
-    ideData.setReady();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ideData.setReady();
+    });
   }
 
   void init(BuildContext context, IdeData ideData) async {

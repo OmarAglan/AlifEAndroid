@@ -13,4 +13,5 @@ const alifDarkTheme = {
   'string': TextStyle(color: Color(0xff3bb026)),
   'comment': TextStyle(color: Color(0xff7777777), fontStyle: FontStyle.italic),
   "boolean": TextStyle(color: Color(0xff7981e6)),
+  'escape': TextStyle(color: Color(0xFF86D3D3)),
 };

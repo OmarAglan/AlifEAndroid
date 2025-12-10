@@ -94,26 +94,26 @@ class _IDEState extends State<IDE> {
 
   @override
   Widget build(BuildContext context) {
-    final data = Provider.of<IdeData>(context);
-
     return Expanded(
       child: SingleChildScrollView(
         child: CodeTheme(
           data: CodeThemeData(styles: {...alifDarkTheme}),
           child: codeController == null
               ? SizedBox(height: 200)
-              : CodeField(
-                  gutterStyle: GutterStyle(
-                    width: 70,
-                    showErrors: false,
-                    showFoldingHandles: false,
-                    textAlign: TextAlign.center,
-                  ),
-                  controller: codeController!,
-                  focusNode: data.focusNode,
-                  textStyle: TextStyle(
-                    fontSize: data.fontSize.toDouble(),
-                    height: 1.4,
+              : Consumer<IdeData>(
+                  builder: (context, data, child) => CodeField(
+                    gutterStyle: GutterStyle(
+                      width: 70,
+                      showErrors: false,
+                      showFoldingHandles: false,
+                      textAlign: TextAlign.center,
+                    ),
+                    controller: codeController!,
+                    focusNode: data.focusNode,
+                    textStyle: TextStyle(
+                      fontSize: data.fontSize.toDouble(),
+                      height: 1.4,
+                    ),
                   ),
                 ),
         ),

@@ -26,25 +26,6 @@ final alif = Mode(
       className: "string",
       contains: [BACKSLASH_ESCAPE],
       variants: [
-        // alif-like strings
-        Mode(
-          begin: "(u|b)?r?'''",
-          end: "'''",
-          contains: [
-            BACKSLASH_ESCAPE,
-            Mode(ref: '~meta'),
-          ],
-          relevance: 10,
-        ),
-        Mode(
-          begin: "(u|b)?r?\"\"\"",
-          end: "\"\"\"",
-          contains: [
-            BACKSLASH_ESCAPE,
-            Mode(ref: '~meta'),
-          ],
-          relevance: 10,
-        ),
         Mode(
           begin: "(م)'''",
           end: "'''",
@@ -65,11 +46,6 @@ final alif = Mode(
             Mode(ref: '~string-subst'),
           ],
         ),
-        // single line
-        Mode(begin: "(u|r|ur)'", end: "'", relevance: 10),
-        Mode(begin: "(u|r|ur)\"", end: "\"", relevance: 10),
-        Mode(begin: "(b|br)'", end: "'"),
-        Mode(begin: "(b|br)\"", end: "\""),
         Mode(
           begin: "(م)'",
           end: "'",
@@ -88,8 +64,18 @@ final alif = Mode(
             Mode(ref: '~string-subst'),
           ],
         ),
-        APOS_STRING_MODE,
-        QUOTE_STRING_MODE,
+        Mode(
+          className: "string",
+          begin: "'",
+          end: "'",
+          contains: [BACKSLASH_ESCAPE],
+        ),
+        Mode(
+          className: "string",
+          begin: "\"",
+          end: "\"",
+          contains: [BACKSLASH_ESCAPE],
+        ),
       ],
     ),
 
@@ -119,7 +105,7 @@ final alif = Mode(
     // ---------- Meta ----------
     '~meta': Mode(className: "meta", begin: "^(>>>|\\.\\.\\.) "),
 
-    // ---------- Function (UPDATED) ----------
+    // ---------- Function ----------
     '~function': Mode(
       className: "function",
       begin: r"([\u0600-\u06FFa-zA-Z_][\u0600-\u06FFa-zA-Z0-9_]*)\s*\(",
@@ -138,9 +124,10 @@ final alif = Mode(
   aliases: ["الف", "alif", "aliflib"],
   keywords: {
     "keyword":
-        "ادخل صحيح مفاتيح اقصى ادنى طول اضف امسح ادرج مفاتيح عشري مصفوفة اطبع مدى صح هذا عدم خطا خطأ اواذا اوإذا اذا إذا والا وإلا صنف دالة استورد عام لاجل لأجل لكل نهاية ارجع توقف حاول بينما استمر خلل احذف الزمن الرياضيات نوع",
+        "ادخل صحيح مفاتيح اقصى ادنى طول اضف امسح ادرج مفاتيح عشري مصفوفة اطبع مدى صح هذا عدم خطا خطأ اواذا اوإذا اذا إذا والا وإلا صنف دالة استورد عام لكل نهاية ارجع توقف حاول __تهيئة__ __عرض__ __استدعاء__ __اجمع__ __اجمع_ع__ بينما استمر خلل احذف الزمن الرياضيات نوع",
     "literal": "صح خطا خطأ هذا",
-    "built_in": "ادخل اطبع مصفوفة طول مدى",
+    "built_in":
+        "ادخل اطبع مصفوفة تحقق_اي احضر استبدل منطق افصل قسم رتب اقرا اقرا_سطر طول مدى",
   },
   illegal: "(<\\/|->|\\?)|=>",
   contains: allModes,
