@@ -1,0 +1,124 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:taif/data/ide_data.dart';
+
+class ShortcutsData extends ChangeNotifier {
+  late SharedPreferences prefs;
+
+  ShortcutsData() {
+    _initShortcuts();
+  }
+
+  List<ShortcutsEntity> shortcuts = [];
+
+  // دي الليستة "الخام" اللي لو عدلتها في الكود هتتحدث علطول
+  final List<ShortcutsEntity> _defaultShortcuts = [
+    ShortcutsEntity(id: 1, name: "↹", insert: "    "),
+    ShortcutsEntity(id: 2, name: "("),
+    ShortcutsEntity(id: 3, name: '"'),
+    ShortcutsEntity(id: 4, name: "'"),
+    ShortcutsEntity(id: 5, name: "="),
+    ShortcutsEntity(id: 6, name: ":"),
+    ShortcutsEntity(id: 7, name: "-"),
+    ShortcutsEntity(id: 8, name: "+"),
+    ShortcutsEntity(id: 9, name: ")"),
+    ShortcutsEntity(id: 10, name: "["),
+    ShortcutsEntity(id: 11, name: "]"),
+    ShortcutsEntity(id: 12, name: "{"),
+    ShortcutsEntity(id: 13, name: "}"),
+    ShortcutsEntity(id: 14, name: "#"),
+    ShortcutsEntity(id: 15, name: ","),
+    ShortcutsEntity(id: 16, name: "\\"),
+    ShortcutsEntity(id: 17, name: "*"),
+    ShortcutsEntity(id: 18, name: "^"),
+    ShortcutsEntity(id: 19, name: "<"),
+    ShortcutsEntity(id: 20, name: ">"),
+    ShortcutsEntity(id: 21, name: "_"),
+    ShortcutsEntity(id: 22, name: "⏎", insert: "\\س"),
+  ];
+
+  void _initShortcuts() async {
+    prefs = await SharedPreferences.getInstance();
+
+    shortcuts = List.from(_defaultShortcuts);
+    final String? savedCounts = prefs.getString('shortcuts_counts');
+
+    if (savedCounts != null) {
+      Map<String, dynamic> countsMap = jsonDecode(savedCounts);
+      for (var item in shortcuts) {
+        String idKey = item.id.toString();
+        if (countsMap.containsKey(idKey)) {
+          item.usageCount = countsMap[idKey];
+        }
+      }
+    }
+
+    _sortShortcuts();
+    notifyListeners();
+  }
+
+  void insertText(BuildContext context, String value, int index) {
+    final ideData = Provider.of<IdeData>(context, listen: false);
+
+    final old = ideData.code;
+    final text = old.text;
+    final selection = old.selection;
+    int start = selection.start == -1 ? text.length : selection.start;
+    int end = selection.end == -1 ? text.length : selection.end;
+    final newText = text.replaceRange(start, end, value);
+    final newPos = start + value.length;
+
+    ideData.editCode(
+      newText,
+      selection: TextSelection.collapsed(offset: newPos),
+    );
+    ideData.focusNode.requestFocus();
+
+    _updateUsage(index);
+  }
+
+  void _updateUsage(int index) {
+    shortcuts[index].usageCount++;
+
+    _sortShortcuts();
+    _saveCountsOnly();
+
+    notifyListeners();
+  }
+
+  void _sortShortcuts() {
+    shortcuts.sort((a, b) => b.usageCount.compareTo(a.usageCount));
+  }
+
+  Future<void> _saveCountsOnly() async {
+    // حولنا الليستة لمجرد خريطة {ID: Count}
+    Map<String, int> countsMap = {};
+
+    for (var item in shortcuts) {
+      if (item.usageCount > 0) {
+        countsMap[item.id.toString()] = item.usageCount;
+      }
+    }
+
+    // احفظ الخريطة الصغيرة دي بس
+    await prefs.setString('shortcuts_counts', jsonEncode(countsMap));
+  }
+}
+
+class ShortcutsEntity {
+  final int id; // ده المهم، لازم يفضل ثابت وميتغيرش
+  final String name;
+  final String insert;
+  int usageCount;
+
+  ShortcutsEntity({
+    required this.id,
+    required this.name,
+    String? insert,
+    this.usageCount = 0,
+  }) : insert = insert ?? name;
+
+  // شيلنا toMap و fromMap لأننا مبقيناش نحفظ الأوبجكت كله
+}
