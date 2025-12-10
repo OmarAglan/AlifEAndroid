@@ -16,7 +16,7 @@ class CustomBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
-    final baseHeight = MediaQuery.of(context).size.height * 0.55;
+    final baseHeight = MediaQuery.of(context).size.height * 0.6;
     final extraHeight = keyboardHeight > 0 ? keyboardHeight / 2 : 0;
     final totalHeight = baseHeight + extraHeight;
 

@@ -26,7 +26,7 @@ final alif = Mode(
       className: "string",
       contains: [BACKSLASH_ESCAPE],
       variants: [
-        // alif-like
+        // alif-like strings
         Mode(
           begin: "(u|b)?r?'''",
           end: "'''",
@@ -65,13 +65,11 @@ final alif = Mode(
             Mode(ref: '~string-subst'),
           ],
         ),
-
         // single line
         Mode(begin: "(u|r|ur)'", end: "'", relevance: 10),
         Mode(begin: "(u|r|ur)\"", end: "\"", relevance: 10),
         Mode(begin: "(b|br)'", end: "'"),
         Mode(begin: "(b|br)\"", end: "\""),
-
         Mode(
           begin: "(م)'",
           end: "'",
@@ -90,7 +88,6 @@ final alif = Mode(
             Mode(ref: '~string-subst'),
           ],
         ),
-
         APOS_STRING_MODE,
         QUOTE_STRING_MODE,
       ],
@@ -104,7 +101,6 @@ final alif = Mode(
         Mode(begin: "\\b(0b[01]+)[lLjJ]?"),
         Mode(begin: "\\b(0o[0-7]+)[lLjJ]?"),
         Mode(
-          // decimal & hex
           begin:
               "(-?)(\\b0[xX][a-fA-F0-9]+|(\\b\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)[lLjJ]?",
         ),
@@ -123,29 +119,28 @@ final alif = Mode(
     // ---------- Meta ----------
     '~meta': Mode(className: "meta", begin: "^(>>>|\\.\\.\\.) "),
 
-    // ---------- Boolean ----------
-    '~boolean': Mode(
-      className: "boolean",
-      relevance: 0,
-      begin: r"(صح |خطا|خطأ|هذا|_تهيئة_)",
-    ),
-
-    // ---------- function ----------
+    // ---------- Function (UPDATED) ----------
     '~function': Mode(
       className: "function",
-      relevance: 0,
-      begin:
-          r"(ادخل|صحيح|مفاتيح|اقصى|ادنى|طول|اضف|امسح|ادرج|مفاتيح|عشري|مصفوفة|اطبع|اصل|مدى)",
-      // begin: r"([\u0600-\u06FFa-zA-Z_][\u0600-\u06FFa-zA-Z0-9_]*)\s*\(",
-      // end: r".",
-      // excludeEnd: true,
-      contains: allModes,
+      begin: r"([\u0600-\u06FFa-zA-Z_][\u0600-\u06FFa-zA-Z0-9_]*)\s*\(",
+      returnBegin: true,
+      end: r"\(",
+      excludeEnd: true,
+      contains: [
+        Mode(
+          className: "title",
+          begin: r"[\u0600-\u06FFa-zA-Z_][\u0600-\u06FFa-zA-Z0-9_]*",
+          relevance: 0,
+        ),
+      ],
     ),
   },
   aliases: ["الف", "alif", "aliflib"],
   keywords: {
     "keyword":
         "ادخل صحيح مفاتيح اقصى ادنى طول اضف امسح ادرج مفاتيح عشري مصفوفة اطبع مدى صح هذا عدم خطا خطأ اواذا اوإذا اذا إذا والا وإلا صنف دالة استورد عام لاجل لأجل لكل نهاية ارجع توقف حاول بينما استمر خلل احذف الزمن الرياضيات نوع",
+    "literal": "صح خطا خطأ هذا",
+    "built_in": "ادخل اطبع مصفوفة طول مدى",
   },
   illegal: "(<\\/|->|\\?)|=>",
   contains: allModes,

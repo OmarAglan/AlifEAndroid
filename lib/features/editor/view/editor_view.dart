@@ -13,14 +13,14 @@ import 'package:taif/features/editor/view/widgets/ide.dart';
 import 'package:taif/features/editor/view/widgets/opened_files.dart';
 import 'package:taif/features/shortcuts/view/shortcuts_view.dart';
 
-class EditroView extends StatefulWidget {
-  const EditroView({super.key});
+class EditorView extends StatefulWidget {
+  const EditorView({super.key});
 
   @override
-  State<EditroView> createState() => _EditroViewState();
+  State<EditorView> createState() => _EditorViewState();
 }
 
-class _EditroViewState extends State<EditroView> {
+class _EditorViewState extends State<EditorView> {
   @override
   void initState() {
     super.initState();

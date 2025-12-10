@@ -13,10 +13,6 @@ Future<void> runCommand(BuildContext context, String commandInput) async {
 
   final file = data.selectedFile;
   final alifBinPath = data.alifBinPath!;
-  if (alifBinPath == null) {
-    data.addOutput("خطأ: لغة ألف ليست متاحة\n");
-    return;
-  }
 
   try {
     final aliflang = File(alifBinPath);
@@ -65,6 +61,9 @@ Future<void> runCommand(BuildContext context, String commandInput) async {
     data.addOutput(
       "~ > ${isAlif ? "الف ${data.selectedFile.name}" : [firstC, ...processArguments].join(" ")}",
     );
+
+    print(firstC);
+    print(processArguments);
 
     final process = await Process.start(
       firstC,

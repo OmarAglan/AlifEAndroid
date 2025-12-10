@@ -13,7 +13,6 @@ class ShortcutsData extends ChangeNotifier {
 
   List<ShortcutsEntity> shortcuts = [];
 
-  // دي الليستة "الخام" اللي لو عدلتها في الكود هتتحدث علطول
   final List<ShortcutsEntity> _defaultShortcuts = [
     ShortcutsEntity(id: 1, name: "↹", insert: "    "),
     ShortcutsEntity(id: 2, name: "("),
@@ -93,7 +92,6 @@ class ShortcutsData extends ChangeNotifier {
   }
 
   Future<void> _saveCountsOnly() async {
-    // حولنا الليستة لمجرد خريطة {ID: Count}
     Map<String, int> countsMap = {};
 
     for (var item in shortcuts) {
@@ -102,13 +100,12 @@ class ShortcutsData extends ChangeNotifier {
       }
     }
 
-    // احفظ الخريطة الصغيرة دي بس
     await prefs.setString('shortcuts_counts', jsonEncode(countsMap));
   }
 }
 
 class ShortcutsEntity {
-  final int id; // ده المهم، لازم يفضل ثابت وميتغيرش
+  final int id;
   final String name;
   final String insert;
   int usageCount;
@@ -119,6 +116,4 @@ class ShortcutsEntity {
     String? insert,
     this.usageCount = 0,
   }) : insert = insert ?? name;
-
-  // شيلنا toMap و fromMap لأننا مبقيناش نحفظ الأوبجكت كله
 }

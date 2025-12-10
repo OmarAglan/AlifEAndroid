@@ -35,7 +35,7 @@ class Taif extends StatelessWidget {
           brightness: Brightness.dark,
           scaffoldBackgroundColor: ThemeColors.background,
         ),
-        home: const EditroView(),
+        home: const EditorView(),
       ),
     );
   }

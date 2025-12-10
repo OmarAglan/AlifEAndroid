@@ -21,7 +21,7 @@ Future<void> saveFileToStorage(
     try {
       final bytes = Uint8List.fromList(utf8.encode(code));
       final path = await FileSaver.instance.saveAs(
-        name: (data.selectedFile.name == null || data.selectedFile.name.isEmpty)
+        name: (data.selectedFile.name.isEmpty)
             ? 'شفرة'
             : data.selectedFile.name.toString().replaceAll(
                 RegExp(r'\.(الف|alif|aliflib)$'),

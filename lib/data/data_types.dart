@@ -15,6 +15,10 @@ class FileEntity {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'Name': name, 'Path': path, 'Code': code, 'Saved': saved};
+  }
+
   FileEntity({
     this.id,
     required this.name,
