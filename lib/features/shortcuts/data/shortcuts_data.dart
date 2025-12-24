@@ -61,18 +61,17 @@ class ShortcutsData extends ChangeNotifier {
   void insertText(BuildContext context, String value, int index) {
     final ideData = Provider.of<IdeData>(context, listen: false);
 
-    final old = ideData.code;
-    final text = old.text;
-    final selection = old.selection;
-    int start = selection.start == -1 ? text.length : selection.start;
-    int end = selection.end == -1 ? text.length : selection.end;
-    final newText = text.replaceRange(start, end, value);
-    final newPos = start + value.length;
+    final text = ideData.code.text;
+    final selection = ideData.code.selection;
 
-    ideData.editCode(
-      newText,
+    final newText = text.replaceRange(selection.start, selection.end, value);
+    final newPos = selection.start + value.length;
+
+    ideData.code.value = ideData.code.value.copyWith(
+      text: newText,
       selection: TextSelection.collapsed(offset: newPos),
     );
+
     ideData.focusNode.requestFocus();
 
     _updateUsage(index);
@@ -80,11 +79,7 @@ class ShortcutsData extends ChangeNotifier {
 
   void _updateUsage(int index) {
     shortcuts[index].usageCount++;
-
-    _sortShortcuts();
     _saveCountsOnly();
-
-    notifyListeners();
   }
 
   void _sortShortcuts() {
