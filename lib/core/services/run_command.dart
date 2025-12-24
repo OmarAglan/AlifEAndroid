@@ -52,14 +52,14 @@ Future<void> runCommand(BuildContext context, String commandInput) async {
       firstC = command[0];
     }
 
-    if (isAlif && command.length == 1) {
+    if (isAlif && command[1] == "ملف") {
       processArguments.add(codePath.path);
     } else {
       processArguments.addAll(command.sublist(1));
     }
 
     data.addOutput(
-      "~ > ${isAlif ? "الف ${data.selectedFile.name}" : [firstC, ...processArguments].join(" ")}",
+      "~ > ${isAlif ? "الف ${command[1] == "ملف" ? data.selectedFile.name : command[1]}" : [firstC, ...processArguments].join(" ")}",
     );
 
     print(firstC);

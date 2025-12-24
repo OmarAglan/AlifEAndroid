@@ -39,7 +39,7 @@ class TerminalTopBar extends StatelessWidget {
                         ? ThemeColors.foreground
                         : Colors.red,
                   ),
-                  onPressed: () => runCommand(context, "الف"),
+                  onPressed: () => runCommand(context, "الف ملف"),
                 ),
               ],
             ),

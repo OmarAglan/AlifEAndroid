@@ -37,7 +37,7 @@ Future<void> saveFileToStorage(
       }
 
       final FileEntity fileData = FileEntity(
-        name: data.selectedFile.name,
+        name: path.split(Platform.pathSeparator).last,
         path: path,
         code: code,
       );

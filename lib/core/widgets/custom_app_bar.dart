@@ -90,7 +90,7 @@ class CustomAppBar extends StatelessWidget {
                       ),
                       onPressed: () => {
                         context.read<IdeData>().clearOutput(),
-                        runCommand(context, "الف"),
+                        runCommand(context, "الف ملف"),
                         showModalBottomSheet(
                           context: context,
                           isScrollControlled: true,

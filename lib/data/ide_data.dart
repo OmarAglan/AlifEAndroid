@@ -15,11 +15,18 @@ class IdeData extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> init(BuildContext context) async {
+  IdeData() {
+    _init();
+  }
+
+  bool autoSave = true;
+  int fontSize = 15;
+
+  Future<void> _init() async {
     _prefs = await SharedPreferences.getInstance();
     _lastFile = _prefs?.getInt("lastFile") ?? 0;
-    _autoSave = _prefs?.getBool("autoSave") ?? true;
-    _fontSize = _prefs?.getInt("fontSize") ?? 16;
+    autoSave = _prefs?.getBool("autoSave") ?? true;
+    fontSize = _prefs?.getInt("fontSize") ?? 16;
     notifyListeners();
   }
 
@@ -147,21 +154,15 @@ class IdeData extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool _autoSave = true;
-  bool get autoSave => _autoSave;
-
   Future<void> setAutoSave(bool value) async {
-    _autoSave = value;
+    autoSave = value;
     _prefs ??= await SharedPreferences.getInstance();
     await _prefs!.setBool("autoSave", value);
     notifyListeners();
   }
 
-  int _fontSize = 15;
-  int get fontSize => _fontSize;
-
   Future<void> setFontSize(int value) async {
-    _fontSize = value;
+    fontSize = value;
     _prefs ??= await SharedPreferences.getInstance();
     await _prefs!.setInt("fontSize", value);
     notifyListeners();
