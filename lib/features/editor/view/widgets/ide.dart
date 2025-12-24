@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_code_editor/flutter_code_editor.dart';
+import 'package:flutter_code_editor/src/code_modifiers/insertion.dart';
 import 'package:provider/provider.dart';
 import 'package:taif/data/ide_data.dart';
 import 'package:taif/core/services/files/save_file.dart';
@@ -38,7 +39,20 @@ class _IDEState extends State<IDE> {
   }
 
   void _initController(IdeData data) {
-    codeController = CodeController(text: data.code.text, language: alif);
+    codeController = CodeController(
+      text: data.code.text,
+      language: alif,
+      modifiers: [
+        const CloseBlockModifier(),
+        const TabModifier(),
+        InsertionCodeModifier.backticks,
+        InsertionCodeModifier.braces,
+        InsertionCodeModifier.brackets,
+        InsertionCodeModifier.doubleQuotes,
+        InsertionCodeModifier.parentheses,
+        InsertionCodeModifier.singleQuotes,
+      ],
+    );
 
     codeController!.addListener(() {
       if (isSyncing) return;
