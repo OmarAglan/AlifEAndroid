@@ -2,7 +2,7 @@
 
 ## تعديل المكتبات
 1. في ملف reg_exp.dart
-    - `C:\Users\{{USERNAME}}\AppData\Local\Pub\Cache\hosted\pub.dev\flutter_code_editor-0.3.4\lib\src\code\reg_exp.dart`
+    - `C:\Users\{{USERNAME}}\AppData\Local\Pub\Cache\hosted\pub.dev\flutter_code_editor-0.3.5\lib\src\code\reg_exp.dart`
 
     ```dart
     class RegExps {

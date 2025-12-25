@@ -16,6 +16,7 @@ analyzer:
     implementation_imports: ignore
     unnecessary_null_comparison: ignore
     must_be_immutable: ignore
+    use_build_context_synchronously: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:
