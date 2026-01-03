@@ -1,0 +1,50 @@
+import 'package:flutter/material.dart';
+
+class SheetButton extends StatelessWidget {
+  const SheetButton({
+    super.key,
+    required this.title,
+    required this.color,
+    this.bg = Colors.transparent,
+    required this.icon,
+    required this.onTap,
+  });
+
+  final String title;
+  final Color color;
+  final Color bg;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: InkWell(
+        onTap: () {
+          onTap();
+          Navigator.pop(context);
+        },
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 8,
+            children: [
+              Icon(icon, color: color),
+              Text(
+                title,
+                style: TextStyle(color: color, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

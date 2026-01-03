@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:taif/data/ide_data.dart';
 import 'package:taif/core/theme/Colors.dart';
 import 'package:taif/core/theme/Text.dart';
+import 'package:taif/features/editor/view/widgets/sheet_button.dart';
 import 'package:taif/generated/l10n.dart';
 import 'package:taif/core/widgets/custom_bottom_sheet.dart';
 
@@ -48,43 +49,30 @@ class EditSheet extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: ThemeColors.foreground,
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: TextButton.icon(
-                  onPressed: () {
-                    data.updateFile(
-                      context,
-                      id,
-                      "reName",
-                      newName: controller.text,
-                    );
-                    Navigator.pop(context);
-                  },
-                  icon: Icon(LucideIcons.save, color: ThemeColors.background),
-                  label: Text(
-                    texts.save,
-                    style: TextStyle(color: ThemeColors.background),
-                  ),
+              SheetButton(
+                title: texts.save,
+                color: ThemeColors.background,
+                bg: Colors.white,
+                icon: LucideIcons.save,
+                onTap: () => data.updateFile(
+                  context,
+                  id,
+                  "reName",
+                  newName: controller.text,
                 ),
               ),
-              TextButton.icon(
-                onPressed: () {
-                  data.updateFile(context, id, "close");
-                  Navigator.pop(context);
-                },
-                icon: Icon(LucideIcons.x, color: Colors.amber),
-                label: Text(texts.close, style: TextStyle(color: Colors.amber)),
-              ),
-              TextButton.icon(
-                onPressed: () {
-                  data.updateFile(context, id, "delete");
-                  Navigator.pop(context);
-                },
-                icon: Icon(LucideIcons.trash, color: Colors.red),
-                label: Text(texts.delete, style: TextStyle(color: Colors.red)),
+              if (data.files[id].path != "")
+                SheetButton(
+                  title: texts.close,
+                  color: Colors.amber,
+                  icon: LucideIcons.x,
+                  onTap: () => data.updateFile(context, id, "close"),
+                ),
+              SheetButton(
+                title: texts.delete,
+                color: Colors.red,
+                icon: LucideIcons.trash,
+                onTap: () => data.updateFile(context, id, "delete"),
               ),
             ],
           ),
