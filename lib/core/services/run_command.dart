@@ -15,6 +15,12 @@ Future<void> runCommand(BuildContext context, String commandInput) async {
   final alifBinPath = data.alifBinPath!;
 
   try {
+    if (data.runningProcess?.exitCode != null) {
+      data.clearRunningProcess();
+      data.addOutput("\n ---");
+      return;
+    }
+
     final aliflang = File(alifBinPath);
     await Process.run('chmod', ['755', aliflang.path]);
 
@@ -61,9 +67,6 @@ Future<void> runCommand(BuildContext context, String commandInput) async {
     data.addOutput(
       "~ > ${isAlif ? "الف ${command[1] == "ملف" ? data.selectedFile.name : command[1]}" : [firstC, ...processArguments].join(" ")}",
     );
-
-    print(firstC);
-    print(processArguments);
 
     final process = await Process.start(
       firstC,
