@@ -1,6 +1,8 @@
+import 'package:provider/provider.dart';
 import 'package:taif/core/theme/Colors.dart';
 import 'package:taif/core/theme/Text.dart';
 import "package:flutter/material.dart";
+import 'package:taif/data/ide_data.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -9,6 +11,7 @@ class About extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final data = Provider.of<IdeData>(context, listen: false);
     return Column(
       children: [
         Column(
@@ -22,7 +25,7 @@ class About extends StatelessWidget {
                   size: ThemeText.smallF,
                 ),
                 const SizedBox(width: 5),
-                Text("لغة ألف نـ5 النسخة 5.2.0", style: ThemeText.smallG),
+                Text("لغة ألف نـ5 النسخة ${data.alifVersion}", style: ThemeText.smallG),
               ],
             ),
             const SizedBox(height: 10),

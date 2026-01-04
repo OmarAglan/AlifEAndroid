@@ -10,6 +10,7 @@ import 'package:taif/core/services/files/save_file.dart';
 class IdeData extends ChangeNotifier {
   SharedPreferences? _prefs;
   bool isReady = false;
+  String alifVersion = "5.2.0";
   void setReady() {
     isReady = true;
     notifyListeners();
