@@ -62,7 +62,7 @@ class About extends StatelessWidget {
                 size: 13,
               ),
               onPressed: () =>
-                  _launchUrl("https://skepr.vercel.app/?from='hodpr'"),
+                  _launchUrl("https://skepr.vercel.app/?from='TaifIDE'"),
               label: Text("تطـوير محـمـد سكيبر", style: ThemeText.smallG),
             ),
           ],

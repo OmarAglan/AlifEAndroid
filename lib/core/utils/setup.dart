@@ -25,6 +25,8 @@ Future<void> setupAlif(BuildContext context) async {
 
     if (!await alifDir.exists()) await alifDir.create(recursive: true);
 
+    String finalPath = "";
+
     if (Platform.isAndroid) {
       final arm64Dir = Directory('${alifDir.path}/arm64-v8a');
       final libDir = Directory('${alifDir.path}/library');
@@ -39,19 +41,19 @@ Future<void> setupAlif(BuildContext context) async {
         'aliflang/library/نظام_التشغيل.aliflib',
       ];
 
-      if (!needsUpdate) return;
-      for (final fileName in filesToCopy) {
-        final data = await rootBundle.load('assets/$fileName');
-        final bytes = data.buffer.asUint8List();
-        final targetPath = fileName.contains('arm64-v8a')
-            ? '${arm64Dir.path}/${fileName.split('/').last}'
-            : '${libDir.path}/${fileName.split('/').last}';
-        final file = File(targetPath);
-        await file.writeAsBytes(bytes, flush: true);
+      if (needsUpdate) {
+        for (final fileName in filesToCopy) {
+          final assetData = await rootBundle.load('assets/$fileName');
+          final bytes = assetData.buffer.asUint8List();
+          final targetPath = fileName.contains('arm64-v8a')
+              ? '${arm64Dir.path}/${fileName.split('/').last}'
+              : '${libDir.path}/${fileName.split('/').last}';
+          await File(targetPath).writeAsBytes(bytes, flush: true);
+        }
+        await prefs.setString('alif_version', data.alifVersion);
+        data.addOutput("تم تحديث ملفات اللغة بنجاح");
       }
-      await prefs.setString('alif_version', data.alifVersion);
-
-      data.setAlifPath('${arm64Dir.path}/libalif.so');
+      finalPath = '${arm64Dir.path}/libalif.so';
     } else if (Platform.isLinux) {
       final langDir = Directory('${alifDir.path}/lang');
       final libraryDir = Directory('${alifDir.path}/library');
@@ -59,32 +61,32 @@ Future<void> setupAlif(BuildContext context) async {
       if (!await langDir.exists()) await langDir.create(recursive: true);
       if (!await libraryDir.exists()) await libraryDir.create(recursive: true);
 
-      final filesToCopy = [
-        'aliflang/linux/amd64',
-        'aliflang/library/التبادل.aliflib',
-        'aliflang/library/نظام_التشغيل.aliflib',
-      ];
-
-      if (!needsUpdate) return;
-      for (final fileName in filesToCopy) {
-        final assetData = await rootBundle.load('assets/$fileName');
-        final bytes = assetData.buffer.asUint8List();
-
-        final targetPath = fileName.contains('linux')
-            ? '${langDir.path}/${fileName.split('/').last}'
-            : '${libraryDir.path}/${fileName.split('/').last}';
-
-        await File(targetPath).writeAsBytes(bytes, flush: true);
+      if (needsUpdate) {
+        final filesToCopy = [
+          'aliflang/linux/amd64',
+          'aliflang/library/التبادل.aliflib',
+          'aliflang/library/نظام_التشغيل.aliflib',
+        ];
+        for (final fileName in filesToCopy) {
+          final assetData = await rootBundle.load('assets/$fileName');
+          final bytes = assetData.buffer.asUint8List();
+          final targetPath = fileName.contains('linux')
+              ? '${langDir.path}/${fileName.split('/').last}'
+              : '${libraryDir.path}/${fileName.split('/').last}';
+          await File(targetPath).writeAsBytes(bytes, flush: true);
+        }
+        await prefs.setString('alif_version', data.alifVersion);
+        data.addOutput("تم تحديث ملفات اللغة بنجاح");
       }
-      await prefs.setString('alif_version', data.alifVersion);
-
-      data.setAlifPath('${langDir.path}/amd64');
-    } else {
-      data.addOutput("المنصة غير مدعومة حالياً");
+      finalPath = '${langDir.path}/amd64';
     }
 
-    data.addOutput("تم تشغيل لغة ألف اصدار ${data.alifVersion}");
+    if (finalPath.isNotEmpty) {
+      data.setAlifPath(finalPath);
+      data.addOutput("تم تثبيت لغة ألف اصدار ${data.alifVersion}");
+    }
   } catch (e, s) {
-    data.addOutput("خطأ أثناء تجهيز ملفات لغة ألف: $e\n$s");
+    data.addOutput("حدث خطأ: $e");
+    print("خطأ: $e\n$s");
   }
 }
