@@ -36,6 +36,16 @@ Future<void> showFileManagerModal(
         name.endsWith(".aliflib");
   }).toList();
 
+  items.sort((a, b) {
+    bool isDirA = FileSystemEntity.isDirectorySync(a.path);
+    bool isDirB = FileSystemEntity.isDirectorySync(b.path);
+
+    if (!isDirA && isDirB) return -1;
+    if (isDirA && !isDirB) return 1;
+
+    return a.path.toLowerCase().compareTo(b.path.toLowerCase());
+  });
+
   String formatFileSize(int bytes) {
     if (bytes < 1024) return "$bytes بايت";
     if (bytes < 1024 * 1024) {

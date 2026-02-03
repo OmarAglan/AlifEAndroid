@@ -28,7 +28,7 @@ Future<void> setupAlif(BuildContext context) async {
     String finalPath = "";
 
     if (Platform.isAndroid) {
-      final arm64Dir = Directory("${alifDir.path}/arm64-v8a");
+      final arm64Dir = Directory(alifDir.path);
       final libDir = Directory("${alifDir.path}/library");
 
       if (!await arm64Dir.exists()) await arm64Dir.create(recursive: true);
@@ -55,7 +55,7 @@ Future<void> setupAlif(BuildContext context) async {
       }
       finalPath = "${arm64Dir.path}/libalif.so";
     } else if (Platform.isLinux) {
-      final langDir = Directory("${alifDir.path}/lang");
+      final langDir = Directory(alifDir.path);
       final libraryDir = Directory("${alifDir.path}/library");
 
       if (!await langDir.exists()) await langDir.create(recursive: true);
