@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:provider/provider.dart';
-import 'package:taif/core/theme/Colors.dart';
-import 'package:taif/core/theme/Text.dart';
-import 'package:taif/core/services/run_command.dart';
-import 'package:taif/data/ide_data.dart';
-import 'package:taif/generated/l10n.dart';
+import "package:flutter/material.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
+import "package:provider/provider.dart";
+import "package:taif/core/theme/Colors.dart";
+import "package:taif/core/theme/Text.dart";
+import "package:taif/core/services/run_command.dart";
+import "package:taif/data/ide_data.dart";
+import "package:taif/generated/l10n.dart";
 
 class TerminalTopBar extends StatelessWidget {
   const TerminalTopBar({super.key});

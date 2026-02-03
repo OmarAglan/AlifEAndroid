@@ -1,9 +1,9 @@
-import 'dart:io';
-import 'package:taif/core/theme/Colors.dart';
-import 'package:taif/core/theme/Text.dart';
-import 'package:taif/core/widgets/custom_bottom_sheet.dart';
-import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import "dart:io";
+import "package:taif/core/theme/Colors.dart";
+import "package:taif/core/theme/Text.dart";
+import "package:taif/core/widgets/custom_bottom_sheet.dart";
+import "package:flutter/material.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
 
 Future<void> showFileManagerModal(
   BuildContext context,
@@ -15,7 +15,7 @@ Future<void> showFileManagerModal(
       (Platform.isAndroid
           ? "/storage/emulated/0"
           : Platform.isLinux
-          ? "${Platform.environment['HOME']}"
+          ? "${Platform.environment["HOME"]}"
           : "");
 
   final directory = Directory(rootPath);
@@ -31,9 +31,9 @@ Future<void> showFileManagerModal(
     if (FileSystemEntity.isDirectorySync(entity.path)) return true;
 
     final name = entity.path.toLowerCase();
-    return name.endsWith('.alif') ||
-        name.endsWith('.الف') ||
-        name.endsWith('.aliflib');
+    return name.endsWith(".alif") ||
+        name.endsWith(".الف") ||
+        name.endsWith(".aliflib");
   }).toList();
 
   String formatFileSize(int bytes) {

@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:taif/data/ide_data.dart';
-import 'package:taif/core/services/files/create_file.dart';
-import 'package:taif/features/editor/view/widgets/edit_sheet.dart';
-import 'package:taif/features/editor/view/widgets/custom_tap.dart';
+import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:taif/data/ide_data.dart";
+import "package:taif/core/services/files/create_file.dart";
+import "package:taif/features/editor/view/widgets/edit_sheet.dart";
+import "package:taif/features/editor/view/widgets/custom_tap.dart";
 
 class OpenedFiles extends StatelessWidget {
   const OpenedFiles({super.key});

@@ -1,12 +1,12 @@
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-import 'package:http/http.dart' as http;
-import 'package:ota_update/ota_update.dart';
-import 'package:taif/core/theme/Colors.dart';
-import 'package:taif/core/theme/Text.dart';
-import 'package:taif/core/widgets/custom_bottom_sheet.dart';
+import "dart:convert";
+import "package:flutter/material.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
+import "package:package_info_plus/package_info_plus.dart";
+import "package:http/http.dart" as http;
+import "package:ota_update/ota_update.dart";
+import "package:taif/core/theme/Colors.dart";
+import "package:taif/core/theme/Text.dart";
+import "package:taif/core/widgets/custom_bottom_sheet.dart";
 
 String repoName = "iskepr/TaifIDE";
 String appName = "app.apk";
@@ -17,12 +17,12 @@ Future<void> checkUpdate(BuildContext context) async {
     String currentVersion = packageInfo.version;
 
     final response = await http.get(
-      Uri.parse('https://api.github.com/repos/$repoName/releases/latest'),
+      Uri.parse("https://api.github.com/repos/$repoName/releases/latest"),
     );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final latestVersion = data['tag_name'];
+      final latestVersion = data["tag_name"];
 
       if (latestVersion != currentVersion) {
         if (!context.mounted) return;
@@ -104,7 +104,7 @@ Future<void> checkUpdate(BuildContext context) async {
       }
     }
   } catch (e) {
-    print('حديث خطأ: $e');
+    print("حديث خطأ: $e");
   }
 }
 
@@ -128,7 +128,7 @@ void _runOtaUpdate(BuildContext context, String url) {
                         if (event.status == OtaStatus.DOWNLOADING) {
                           statusText = "جاري التحميل: ${event.value}%";
                           progressValue =
-                              (int.tryParse(event.value ?? '0') ?? 0) / 100;
+                              (int.tryParse(event.value ?? "0") ?? 0) / 100;
                         } else if (event.status == OtaStatus.INSTALLING) {
                           statusText = "جاري التثبيت...";
                           progressValue = 1.0;
@@ -148,7 +148,7 @@ void _runOtaUpdate(BuildContext context, String url) {
                     },
                   );
             } catch (e) {
-              print('فشل التحميل: $e');
+              print("فشل التحميل: $e");
               Navigator.pop(context);
             }
           }

@@ -1,11 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_code_editor/flutter_code_editor.dart';
-import 'package:flutter_code_editor/src/code_modifiers/insertion.dart';
-import 'package:provider/provider.dart';
-import 'package:taif/data/ide_data.dart';
-import 'package:taif/core/services/files/save_file.dart';
-import 'package:taif/core/theme/Theme.dart';
-import 'package:taif/core/theme/alif.dart';
+import "package:flutter/material.dart";
+import "package:flutter_code_editor/flutter_code_editor.dart";
+import "package:flutter_code_editor/src/code_modifiers/insertion.dart";
+import "package:provider/provider.dart";
+import "package:taif/data/ide_data.dart";
+import "package:taif/core/services/files/save_file.dart";
+import "package:taif/core/theme/alif_dark_theme.dart";
+import "package:taif/core/theme/alif.dart";
 
 class IDE extends StatefulWidget {
   const IDE({super.key});

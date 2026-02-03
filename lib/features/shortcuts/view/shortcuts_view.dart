@@ -1,8 +1,8 @@
-import 'package:provider/provider.dart';
-import 'package:taif/core/theme/Colors.dart';
-import 'package:flutter/material.dart';
-import 'package:taif/core/theme/Text.dart';
-import 'package:taif/features/shortcuts/data/shortcuts_data.dart';
+import "package:provider/provider.dart";
+import "package:taif/core/theme/Colors.dart";
+import "package:flutter/material.dart";
+import "package:taif/core/theme/Text.dart";
+import "package:taif/features/shortcuts/data/shortcuts_data.dart";
 
 class ShortcutsView extends StatelessWidget {
   const ShortcutsView({super.key});

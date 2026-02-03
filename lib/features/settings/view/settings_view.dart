@@ -1,13 +1,13 @@
-import 'package:provider/provider.dart';
-import 'package:taif/core/widgets/custom_bottom_sheet.dart';
-import 'package:taif/data/ide_data.dart';
-import 'package:taif/core/theme/Colors.dart';
-import 'package:taif/core/theme/Text.dart';
-import 'package:taif/features/settings/view/widgets/about.dart';
-import 'package:taif/generated/l10n.dart';
-import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:input_quantity/input_quantity.dart';
+import "package:provider/provider.dart";
+import "package:taif/core/widgets/custom_bottom_sheet.dart";
+import "package:taif/data/ide_data.dart";
+import "package:taif/core/theme/Colors.dart";
+import "package:taif/core/theme/Text.dart";
+import "package:taif/features/settings/view/widgets/about.dart";
+import "package:taif/generated/l10n.dart";
+import "package:flutter/material.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
+import "package:input_quantity/input_quantity.dart";
 
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
@@ -73,11 +73,11 @@ class SettingsView extends StatelessWidget {
                               border: InputBorder.none,
                             ),
                             onQtyChanged: (val) async {
-                              int newSize;
+                              double newSize;
                               if (val is num) {
-                                newSize = val.toInt();
+                                newSize = val.toDouble();
                               } else {
-                                final parsed = int.tryParse(val.toString());
+                                final parsed = double.tryParse(val.toString());
                                 if (parsed == null) return;
                                 newSize = parsed;
                               }

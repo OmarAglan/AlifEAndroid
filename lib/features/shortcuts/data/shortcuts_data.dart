@@ -1,8 +1,8 @@
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:taif/data/ide_data.dart';
+import "dart:convert";
+import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:shared_preferences/shared_preferences.dart";
+import "package:taif/data/ide_data.dart";
 
 class ShortcutsData extends ChangeNotifier {
   late SharedPreferences prefs;
@@ -16,8 +16,11 @@ class ShortcutsData extends ChangeNotifier {
   final List<ShortcutsEntity> _defaultShortcuts = [
     ShortcutsEntity(id: 1, name: "↹", insert: "    "),
     ShortcutsEntity(id: 2, name: "("),
-    ShortcutsEntity(id: 3, name: '"'),
-    ShortcutsEntity(id: 4, name: "'"),
+    ShortcutsEntity(
+      id: 3,
+      name: """),
+    ShortcutsEntity(id: 4, name: """,
+    ),
     ShortcutsEntity(id: 5, name: "="),
     ShortcutsEntity(id: 6, name: ":"),
     ShortcutsEntity(id: 7, name: "-"),
@@ -42,7 +45,7 @@ class ShortcutsData extends ChangeNotifier {
     prefs = await SharedPreferences.getInstance();
 
     shortcuts = List.from(_defaultShortcuts);
-    final String? savedCounts = prefs.getString('shortcuts_counts');
+    final String? savedCounts = prefs.getString("shortcuts_counts");
 
     if (savedCounts != null) {
       Map<String, dynamic> countsMap = jsonDecode(savedCounts);
@@ -95,7 +98,7 @@ class ShortcutsData extends ChangeNotifier {
       }
     }
 
-    await prefs.setString('shortcuts_counts', jsonEncode(countsMap));
+    await prefs.setString("shortcuts_counts", jsonEncode(countsMap));
   }
 }
 

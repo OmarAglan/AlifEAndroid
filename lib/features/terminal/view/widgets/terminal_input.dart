@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:taif/data/ide_data.dart';
-import 'package:taif/core/theme/Colors.dart';
-import 'package:taif/core/services/run_command.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:taif/data/ide_data.dart";
+import "package:taif/core/theme/Colors.dart";
+import "package:taif/core/services/run_command.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
 
 class TerminalInput extends StatelessWidget {
   TerminalInput({super.key});

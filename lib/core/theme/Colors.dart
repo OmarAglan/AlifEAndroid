@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import "package:flutter/material.dart";
 
 abstract class ThemeColors {
   static final primary = Colors.purpleAccent.withOpacity(0.5);

@@ -1,11 +1,11 @@
-import 'dart:convert';
-import 'dart:io';
+import "dart:convert";
+import "dart:io";
 
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:taif/data/data_types.dart';
-import 'package:taif/core/services/files/open_file.dart';
-import 'package:taif/core/services/files/save_file.dart';
+import "package:flutter/material.dart";
+import "package:shared_preferences/shared_preferences.dart";
+import "package:taif/data/data_types.dart";
+import "package:taif/core/services/files/open_file.dart";
+import "package:taif/core/services/files/save_file.dart";
 
 class IdeData extends ChangeNotifier {
   SharedPreferences? _prefs;
@@ -21,13 +21,13 @@ class IdeData extends ChangeNotifier {
   }
 
   bool autoSave = true;
-  int fontSize = 15;
+  double fontSize = 15;
 
   Future<void> _init() async {
     _prefs = await SharedPreferences.getInstance();
     _lastFile = _prefs?.getInt("lastFile") ?? 0;
     autoSave = _prefs?.getBool("autoSave") ?? true;
-    fontSize = _prefs?.getInt("fontSize") ?? 16;
+    fontSize = _prefs?.getDouble("fontSize") ?? 16;
     notifyListeners();
   }
 
@@ -162,10 +162,10 @@ class IdeData extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setFontSize(int value) async {
+  Future<void> setFontSize(double value) async {
     fontSize = value;
     _prefs ??= await SharedPreferences.getInstance();
-    await _prefs!.setInt("fontSize", value);
+    await _prefs!.setDouble("fontSize", value);
     notifyListeners();
   }
 }

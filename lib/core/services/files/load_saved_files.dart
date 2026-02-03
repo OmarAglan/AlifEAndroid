@@ -1,14 +1,14 @@
-import 'dart:convert';
+import "dart:convert";
 
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:taif/core/services/files/create_file.dart';
-import 'package:taif/core/services/files/open_file.dart';
-import 'package:taif/data/data_types.dart';
+import "package:flutter/material.dart";
+import "package:shared_preferences/shared_preferences.dart";
+import "package:taif/core/services/files/create_file.dart";
+import "package:taif/core/services/files/open_file.dart";
+import "package:taif/data/data_types.dart";
 
 Future<void> loadFilesFromStorage(BuildContext context, data) async {
   final prefs = await SharedPreferences.getInstance();
-  final savedFiles = prefs.getString('opened_files');
+  final savedFiles = prefs.getString("opened_files");
   final lastFile = prefs.getInt("lastFile");
 
   if (savedFiles != null) {

@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:taif/core/theme/Colors.dart';
+import "package:flutter/material.dart";
+import "package:taif/core/theme/Colors.dart";
 
 abstract class ThemeText {
   static const String fontFamily = "Alif";

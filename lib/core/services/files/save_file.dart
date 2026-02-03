@@ -1,13 +1,13 @@
-import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
+import "dart:convert";
+import "dart:io";
+import "dart:typed_data";
 
-import 'package:file_saver/file_saver.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:taif/data/data_types.dart';
-import 'package:taif/data/ide_data.dart';
+import "package:file_saver/file_saver.dart";
+import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "package:shared_preferences/shared_preferences.dart";
+import "package:taif/data/data_types.dart";
+import "package:taif/data/ide_data.dart";
 
 Future<void> saveFileToStorage(
   BuildContext context, {
@@ -22,9 +22,9 @@ Future<void> saveFileToStorage(
       final bytes = Uint8List.fromList(utf8.encode(code));
       final path = await FileSaver.instance.saveAs(
         name: (data.selectedFile.name.isEmpty)
-            ? 'شفرة'
+            ? "شفرة"
             : data.selectedFile.name.toString().replaceAll(
-                RegExp(r'\.(الف|alif|aliflib)$'),
+                RegExp(r"\.(الف|alif|aliflib)$"),
                 "",
               ),
         bytes: bytes,

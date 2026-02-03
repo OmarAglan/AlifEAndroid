@@ -1,18 +1,18 @@
-import 'dart:io';
-import 'package:provider/provider.dart';
-import 'package:taif/data/ide_data.dart';
-import 'package:taif/core/theme/Colors.dart';
-import 'package:taif/core/theme/Text.dart';
-import 'package:taif/features/settings/view/settings_view.dart';
-import 'package:taif/generated/l10n.dart';
-import 'package:taif/features/terminal/view/terminal_view.dart';
-import 'package:taif/core/utils/file_picker.dart';
-import 'package:taif/core/services/files/create_file.dart';
-import 'package:taif/core/services/files/open_file.dart';
-import 'package:taif/core/services/files/save_file.dart';
-import 'package:taif/core/services/run_command.dart';
-import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import "dart:io";
+import "package:provider/provider.dart";
+import "package:taif/data/ide_data.dart";
+import "package:taif/core/theme/Colors.dart";
+import "package:taif/core/theme/Text.dart";
+import "package:taif/features/settings/view/settings_view.dart";
+import "package:taif/generated/l10n.dart";
+import "package:taif/features/terminal/view/terminal_view.dart";
+import "package:taif/core/utils/file_picker.dart";
+import "package:taif/core/services/files/create_file.dart";
+import "package:taif/core/services/files/open_file.dart";
+import "package:taif/core/services/files/save_file.dart";
+import "package:taif/core/services/run_command.dart";
+import "package:flutter/material.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
 
 class CustomAppBar extends StatelessWidget {
   const CustomAppBar({super.key});

@@ -1,15 +1,15 @@
-import 'dart:io';
+import "dart:io";
 
-import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:provider/provider.dart';
-import 'package:taif/data/ide_data.dart';
+import "package:flutter/material.dart";
+import "package:path_provider/path_provider.dart";
+import "package:provider/provider.dart";
+import "package:taif/data/ide_data.dart";
 
 Future<void> runCommand(BuildContext context, String commandInput) async {
   final data = Provider.of<IdeData>(context, listen: false);
 
   final command = commandInput.split(" ").map((c) => c.trim()).toList();
-  final bool isAlif = command[0] == 'alif' || command[0] == 'الف';
+  final bool isAlif = command[0] == "alif" || command[0] == "الف";
 
   final file = data.selectedFile;
   final alifBinPath = data.alifBinPath!;
@@ -22,10 +22,10 @@ Future<void> runCommand(BuildContext context, String commandInput) async {
     }
 
     final aliflang = File(alifBinPath);
-    await Process.run('chmod', ['755', aliflang.path]);
+    await Process.run("chmod", ["755", aliflang.path]);
 
     final appDir = await getApplicationSupportDirectory();
-    final userDir = Directory('${appDir.path}/المستخدم');
+    final userDir = Directory("${appDir.path}/المستخدم");
     if (!await userDir.exists()) await userDir.create(recursive: true);
     await Process.run("chmod", ["755", userDir.path]);
 
@@ -39,11 +39,11 @@ Future<void> runCommand(BuildContext context, String commandInput) async {
       }
     } else {
       var tempDir = await getTemporaryDirectory();
-      codePath = File('${tempDir.path}/${file.name}');
+      codePath = File("${tempDir.path}/${file.name}");
       await codePath.writeAsString(file.code);
     }
 
-    final libDir = alifBinPath.replaceAll('/libalif.so', '');
+    final libDir = alifBinPath.replaceAll("/libalif.so", "");
     String firstC;
     final List<String> processArguments = [];
 
@@ -71,19 +71,18 @@ Future<void> runCommand(BuildContext context, String commandInput) async {
     final process = await Process.start(
       firstC,
       processArguments,
-      environment: Platform.isAndroid ? {'LD_LIBRARY_PATH': libDir} : {},
+      environment: Platform.isAndroid ? {"LD_LIBRARY_PATH": libDir} : {},
       workingDirectory: isAlif ? null : userDir.path,
     );
 
     data.editProcess(process);
+    process.stderr.transform(SystemEncoding().decoder).listen((result) {
+      data.addOutput(
+        "\n ${result.toLowerCase().contains("warning") ? "تَحْذِير" : "خَطَأ"}: $result",
+      );
+    });
     process.stdout.transform(SystemEncoding().decoder).listen((result) {
       data.addOutput(result, newLine: false);
-    });
-    process.stderr.transform(SystemEncoding().decoder).listen((result) {
-      if (!result.toLowerCase().contains("warning")) {
-        data.addOutput("خَطَأ: $result");
-      }
-      data.clearRunningProcess();
     });
     process.exitCode.then((exitCode) {
       if (exitCode != 0) {
