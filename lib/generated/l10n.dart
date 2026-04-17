@@ -1,7 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
-import "package:flutter/material.dart";
-import "package:intl/intl.dart";
-import "intl/messages_all.dart";
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'intl/messages_all.dart';
 
 // **************************************************************************
 // Generator: Flutter Intl IDE plugin
@@ -20,7 +20,7 @@ class S {
   static S get current {
     assert(
       _current != null,
-      "No instance of S was loaded. Try to initialize the S delegate before accessing S.current.",
+      'No instance of S was loaded. Try to initialize the S delegate before accessing S.current.',
     );
     return _current!;
   }
@@ -45,7 +45,7 @@ class S {
     final instance = S.maybeOf(context);
     assert(
       instance != null,
-      "No instance of S present in the widget tree. Did you add S.delegate in localizationsDelegates?",
+      'No instance of S present in the widget tree. Did you add S.delegate in localizationsDelegates?',
     );
     return instance!;
   }
@@ -56,72 +56,72 @@ class S {
 
   /// `Taif IDE`
   String get title {
-    return Intl.message("Taif IDE", name: "title", desc: "", args: []);
+    return Intl.message('Taif IDE', name: 'title', desc: '', args: []);
   }
 
   /// `Terminal`
   String get terminal {
-    return Intl.message("Terminal", name: "terminal", desc: "", args: []);
+    return Intl.message('Terminal', name: 'terminal', desc: '', args: []);
   }
 
   /// `Settings`
   String get settings {
-    return Intl.message("Settings", name: "settings", desc: "", args: []);
+    return Intl.message('Settings', name: 'settings', desc: '', args: []);
   }
 
   /// `New File`
   String get new_file {
-    return Intl.message("New File", name: "new_file", desc: "", args: []);
+    return Intl.message('New File', name: 'new_file', desc: '', args: []);
   }
 
   /// `Open File`
   String get open_file {
-    return Intl.message("Open File", name: "open_file", desc: "", args: []);
+    return Intl.message('Open File', name: 'open_file', desc: '', args: []);
   }
 
   /// `Save`
   String get save {
-    return Intl.message("Save", name: "save", desc: "", args: []);
+    return Intl.message('Save', name: 'save', desc: '', args: []);
   }
 
   /// `Save As`
   String get save_as {
-    return Intl.message("Save As", name: "save_as", desc: "", args: []);
+    return Intl.message('Save As', name: 'save_as', desc: '', args: []);
   }
 
   /// `Close`
   String get close {
-    return Intl.message("Close", name: "close", desc: "", args: []);
+    return Intl.message('Close', name: 'close', desc: '', args: []);
   }
 
   /// `Delete`
   String get delete {
-    return Intl.message("Delete", name: "delete", desc: "", args: []);
+    return Intl.message('Delete', name: 'delete', desc: '', args: []);
   }
 
   /// `Font Size`
   String get fontSize {
-    return Intl.message("Font Size", name: "fontSize", desc: "", args: []);
+    return Intl.message('Font Size', name: 'fontSize', desc: '', args: []);
   }
 
   /// `Auto Save`
   String get autoSave {
-    return Intl.message("Auto Save", name: "autoSave", desc: "", args: []);
+    return Intl.message('Auto Save', name: 'autoSave', desc: '', args: []);
   }
 
   /// `Edit File`
   String get editFile {
-    return Intl.message("Edit File", name: "editFile", desc: "", args: []);
+    return Intl.message('Edit File', name: 'editFile', desc: '', args: []);
   }
 
   /// `No Path`
   String get noPath {
-    return Intl.message("No Path", name: "noPath", desc: "", args: []);
+    return Intl.message('No Path', name: 'noPath', desc: '', args: []);
   }
 
   /// `File Name`
   String get fileName {
-    return Intl.message("File Name", name: "fileName", desc: "", args: []);
+    return Intl.message('File Name', name: 'fileName', desc: '', args: []);
   }
 }
 
@@ -130,8 +130,8 @@ class AppLocalizationDelegate extends LocalizationsDelegate<S> {
 
   List<Locale> get supportedLocales {
     return const <Locale>[
-      Locale.fromSubtags(languageCode: "en"),
-      Locale.fromSubtags(languageCode: "ar"),
+      Locale.fromSubtags(languageCode: 'en'),
+      Locale.fromSubtags(languageCode: 'ar'),
     ];
   }
 

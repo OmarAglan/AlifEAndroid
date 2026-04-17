@@ -14,13 +14,10 @@ class ShortcutsData extends ChangeNotifier {
   List<ShortcutsEntity> shortcuts = [];
 
   final List<ShortcutsEntity> _defaultShortcuts = [
-    ShortcutsEntity(id: 1, name: "↹", insert: "    "),
+    ShortcutsEntity(id: 1, name: "↹", insert: "  "),
     ShortcutsEntity(id: 2, name: "("),
-    ShortcutsEntity(
-      id: 3,
-      name: """),
-    ShortcutsEntity(id: 4, name: """,
-    ),
+    ShortcutsEntity(id: 3, name: '"'),
+    ShortcutsEntity(id: 4, name: "'"),
     ShortcutsEntity(id: 5, name: "="),
     ShortcutsEntity(id: 6, name: ":"),
     ShortcutsEntity(id: 7, name: "-"),
@@ -74,8 +71,6 @@ class ShortcutsData extends ChangeNotifier {
       text: newText,
       selection: TextSelection.collapsed(offset: newPos),
     );
-
-    ideData.focusNode.requestFocus();
 
     _updateUsage(index);
   }
