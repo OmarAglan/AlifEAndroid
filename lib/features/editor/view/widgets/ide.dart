@@ -1,10 +1,10 @@
-import "package:flutter/material.dart";
 import "package:code_forge/code_forge.dart";
+import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:taif/data/ide_data.dart";
 import "package:taif/core/services/files/save_file.dart";
-import "package:taif/core/theme/alif_dark_theme.dart";
 import "package:taif/core/theme/alif.dart";
+import "package:taif/core/theme/alif_dark_theme.dart";
+import "package:taif/data/ide_data.dart";
 
 extension CodeForgeControllerValueExt on CodeForgeController {
   set value(TextEditingValue newValue) {
@@ -23,31 +23,35 @@ class IDE extends StatefulWidget {
 class _IDEState extends State<IDE> {
   CodeForgeController? codeController;
   bool isSyncing = false;
+  late IdeData data;
 
   @override
   void initState() {
     super.initState();
-    final data = Provider.of<IdeData>(context, listen: false);
+    data = Provider.of<IdeData>(context, listen: false);
 
     if (data.isReady) {
-      _initController(data);
+      _initController();
     } else {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        if (data.isReady) {
-          _initController(data);
-        }
-      });
+      data.addListener(_onDataReady);
     }
   }
 
   @override
   void dispose() {
+    data.removeListener(_onDataReady);
     codeController?.dispose();
     super.dispose();
   }
 
-  void _initController(IdeData data) {
+  void _onDataReady() {
+    if (data.isReady && codeController == null) {
+      _initController();
+      data.removeListener(_onDataReady);
+    }
+  }
+
+  void _initController() {
     codeController = CodeForgeController();
 
     codeController!.value = TextEditingValue(
@@ -55,37 +59,24 @@ class _IDEState extends State<IDE> {
       selection: data.code.selection,
     );
 
-    codeController!.addListener(() {
+    codeController!.addListener(() async {
       if (isSyncing) return;
 
       if (data.code.text != codeController!.text ||
           data.code.selection != codeController!.selection) {
         isSyncing = true;
 
-        data.selectedFile.code = codeController!.text;
         data.editCode(
           codeController!.text,
           selection: codeController!.selection,
+          markDirty: true,
         );
-
-        final currentId = data.selectedFile.id;
-        if (currentId != null &&
-            currentId >= 0 &&
-            currentId < data.files.length) {
-          data.files[currentId].code = codeController!.text;
-        }
 
         if (data.autoSave) {
           if (data.selectedFile.path?.isNotEmpty ?? false) {
-            saveFileToStorage(context);
+            await saveFileToStorage(context);
           } else {
-            saveFilesLocal(context);
-          }
-        } else {
-          if (currentId != null &&
-              currentId >= 0 &&
-              currentId < data.files.length) {
-            data.files[currentId].saved = false;
+            await saveFilesLocal(context);
           }
         }
 
@@ -135,9 +126,9 @@ class _IDEState extends State<IDE> {
                   editorTheme: alifDarkTheme,
                   focusNode: data.focusNode,
                   textDirection: TextDirection.rtl,
-                  textStyle: const TextStyle(
+                  textStyle: TextStyle(
                     fontFamily: "Tajawal",
-                    fontSize: 16,
+                    fontSize: data.fontSize,
                   ),
                   enableFolding: false,
                   enableGuideLines: false,

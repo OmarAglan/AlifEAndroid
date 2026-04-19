@@ -1,11 +1,11 @@
 import "dart:io";
 
-import "package:flutter/services.dart";
 import "package:flutter/material.dart";
-import "package:provider/provider.dart";
-import "package:taif/data/ide_data.dart";
+import "package:flutter/services.dart";
 import "package:path_provider/path_provider.dart";
+import "package:provider/provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
+import "package:taif/data/ide_data.dart";
 
 Future<void> setupAlif(BuildContext context) async {
   final data = Provider.of<IdeData>(context, listen: false);
@@ -14,7 +14,7 @@ Future<void> setupAlif(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     final installedVersion = prefs.getString("alif_version") ?? "";
 
-    bool needsUpdate = installedVersion != data.alifVersion;
+    final bool needsUpdate = installedVersion != data.alifVersion;
 
     final appDir = await getApplicationSupportDirectory();
     final alifDir = Directory("${appDir.path}/alif");
@@ -87,6 +87,6 @@ Future<void> setupAlif(BuildContext context) async {
     }
   } catch (e, s) {
     data.addOutput("حدث خطأ: $e");
-    print("خطأ: $e\n$s");
+    debugPrint("خطأ: $e\n$s");
   }
 }

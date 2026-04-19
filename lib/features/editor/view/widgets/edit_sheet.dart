@@ -1,12 +1,12 @@
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
+import "package:taif/core/theme/colors.dart";
+import "package:taif/core/theme/text.dart";
+import "package:taif/core/widgets/custom_bottom_sheet.dart";
 import "package:taif/data/ide_data.dart";
-import "package:taif/core/theme/Colors.dart";
-import "package:taif/core/theme/Text.dart";
 import "package:taif/features/editor/view/widgets/sheet_button.dart";
 import "package:taif/generated/l10n.dart";
-import "package:taif/core/widgets/custom_bottom_sheet.dart";
 
 class EditSheet extends StatelessWidget {
   const EditSheet({super.key, required this.id});
@@ -17,11 +17,11 @@ class EditSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final data = Provider.of<IdeData>(context, listen: false);
     final texts = S.of(context);
-    TextEditingController controller = TextEditingController(
+    final TextEditingController controller = TextEditingController(
       text: data.files[id].name,
     );
     return CustomBottomSheet(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: Column(
         spacing: 16,
         children: [
@@ -36,7 +36,7 @@ class EditSheet extends StatelessWidget {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(15),
-                borderSide: BorderSide(color: Colors.white),
+                borderSide: const BorderSide(color: Colors.white),
               ),
             ),
           ),
@@ -44,7 +44,7 @@ class EditSheet extends StatelessWidget {
             data.files[id].path == ""
                 ? texts.noPath
                 : data.files[id].path!.replaceAll("/storage/emulated/0", "~"),
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,

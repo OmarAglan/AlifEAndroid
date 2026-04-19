@@ -3,9 +3,9 @@ import "dart:io";
 
 import "package:flutter/material.dart";
 import "package:shared_preferences/shared_preferences.dart";
-import "package:taif/data/data_types.dart";
 import "package:taif/core/services/files/open_file.dart";
 import "package:taif/core/services/files/save_file.dart";
+import "package:taif/data/data_types.dart";
 
 class IdeData extends ChangeNotifier {
   SharedPreferences? _prefs;
@@ -17,6 +17,7 @@ class IdeData extends ChangeNotifier {
   }
 
   IdeData() {
+    _selectedFile = const FileEntity(id: -1, name: "", code: "", saved: true);
     _init();
   }
 
@@ -53,27 +54,62 @@ class IdeData extends ChangeNotifier {
     String type, {
     String? newName,
   }) async {
+    if (id < 0 || id >= files.length) return;
+
     final file = files[id];
     if (type == "reName") {
-      file.name = newName!;
-      if (file.path != "") {
-        final oldFile = File(file.path ?? "");
+      final updatedName = newName?.trim();
+      if (updatedName == null || updatedName.isEmpty) return;
+
+      final updatedFile = file.copyWith(name: updatedName);
+      files[id] = updatedFile;
+
+      if (file.path != null && file.path!.isNotEmpty) {
+        final oldFile = File(file.path!);
         final dir = oldFile.parent.path;
-        final newPath = "$dir/${file.name}";
+        final newPath = "$dir/$updatedName";
 
         if (await oldFile.exists()) {
-          await oldFile.copy(newPath);
-          await oldFile.delete();
+          try {
+            final renamed = await oldFile.rename(newPath);
+            files[id] = updatedFile.copyWith(path: renamed.path);
+          } catch (_) {
+            final copied = await oldFile.copy(newPath);
+            await oldFile.delete();
+            files[id] = updatedFile.copyWith(path: copied.path);
+          }
         }
-
-        file.path = newPath;
       }
+
+      if (_selectedFile.id == id) setSelectedFile(files[id]);
+
+      if (!context.mounted) return;
       openFile(id, context);
     } else if (type == "delete" || type == "close") {
-      files.removeAt(id);
-      openFile(id - 1, context);
-      if (type == "delete" || file.path != "") {
-        File(file.path!).delete();
+      final removed = files.removeAt(id);
+      if (type == "delete" &&
+          removed.path != null &&
+          removed.path!.isNotEmpty) {
+        try {
+          await File(removed.path!).delete();
+        } catch (_) {
+          // Ignore delete errors and keep working.
+        }
+      }
+
+      if (!context.mounted) return;
+      if (files.isNotEmpty) {
+        final nextIndex = id >= files.length ? files.length - 1 : id;
+        openFile(nextIndex, context);
+      } else {
+        const newFile = FileEntity(
+          id: 0,
+          name: "ملف_جديد_1.الف",
+          code: "",
+          saved: false,
+        );
+        files.add(newFile);
+        openFile(0, context);
       }
     }
     saveFilesLocal(context);
@@ -126,13 +162,22 @@ class IdeData extends ChangeNotifier {
   }
 
   TextEditingController code = TextEditingController();
-  void editCode(String newCode, {TextSelection? selection}) {
-    if (code.text != newCode) {
-      code.text = newCode;
+  void editCode(
+    String newCode, {
+    TextSelection? selection,
+    bool markDirty = false,
+  }) {
+    if (code.text != newCode) code.text = newCode;
+    if (selection != null) code.selection = selection;
+
+    if (markDirty) {
+      _selectedFile = _selectedFile.copyWith(code: newCode, saved: autoSave);
+      final index = files.indexWhere((file) => file.id == _selectedFile.id);
+      if (index >= 0) {
+        files[index] = files[index].copyWith(code: newCode, saved: autoSave);
+      }
     }
-    if (selection != null) {
-      code.selection = selection;
-    }
+
     notifyListeners();
   }
 

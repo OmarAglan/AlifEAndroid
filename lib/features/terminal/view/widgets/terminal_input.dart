@@ -1,13 +1,13 @@
 import "package:flutter/material.dart";
-import "package:provider/provider.dart";
-import "package:taif/data/ide_data.dart";
-import "package:taif/core/theme/Colors.dart";
-import "package:taif/core/services/run_command.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
+import "package:provider/provider.dart";
+import "package:taif/core/services/run_command.dart";
+import "package:taif/core/theme/colors.dart";
+import "package:taif/data/ide_data.dart";
 
 class TerminalInput extends StatelessWidget {
   TerminalInput({super.key});
-  TextEditingController inputController = TextEditingController();
+  final TextEditingController inputController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
   void runCommandHandler(IdeData data, BuildContext context) async {
@@ -24,6 +24,7 @@ class TerminalInput extends StatelessWidget {
       data.sendOutput(inputController.text);
     }
     inputController.clear();
+    if (!context.mounted) return;
     FocusScope.of(context).requestFocus(_focusNode);
   }
 
@@ -37,8 +38,8 @@ class TerminalInput extends StatelessWidget {
               focusNode: _focusNode,
               controller: inputController,
               onSubmitted: (_) => runCommandHandler(data, context),
-              style: TextStyle(color: ThemeColors.foreground),
-              decoration: InputDecoration(
+              style: const TextStyle(color: ThemeColors.foreground),
+              decoration: const InputDecoration(
                 hintText: "ادخل هنا",
                 hintStyle: TextStyle(color: ThemeColors.secondary),
                 border: InputBorder.none,
@@ -47,7 +48,10 @@ class TerminalInput extends StatelessWidget {
           ),
           IconButton(
             onPressed: () => runCommandHandler(data, context),
-            icon: Icon(LucideIcons.arrowRight, color: ThemeColors.foreground),
+            icon: const Icon(
+              LucideIcons.arrowRight,
+              color: ThemeColors.foreground,
+            ),
           ),
         ],
       ),

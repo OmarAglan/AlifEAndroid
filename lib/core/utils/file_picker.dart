@@ -1,9 +1,10 @@
 import "dart:io";
-import "package:taif/core/theme/Colors.dart";
-import "package:taif/core/theme/Text.dart";
-import "package:taif/core/widgets/custom_bottom_sheet.dart";
+
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
+import "package:taif/core/theme/colors.dart";
+import "package:taif/core/theme/text.dart";
+import "package:taif/core/widgets/custom_bottom_sheet.dart";
 
 Future<void> showFileManagerModal(
   BuildContext context,
@@ -21,13 +22,14 @@ Future<void> showFileManagerModal(
   final directory = Directory(rootPath);
 
   if (!await directory.exists()) {
+    if (!context.mounted) return;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text("المجلد غير موجود: $rootPath")));
     return;
   }
 
-  List<FileSystemEntity> items = directory.listSync().where((entity) {
+  final List<FileSystemEntity> items = directory.listSync().where((entity) {
     if (FileSystemEntity.isDirectorySync(entity.path)) return true;
 
     final name = entity.path.toLowerCase();
@@ -37,8 +39,8 @@ Future<void> showFileManagerModal(
   }).toList();
 
   items.sort((a, b) {
-    bool isDirA = FileSystemEntity.isDirectorySync(a.path);
-    bool isDirB = FileSystemEntity.isDirectorySync(b.path);
+    final bool isDirA = FileSystemEntity.isDirectorySync(a.path);
+    final bool isDirB = FileSystemEntity.isDirectorySync(b.path);
 
     if (!isDirA && isDirB) return -1;
     if (isDirA && !isDirB) return 1;
@@ -57,6 +59,7 @@ Future<void> showFileManagerModal(
     return "${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(2)} جيجا بايت";
   }
 
+  if (!context.mounted) return;
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -66,8 +69,8 @@ Future<void> showFileManagerModal(
         child: Column(
           children: [
             Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.all(20),
+              decoration: const BoxDecoration(
                 color: ThemeColors.background,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(25),
@@ -87,7 +90,10 @@ Future<void> showFileManagerModal(
                     overflow: TextOverflow.ellipsis,
                   ),
                   IconButton(
-                    icon: Icon(Icons.arrow_back, color: ThemeColors.foreground),
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      color: ThemeColors.foreground,
+                    ),
                     onPressed: () {
                       final parentPath = Directory(rootPath).parent.path;
 
@@ -118,18 +124,22 @@ Future<void> showFileManagerModal(
                           leading: Icon(
                             isDir ? LucideIcons.folder : LucideIcons.fileCode,
                             color: isDir
-                                ? Color(0xFFDAB744)
+                                ? const Color(0xFFDAB744)
                                 : ThemeColors.foreground,
                           ),
                           title: Text(
                             name,
-                            style: TextStyle(color: ThemeColors.foreground),
+                            style: const TextStyle(
+                              color: ThemeColors.foreground,
+                            ),
                           ),
                           subtitle: Text(
                             isDir
                                 ? "عدد الملفات ${Directory(entity.path).listSync().length}"
                                 : "الحجم ${formatFileSize(File(entity.path).statSync().size)}",
-                            style: TextStyle(color: ThemeColors.secondary),
+                            style: const TextStyle(
+                              color: ThemeColors.secondary,
+                            ),
                           ),
                           onTap: () {
                             if (isDir) {
@@ -147,7 +157,7 @@ Future<void> showFileManagerModal(
                         );
                       },
                     )
-                  : Text(
+                  : const Text(
                       "لا يوجد ملفات للغة ألف في هذا المجلد",
                       style: TextStyle(color: ThemeColors.secondary),
                     ),

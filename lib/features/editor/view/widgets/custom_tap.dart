@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
-import "package:taif/core/theme/Colors.dart";
 import "package:taif/core/services/files/open_file.dart";
+import "package:taif/core/theme/colors.dart";
 
 class CustomTap extends StatelessWidget {
   const CustomTap({
@@ -24,8 +24,8 @@ class CustomTap extends StatelessWidget {
       onTap: () => openFile(id, context),
       onLongPress: () => onLongPress(context, id),
       child: Container(
-        margin: EdgeInsets.all(5),
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 7),
+        margin: const EdgeInsets.all(5),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 7),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
           boxShadow: sel
@@ -43,7 +43,7 @@ class CustomTap extends StatelessWidget {
                   color: ThemeColors.foreground,
                 ),
               ),
-            if (isNotSaved) SizedBox(width: 5),
+            if (isNotSaved) const SizedBox(width: 5),
             Text(name),
           ],
         ),

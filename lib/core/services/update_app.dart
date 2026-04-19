@@ -1,11 +1,12 @@
 import "dart:convert";
+
 import "package:flutter/material.dart";
-import "package:lucide_icons_flutter/lucide_icons.dart";
-import "package:package_info_plus/package_info_plus.dart";
 import "package:http/http.dart" as http;
+import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:ota_update/ota_update.dart";
-import "package:taif/core/theme/Colors.dart";
-import "package:taif/core/theme/Text.dart";
+import "package:package_info_plus/package_info_plus.dart";
+import "package:taif/core/theme/colors.dart";
+import "package:taif/core/theme/text.dart";
 import "package:taif/core/widgets/custom_bottom_sheet.dart";
 
 String repoName = "iskepr/TaifIDE";
@@ -13,8 +14,8 @@ String appName = "app.apk";
 
 Future<void> checkUpdate(BuildContext context) async {
   try {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    String currentVersion = packageInfo.version;
+    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    final String currentVersion = packageInfo.version;
 
     final response = await http.get(
       Uri.parse("https://api.github.com/repos/$repoName/releases/latest"),
@@ -29,12 +30,12 @@ Future<void> checkUpdate(BuildContext context) async {
         showModalBottomSheet(
           context: context,
           builder: (context) => CustomBottomSheet(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             height: 300,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
+                const Column(
                   children: [
                     Icon(
                       LucideIcons.refreshCw,
@@ -72,7 +73,7 @@ Future<void> checkUpdate(BuildContext context) async {
                           "https://github.com/$repoName/releases/download/$latestVersion/$appName",
                         );
                       },
-                      child: SizedBox(
+                      child: const SizedBox(
                         width: double.infinity,
                         child: Center(
                           child: Text(
@@ -88,7 +89,7 @@ Future<void> checkUpdate(BuildContext context) async {
                     ),
                     TextButton(
                       onPressed: () => Navigator.pop(context, false),
-                      child: IntrinsicWidth(
+                      child: const IntrinsicWidth(
                         stepWidth: double.infinity,
                         child: Center(
                           child: Text("ليس الأن", style: ThemeText.title),
@@ -104,7 +105,7 @@ Future<void> checkUpdate(BuildContext context) async {
       }
     }
   } catch (e) {
-    print("حديث خطأ: $e");
+    debugPrint("حديث خطأ: $e");
   }
 }
 
@@ -148,7 +149,7 @@ void _runOtaUpdate(BuildContext context, String url) {
                     },
                   );
             } catch (e) {
-              print("فشل التحميل: $e");
+              debugPrint("فشل التحميل: $e");
               Navigator.pop(context);
             }
           }

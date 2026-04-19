@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
-import "package:taif/core/theme/Colors.dart";
-import "package:taif/core/theme/Text.dart";
 import "package:taif/core/services/run_command.dart";
+import "package:taif/core/theme/colors.dart";
+import "package:taif/core/theme/text.dart";
 import "package:taif/data/ide_data.dart";
 import "package:taif/generated/l10n.dart";
 
@@ -22,7 +22,7 @@ class TerminalTopBar extends StatelessWidget {
             builder: (context, data, child) => Row(
               children: [
                 IconButton(
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.clear_all_rounded,
                     color: ThemeColors.foreground,
                     size: 30,

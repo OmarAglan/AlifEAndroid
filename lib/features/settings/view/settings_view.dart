@@ -1,13 +1,13 @@
+import "package:flutter/material.dart";
+import "package:input_quantity/input_quantity.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
+import "package:taif/core/theme/colors.dart";
+import "package:taif/core/theme/text.dart";
 import "package:taif/core/widgets/custom_bottom_sheet.dart";
 import "package:taif/data/ide_data.dart";
-import "package:taif/core/theme/Colors.dart";
-import "package:taif/core/theme/Text.dart";
 import "package:taif/features/settings/view/widgets/about.dart";
 import "package:taif/generated/l10n.dart";
-import "package:flutter/material.dart";
-import "package:lucide_icons_flutter/lucide_icons.dart";
-import "package:input_quantity/input_quantity.dart";
 
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
@@ -30,13 +30,13 @@ class SettingsView extends StatelessWidget {
                 children: [
                   Text(
                     txt.settings,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: ThemeColors.foreground,
                       fontSize: 25,
                     ),
                   ),
                   const SizedBox(width: 5),
-                  Icon(
+                  const Icon(
                     LucideIcons.settings,
                     color: ThemeColors.foreground,
                     size: 25,
@@ -44,7 +44,7 @@ class SettingsView extends StatelessWidget {
                 ],
               ),
               Padding(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 child: Column(
                   spacing: 10,
                   children: [
@@ -55,21 +55,21 @@ class SettingsView extends StatelessWidget {
                           children: [
                             Text(txt.fontSize, style: ThemeText.title),
                             const SizedBox(width: 5),
-                            Text("(15)", style: ThemeText.smallG),
+                            const Text("(15)", style: ThemeText.smallG),
                           ],
                         ),
                         ScaleTransition(
-                          scale: AlwaysStoppedAnimation(1.1),
+                          scale: const AlwaysStoppedAnimation(1.1),
                           child: InputQty(
                             initVal: data.fontSize,
                             maxVal: 50,
                             minVal: 10,
                             steps: 1,
-                            qtyFormProps: QtyFormProps(
+                            qtyFormProps: const QtyFormProps(
                               style: TextStyle(color: ThemeColors.foreground),
                               enableTyping: false,
                             ),
-                            decoration: QtyDecorationProps(
+                            decoration: const QtyDecorationProps(
                               border: InputBorder.none,
                             ),
                             onQtyChanged: (val) async {

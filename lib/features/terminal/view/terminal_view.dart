@@ -1,8 +1,8 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:taif/data/ide_data.dart";
-import "package:taif/core/theme/Text.dart";
+import "package:taif/core/theme/text.dart";
 import "package:taif/core/widgets/custom_bottom_sheet.dart";
+import "package:taif/data/ide_data.dart";
 import "package:taif/features/terminal/view/widgets/terminal_input.dart";
 import "package:taif/features/terminal/view/widgets/terminal_top_bar.dart";
 

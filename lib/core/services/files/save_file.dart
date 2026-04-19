@@ -9,21 +9,31 @@ import "package:shared_preferences/shared_preferences.dart";
 import "package:taif/data/data_types.dart";
 import "package:taif/data/ide_data.dart";
 
-Future<void> saveFileToStorage(
+Future<bool> saveFileToStorage(
   BuildContext context, {
   bool asNew = false,
 }) async {
   final data = Provider.of<IdeData>(context, listen: false);
-  final code = data.code.text;
-  final List<FileEntity> filesList = data.files;
 
-  if (data.selectedFile.path == "" || asNew) {
+  if (data.files.isEmpty) {
+    data.addOutput("لا يوجد ملف مفتوح للحفظ.");
+    return false;
+  }
+
+  final code = data.code.text;
+  final selectedId = data.selectedFile.id;
+  final filesList = List<FileEntity>.from(data.files);
+  final currentIndex = filesList.indexWhere((file) => file.id == selectedId);
+
+  if (data.selectedFile.path == null ||
+      data.selectedFile.path!.isEmpty ||
+      asNew) {
     try {
       final bytes = Uint8List.fromList(utf8.encode(code));
       final path = await FileSaver.instance.saveAs(
         name: (data.selectedFile.name.isEmpty)
             ? "شفرة"
-            : data.selectedFile.name.toString().replaceAll(
+            : data.selectedFile.name.replaceAll(
                 RegExp(r"\.(الف|alif|aliflib)$"),
                 "",
               ),
@@ -31,45 +41,57 @@ Future<void> saveFileToStorage(
         fileExtension: "الف",
         mimeType: MimeType.other,
       );
+
       if (path == null || path.isEmpty) {
         data.addOutput("تم إلغاء الحفظ.");
-        return;
+        return false;
       }
 
-      final FileEntity fileData = FileEntity(
+      final FileEntity fileData = data.selectedFile.copyWith(
         name: path.split(Platform.pathSeparator).last,
         path: path,
         code: code,
+        saved: true,
       );
-      filesList[filesList.indexWhere((p) => p.name == data.selectedFile.name)] =
-          fileData;
 
+      if (currentIndex >= 0) {
+        filesList[currentIndex] = fileData;
+      } else {
+        filesList.add(fileData);
+      }
+
+      data.setSelectedFile(fileData);
+      data.setFiles(filesList);
       data.addOutput("تم الحفظ في: $path");
     } catch (e) {
       data.addOutput("خطأ أثناء الحفظ: $e");
+      return false;
     }
   } else {
-    File(data.selectedFile.path!).writeAsString(data.selectedFile.code);
+    try {
+      await File(data.selectedFile.path!).writeAsString(code);
+      final FileEntity fileData = data.selectedFile.copyWith(
+        code: code,
+        saved: true,
+      );
+      if (currentIndex >= 0) {
+        filesList[currentIndex] = fileData;
+      }
+      data.setSelectedFile(fileData);
+      data.setFiles(filesList);
+    } catch (e) {
+      data.addOutput("خطأ أثناء الحفظ: $e");
+      return false;
+    }
   }
-  saveFilesLocal(context);
+  if (!context.mounted) return false;
+  await saveFilesLocal(context);
+  return true;
 }
 
-void saveFilesLocal(BuildContext context) {
+Future<void> saveFilesLocal(BuildContext context) async {
   final data = Provider.of<IdeData>(context, listen: false);
-
-  final updatedFiles = data.files.map((file) {
-    return FileEntity(
-      id: file.id,
-      name: file.name,
-      path: file.path,
-      code: file.code,
-      saved: true,
-    );
-  }).toList();
-
-  SharedPreferences.getInstance().then((prefs) {
-    prefs.setString("opened_files", jsonEncode(updatedFiles));
-  });
-
-  data.setFiles(updatedFiles);
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString("opened_files", jsonEncode(data.files));
+  data.setFiles(data.files);
 }

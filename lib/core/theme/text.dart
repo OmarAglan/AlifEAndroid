@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:taif/core/theme/Colors.dart";
+import "package:taif/core/theme/colors.dart";
 
 abstract class ThemeText {
   static const String fontFamily = "Alif";
@@ -7,22 +7,22 @@ abstract class ThemeText {
   static const double smallF = 14;
   static const double midF = 18;
 
-  static final TextStyle smallG = TextStyle(
+  static const TextStyle smallG = TextStyle(
     fontSize: smallF,
     color: ThemeColors.secondary,
   );
 
-  static final TextStyle smallW = TextStyle(
+  static const TextStyle smallW = TextStyle(
     fontSize: smallF,
     color: ThemeColors.foreground,
   );
 
-  static final TextStyle mid = TextStyle(
+  static const TextStyle mid = TextStyle(
     fontSize: midF,
     color: ThemeColors.secondary,
   );
 
-  static final TextStyle title = TextStyle(
+  static const TextStyle title = TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.bold,
     color: ThemeColors.foreground,

@@ -9,7 +9,7 @@ import "package:taif/data/data_types.dart";
 Future<void> loadFilesFromStorage(BuildContext context, data) async {
   final prefs = await SharedPreferences.getInstance();
   final savedFiles = prefs.getString("opened_files");
-  final lastFile = prefs.getInt("lastFile");
+  final lastFile = prefs.getInt("lastFile") ?? 0;
 
   if (savedFiles != null) {
     try {
@@ -17,18 +17,23 @@ Future<void> loadFilesFromStorage(BuildContext context, data) async {
       if (decoded is List) {
         data.files = decoded.map((file) => FileEntity.fromJson(file)).toList();
       }
-      if (lastFile != null && lastFile >= 0 && lastFile < data.files.length) {
-        openFile(lastFile, context);
-      }
     } catch (e) {
-      print("خطأ في قراءة الملفات المخزنة: $e");
+      debugPrint("خطأ في قراءة الملفات المخزنة: $e");
     }
+  }
+  if (!context.mounted) return;
+  if (data.files.isNotEmpty) {
+    final selectedIndex = lastFile >= 0 && lastFile < data.files.length
+        ? lastFile
+        : 0;
+    await openFile(selectedIndex, context);
   } else {
     createFile(name: defultFile.name, code: defultFile.code, context: context);
   }
 }
 
-FileEntity defultFile = FileEntity(
+FileEntity defultFile = const FileEntity(
+  id: 0,
   name: "الأعداد_الاولية.الف",
   code: """
 # هذا البرنامج يقوم بطباعة الاعداد الاولية ضمن المدى المعطى له

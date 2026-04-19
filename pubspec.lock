@@ -262,7 +262,7 @@ packages:
     source: hosted
     version: "2.2.3"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       sha256: "87721a4a50b19c7f1d49001e51409bddc46303966ce89a65af4f4e6004896412"
@@ -614,7 +614,7 @@ packages:
     source: hosted
     version: "2.2.0"
   re_highlight:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: re_highlight
       sha256: "6c4ac3f76f939fb7ca9df013df98526634e17d8f7460e028bd23a035870024f2"

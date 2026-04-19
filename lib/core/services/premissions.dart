@@ -1,27 +1,28 @@
 import "dart:io";
 
-import "package:taif/core/theme/Colors.dart";
-import "package:taif/core/theme/Text.dart";
-import "package:taif/core/widgets/custom_bottom_sheet.dart";
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:permission_handler/permission_handler.dart";
+import "package:taif/core/theme/colors.dart";
+import "package:taif/core/theme/text.dart";
+import "package:taif/core/widgets/custom_bottom_sheet.dart";
 
 Future<bool> requestStoragePermission(BuildContext context) async {
   if (Platform.isLinux) return true;
 
   var status = await Permission.manageExternalStorage.status;
   if (status.isGranted) return true;
+  if (!context.mounted) return false;
   final result = await showModalBottomSheet<bool>(
     context: context,
     builder: (context) {
       return CustomBottomSheet(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         height: 300,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
+            const Column(
               spacing: 10,
               children: [
                 Icon(
@@ -53,7 +54,7 @@ Future<bool> requestStoragePermission(BuildContext context) async {
                     ),
                   ),
                   onPressed: () => Navigator.pop(context, true),
-                  child: SizedBox(
+                  child: const SizedBox(
                     width: double.infinity,
                     child: Center(
                       child: Text(
@@ -69,7 +70,7 @@ Future<bool> requestStoragePermission(BuildContext context) async {
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(context, false),
-                  child: IntrinsicWidth(
+                  child: const IntrinsicWidth(
                     stepWidth: double.infinity,
                     child: Center(child: Text("رفض", style: ThemeText.title)),
                   ),
@@ -85,7 +86,7 @@ Future<bool> requestStoragePermission(BuildContext context) async {
   status = await Permission.manageExternalStorage.request();
   if (!status.isGranted) {
     final opened = await openAppSettings();
-    if (!opened) print("فشل فتح الاعدادات");
+    if (!opened) debugPrint("فشل فتح الاعدادات");
   }
 
   return status.isDenied ? false : true;

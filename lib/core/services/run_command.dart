@@ -38,7 +38,7 @@ Future<void> runCommand(BuildContext context, String commandInput) async {
         data.addOutput("تَحْذِير: لَمْ تَتِمّ حِفْظ التَّعْدِيلات الأَخِيرَة");
       }
     } else {
-      var tempDir = await getTemporaryDirectory();
+      final tempDir = await getTemporaryDirectory();
       codePath = File("${tempDir.path}/${file.name}");
       await codePath.writeAsString(file.code);
     }
@@ -76,12 +76,12 @@ Future<void> runCommand(BuildContext context, String commandInput) async {
     );
 
     data.editProcess(process);
-    process.stderr.transform(SystemEncoding().decoder).listen((result) {
+    process.stderr.transform(const SystemEncoding().decoder).listen((result) {
       data.addOutput(
         "\n ${result.toLowerCase().contains("warning") ? "تَحْذِير" : "خَطَأ"}: $result",
       );
     });
-    process.stdout.transform(SystemEncoding().decoder).listen((result) {
+    process.stdout.transform(const SystemEncoding().decoder).listen((result) {
       data.addOutput(result, newLine: false);
     });
     process.exitCode.then((exitCode) {

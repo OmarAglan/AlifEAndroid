@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:taif/data/ide_data.dart";
 import "package:taif/core/services/files/create_file.dart";
-import "package:taif/features/editor/view/widgets/edit_sheet.dart";
+import "package:taif/data/ide_data.dart";
 import "package:taif/features/editor/view/widgets/custom_tap.dart";
+import "package:taif/features/editor/view/widgets/edit_sheet.dart";
 
 class OpenedFiles extends StatelessWidget {
   const OpenedFiles({super.key});
@@ -29,9 +29,9 @@ class OpenedFiles extends StatelessWidget {
               Consumer<IdeData>(
                 builder: (context, data, child) => Row(
                   children: List.generate(data.files.length, (id) {
-                    bool sel = data.selectedFile.id == id;
+                    final bool sel = data.selectedFile.id == id;
                     final files = data.files;
-                    bool isNotSaved = !(files[id].saved ?? false);
+                    final bool isNotSaved = !files[id].saved;
                     return CustomTap(
                       id: id,
                       isNotSaved: isNotSaved,
@@ -44,7 +44,7 @@ class OpenedFiles extends StatelessWidget {
               ),
               IconButton(
                 onPressed: () => createFile(context: context),
-                icon: Icon(Icons.add_rounded),
+                icon: const Icon(Icons.add_rounded),
               ),
             ],
           ),

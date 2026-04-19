@@ -1,11 +1,11 @@
-import "package:taif/core/theme/Colors.dart";
-import "package:taif/data/ide_data.dart";
-import "package:taif/features/shortcuts/data/shortcuts_data.dart";
-import "package:taif/generated/l10n.dart";
-import "package:taif/features/editor/view/editor_view.dart";
 import "package:flutter/material.dart";
 import "package:flutter_localizations/flutter_localizations.dart";
 import "package:provider/provider.dart";
+import "package:taif/core/theme/colors.dart";
+import "package:taif/data/ide_data.dart";
+import "package:taif/features/editor/view/editor_view.dart";
+import "package:taif/features/shortcuts/data/shortcuts_data.dart";
+import "package:taif/generated/l10n.dart";
 
 void main() => runApp(const Taif());
 
@@ -22,7 +22,7 @@ class Taif extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         locale: const Locale("ar"),
-        localizationsDelegates: [
+        localizationsDelegates: const [
           S.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,

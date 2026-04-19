@@ -45,9 +45,9 @@ class ShortcutsData extends ChangeNotifier {
     final String? savedCounts = prefs.getString("shortcuts_counts");
 
     if (savedCounts != null) {
-      Map<String, dynamic> countsMap = jsonDecode(savedCounts);
+      final Map<String, dynamic> countsMap = jsonDecode(savedCounts);
       for (var item in shortcuts) {
-        String idKey = item.id.toString();
+        final String idKey = item.id.toString();
         if (countsMap.containsKey(idKey)) {
           item.usageCount = countsMap[idKey];
         }
@@ -77,7 +77,9 @@ class ShortcutsData extends ChangeNotifier {
 
   void _updateUsage(int index) {
     shortcuts[index].usageCount++;
+    _sortShortcuts();
     _saveCountsOnly();
+    notifyListeners();
   }
 
   void _sortShortcuts() {
@@ -85,7 +87,7 @@ class ShortcutsData extends ChangeNotifier {
   }
 
   Future<void> _saveCountsOnly() async {
-    Map<String, int> countsMap = {};
+    final Map<String, int> countsMap = {};
 
     for (var item in shortcuts) {
       if (item.usageCount > 0) {
