@@ -1,6 +1,5 @@
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
-import "package:provider/provider.dart";
 import "package:taif/core/theme/colors.dart";
 import "package:taif/core/theme/text.dart";
 import "package:taif/data/ide_data.dart";
@@ -11,34 +10,33 @@ class About extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final data = Provider.of<IdeData>(context, listen: false);
     return Column(
       children: [
-        Column(
+        const Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
+                Icon(
                   LucideIcons.cpu,
                   color: ThemeColors.secondary,
                   size: ThemeText.smallF,
                 ),
-                const SizedBox(width: 5),
+                SizedBox(width: 5),
                 Text(
-                  "لغة ألف نـ5 النسخة ${data.alifVersion}",
+                  "لغة ألف نـ5 النسخة ${IdeData.alifVersion}",
                   style: ThemeText.smallG,
                 ),
               ],
             ),
-            const SizedBox(height: 10),
-            const Row(
+            SizedBox(height: 10),
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(LucideIcons.info, color: ThemeColors.secondary, size: 13),
                 SizedBox(width: 5),
                 Text(
-                  "محرر طيف النسخة 1.0.0 (تجريبية)",
+                  "محرر طيف النسخة ${IdeData.appVersion} (تجريبية)",
                   style: ThemeText.smallG,
                 ),
               ],

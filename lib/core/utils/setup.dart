@@ -9,12 +9,13 @@ import "package:taif/data/ide_data.dart";
 
 Future<void> setupAlif(BuildContext context) async {
   final data = Provider.of<IdeData>(context, listen: false);
+  const alifVersion = IdeData.alifVersion;
 
   try {
     final prefs = await SharedPreferences.getInstance();
     final installedVersion = prefs.getString("alif_version") ?? "";
 
-    final bool needsUpdate = installedVersion != data.alifVersion;
+    final bool needsUpdate = installedVersion != alifVersion;
 
     final appDir = await getApplicationSupportDirectory();
     final alifDir = Directory("${appDir.path}/alif");
@@ -27,6 +28,12 @@ Future<void> setupAlif(BuildContext context) async {
 
     String finalPath = "";
 
+    final libraryFiles = [
+      "aliflang/library/التبادل.aliflib",
+      "aliflang/library/العشوائي.aliflib",
+      "aliflang/library/نظام_التشغيل.aliflib",
+    ];
+
     if (Platform.isAndroid) {
       final arm64Dir = Directory(alifDir.path);
       final libDir = Directory("${alifDir.path}/library");
@@ -35,10 +42,9 @@ Future<void> setupAlif(BuildContext context) async {
       if (!await libDir.exists()) await libDir.create(recursive: true);
 
       final filesToCopy = [
+        ...libraryFiles,
         "aliflang/arm64-v8a/libalif.so",
         "aliflang/arm64-v8a/libc++_shared.so",
-        "aliflang/library/التبادل.aliflib",
-        "aliflang/library/نظام_التشغيل.aliflib",
       ];
 
       if (needsUpdate) {
@@ -50,7 +56,7 @@ Future<void> setupAlif(BuildContext context) async {
               : "${libDir.path}/${fileName.split("/").last}";
           await File(targetPath).writeAsBytes(bytes, flush: true);
         }
-        await prefs.setString("alif_version", data.alifVersion);
+        await prefs.setString("alif_version", alifVersion);
         data.addOutput("تم تحديث ملفات اللغة بنجاح");
       }
       finalPath = "${arm64Dir.path}/libalif.so";
@@ -62,11 +68,7 @@ Future<void> setupAlif(BuildContext context) async {
       if (!await libraryDir.exists()) await libraryDir.create(recursive: true);
 
       if (needsUpdate) {
-        final filesToCopy = [
-          "aliflang/linux/amd64",
-          "aliflang/library/التبادل.aliflib",
-          "aliflang/library/نظام_التشغيل.aliflib",
-        ];
+        final filesToCopy = [...libraryFiles, "aliflang/linux/amd64"];
         for (final fileName in filesToCopy) {
           final assetData = await rootBundle.load("assets/$fileName");
           final bytes = assetData.buffer.asUint8List();
@@ -75,7 +77,7 @@ Future<void> setupAlif(BuildContext context) async {
               : "${libraryDir.path}/${fileName.split("/").last}";
           await File(targetPath).writeAsBytes(bytes, flush: true);
         }
-        await prefs.setString("alif_version", data.alifVersion);
+        await prefs.setString("alif_version", alifVersion);
         data.addOutput("تم تحديث ملفات اللغة بنجاح");
       }
       finalPath = "${langDir.path}/amd64";
@@ -83,7 +85,7 @@ Future<void> setupAlif(BuildContext context) async {
 
     if (finalPath.isNotEmpty) {
       data.setAlifPath(finalPath);
-      data.addOutput("تم تثبيت لغة ألف اصدار ${data.alifVersion}");
+      data.addOutput("تم تثبيت لغة ألف اصدار $alifVersion");
     }
   } catch (e, s) {
     data.addOutput("حدث خطأ: $e");

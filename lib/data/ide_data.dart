@@ -8,9 +8,11 @@ import "package:taif/core/services/files/save_file.dart";
 import "package:taif/data/data_types.dart";
 
 class IdeData extends ChangeNotifier {
+  static const String appVersion = "1.1.0";
+  static const String alifVersion = "5.3.0";
+
   SharedPreferences? _prefs;
   bool isReady = false;
-  String alifVersion = "5.2.0";
   void setReady() {
     isReady = true;
     notifyListeners();

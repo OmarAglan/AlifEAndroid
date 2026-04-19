@@ -5,6 +5,14 @@ class FileEntity {
   final String code;
   final bool saved;
 
+  const FileEntity({
+    required this.id,
+    required this.name,
+    this.path,
+    required this.code,
+    this.saved = false,
+  });
+
   factory FileEntity.fromJson(Map<String, dynamic> json) {
     return FileEntity(
       id: json["id"] ?? 0,
@@ -35,11 +43,6 @@ class FileEntity {
     );
   }
 
-  const FileEntity({
-    required this.id,
-    required this.name,
-    this.path,
-    required this.code,
-    this.saved = false,
-  });
+  @override
+  String toString() => toJson().toString();
 }

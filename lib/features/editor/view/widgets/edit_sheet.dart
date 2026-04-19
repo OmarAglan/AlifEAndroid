@@ -17,9 +17,15 @@ class EditSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final data = Provider.of<IdeData>(context, listen: false);
     final texts = S.of(context);
+    final file = data.files[id];
+
     final TextEditingController controller = TextEditingController(
-      text: data.files[id].name,
+      text: file.name,
     );
+
+    // سطر واحد يحللك أزمة الـ null والنص الفاضي مع بعض
+    final bool hasPath = file.path != null && file.path!.isNotEmpty;
+
     return CustomBottomSheet(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -41,9 +47,9 @@ class EditSheet extends StatelessWidget {
             ),
           ),
           SelectableText(
-            data.files[id].path == ""
-                ? texts.noPath
-                : data.files[id].path!.replaceAll("/storage/emulated/0", "~"),
+            hasPath
+                ? file.path!.replaceAll("/storage/emulated/0", "~")
+                : texts.noPath,
             style: const TextStyle(color: Colors.white),
           ),
           Row(
@@ -61,7 +67,7 @@ class EditSheet extends StatelessWidget {
                   newName: controller.text,
                 ),
               ),
-              if (data.files[id].path != "")
+              if (hasPath)
                 SheetButton(
                   title: texts.close,
                   color: Colors.amber,
