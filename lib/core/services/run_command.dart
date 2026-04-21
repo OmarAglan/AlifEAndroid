@@ -13,6 +13,7 @@ Future<void> runCommand(BuildContext context, String commandInput) async {
   final bool isAlif = command[0] == "alif" || command[0] == "الف";
 
   final file = data.selectedFile;
+  data.startNewTerminalSession();
 
   if (data.runningProcess?.exitCode != null) {
     data.clearRunningProcess();
@@ -21,7 +22,7 @@ Future<void> runCommand(BuildContext context, String commandInput) async {
   }
 
   if (isAlif && data.alifBinPath == null) {
-    data.addOutput("خَطَأ: مَسَار مُتَرْجِم لُغَة أَلِف غَيْر مُعَرَّف.");
+    data.addOutput("لم يتم العثور على اللغة", isError: true);
     return;
   }
 
@@ -33,7 +34,7 @@ Future<void> runCommand(BuildContext context, String commandInput) async {
       final aliflang = File(data.alifBinPath!);
 
       if (!await aliflang.exists()) {
-        data.addOutput("خَطَأ: مَلَف التَّشْغِيل للُغَة أَلِف غَيْر مَوْجُود.");
+        data.addOutput("لم يتم العثور على ملف اللغة", isError: true);
         return;
       }
       await Process.run("chmod", ["755", aliflang.path]);
@@ -50,7 +51,7 @@ Future<void> runCommand(BuildContext context, String commandInput) async {
       codePath = File(file.path!);
       final fileContent = await codePath.readAsString();
       if (fileContent != file.code) {
-        data.addOutput("تَحْذِير: لَمْ تَتِمّ حِفْظ التَّعْدِيلات الأَخِيرَة");
+        data.addOutput("لم يتم حفظ التعديلات الاخيرة", isError: false);
       }
     } else {
       final tempDir = await getTemporaryDirectory();
@@ -104,15 +105,17 @@ Future<void> runCommand(BuildContext context, String commandInput) async {
     data.editProcess(process);
     process.stderr.transform(const SystemEncoding().decoder).listen((result) {
       data.addOutput(
-        "\n ${result.toLowerCase().contains("warning") ? "تَحْذِير" : "خَطَأ"}: ${result.trim()}",
+        result.trim(),
+        isError: !result.toLowerCase().contains("warning"),
       );
     });
     process.stdout.transform(const SystemEncoding().decoder).listen((result) {
+      data.terminalFocus.requestFocus();
       data.addOutput(result, newLine: false);
     });
     process.exitCode.then((exitCode) {
       if (exitCode != 0) {
-        data.addOutput("حَدَثَ خَطَأ فِي الشَّفْرَة [رَقْم $exitCode]");
+        data.addOutput("في الشفرة [رقم $exitCode]", isError: true);
       }
       data.clearRunningProcess();
     });

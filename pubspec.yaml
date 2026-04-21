@@ -13,6 +13,7 @@ dependencies:
     flutter_code_editor: ^0.3.5
     flutter_localizations:
         sdk: flutter
+    fluttertoast: ^9.0.0
     highlight: ^0.7.0
     http: ^1.6.0
     input_quantity: ^2.5.2

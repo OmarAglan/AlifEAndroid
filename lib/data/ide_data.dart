@@ -3,6 +3,7 @@ import "dart:io";
 
 import "package:code_forge/code_forge.dart";
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import "../constants.dart";
 import "../core/services/files/open_file.dart";
@@ -17,6 +18,7 @@ class IdeData extends ChangeNotifier {
 
   late final CodeForgeController code;
   late final FindController findController;
+  late final FocusNode terminalFocus;
 
   bool isReady = false;
   void setReady() {
@@ -27,6 +29,7 @@ class IdeData extends ChangeNotifier {
   IdeData() {
     code = CodeForgeController();
     findController = FindController(code);
+    terminalFocus = FocusNode();
     _selectedFile = const FileEntity(id: -1, name: "", code: "", saved: true);
     _init();
   }
@@ -127,14 +130,59 @@ class IdeData extends ChangeNotifier {
   }
 
   // output
-  String output = "";
-  void addOutput(String text, {bool newLine = true}) {
-    output += "$text${newLine ? "\n" : ""}";
+  final List<TerminalLine> outputLines = [];
+  String get output => outputLines.join("\n");
+
+  int _currentSessionId = 0;
+  int get currentSessionId => _currentSessionId;
+
+  void startNewTerminalSession() {
+    _currentSessionId++;
+    notifyListeners();
+  }
+
+  void addOutput(String text, {bool newLine = true, bool? isError}) {
+    String prefix = "";
+    if (isError == true) {
+      prefix = "${l10n.error}: ";
+      HapticFeedback.heavyImpact();
+    } else if (isError == false) {
+      prefix = "${l10n.warning}: ";
+      HapticFeedback.mediumImpact();
+    }
+
+    final String toAdd = "$prefix$text${newLine ? '\n' : ''}";
+
+    if (outputLines.isEmpty) {
+      outputLines.add(TerminalLine(text: "", sessionId: _currentSessionId));
+    }
+
+    final lastLineObj = outputLines.removeLast();
+    final String combined = lastLineObj.text + toAdd;
+
+    final List<String> newTextLines = combined.split(RegExp(r"\r?\n"));
+
+    for (var lineText in newTextLines) {
+      outputLines.add(
+        TerminalLine(
+          text: lineText,
+          sessionId: _currentSessionId,
+          isError: isError,
+        ),
+      );
+    }
+
+    const maxLines = 300;
+    if (outputLines.length > maxLines) {
+      outputLines.removeRange(0, outputLines.length - maxLines);
+    }
+
     notifyListeners();
   }
 
   void clearOutput() {
-    output = "";
+    outputLines.clear();
+    _currentSessionId = 0;
     notifyListeners();
   }
 

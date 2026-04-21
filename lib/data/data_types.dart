@@ -4,7 +4,7 @@ class FileEntity {
   final String? path;
   final String code;
   final bool saved;
-  final List<int> cursor; 
+  final List<int> cursor;
 
   const FileEntity({
     required this.id,
@@ -12,7 +12,7 @@ class FileEntity {
     this.path,
     required this.code,
     this.saved = false,
-    this.cursor = const [0, 0], // القيمة الافتراضية أول السطر
+    this.cursor = const [0, 0],
   });
 
   factory FileEntity.fromJson(Map<String, dynamic> json) {
@@ -54,4 +54,18 @@ class FileEntity {
       cursor: cursor ?? this.cursor,
     );
   }
+}
+
+class TerminalLine {
+  final String text;
+  final int sessionId;
+  final bool? isError;
+  final bool isSystem;
+
+  TerminalLine({
+    required this.text,
+    required this.sessionId,
+    this.isError,
+    this.isSystem = false,
+  });
 }

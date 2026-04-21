@@ -23,9 +23,13 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "autoSave": MessageLookupByLibrary.simpleMessage("Auto Save"),
+    "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+    "clear": MessageLookupByLibrary.simpleMessage("Clear"),
     "close": MessageLookupByLibrary.simpleMessage("Close"),
     "delete": MessageLookupByLibrary.simpleMessage("Delete"),
     "editFile": MessageLookupByLibrary.simpleMessage("Edit File"),
+    "enterCommand": MessageLookupByLibrary.simpleMessage("Enter Command"),
+    "error": MessageLookupByLibrary.simpleMessage("Error"),
     "fileName": MessageLookupByLibrary.simpleMessage("File Name"),
     "fontSize": MessageLookupByLibrary.simpleMessage("Font Size"),
     "new_file": MessageLookupByLibrary.simpleMessage("New File"),
@@ -37,5 +41,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "settings": MessageLookupByLibrary.simpleMessage("Settings"),
     "terminal": MessageLookupByLibrary.simpleMessage("Terminal"),
     "title": MessageLookupByLibrary.simpleMessage("Taif IDE"),
+    "warning": MessageLookupByLibrary.simpleMessage("Warning"),
   };
 }

@@ -13,5 +13,10 @@
     "editFile": "تعديل الملف",
     "noPath": "لا يوجد مسار",
     "fileName": "اسم الملف",
-    "search": "بحث"
+    "enterCommand": "أدخل الأمر",
+    "search": "بحث",
+    "error": "خطأ",
+    "warning": "تحذير",
+    "clear": "مسح",
+    "cancel": "إلغاء"
 }

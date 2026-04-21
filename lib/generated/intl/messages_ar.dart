@@ -23,9 +23,13 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "autoSave": MessageLookupByLibrary.simpleMessage("الحفظ التلقائي"),
+    "cancel": MessageLookupByLibrary.simpleMessage("إلغاء"),
+    "clear": MessageLookupByLibrary.simpleMessage("مسح"),
     "close": MessageLookupByLibrary.simpleMessage("اغلاق"),
     "delete": MessageLookupByLibrary.simpleMessage("حذف"),
     "editFile": MessageLookupByLibrary.simpleMessage("تعديل الملف"),
+    "enterCommand": MessageLookupByLibrary.simpleMessage("أدخل الأمر"),
+    "error": MessageLookupByLibrary.simpleMessage("خطأ"),
     "fileName": MessageLookupByLibrary.simpleMessage("اسم الملف"),
     "fontSize": MessageLookupByLibrary.simpleMessage("حجم الخط"),
     "new_file": MessageLookupByLibrary.simpleMessage("ملف جديد"),
@@ -37,5 +41,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "settings": MessageLookupByLibrary.simpleMessage("الإعدادات"),
     "terminal": MessageLookupByLibrary.simpleMessage("الطرفية"),
     "title": MessageLookupByLibrary.simpleMessage("مُحرر طيف"),
+    "warning": MessageLookupByLibrary.simpleMessage("تحذير"),
   };
 }

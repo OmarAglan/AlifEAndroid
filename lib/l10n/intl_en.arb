@@ -13,5 +13,10 @@
     "editFile": "Edit File",
     "noPath": "No Path",
     "fileName": "File Name",
-    "search": "Search"
+    "enterCommand": "Enter Command",
+    "search": "Search",
+    "error": "Error",
+    "warning": "Warning",
+    "clear": "Clear",
+    "cancel": "Cancel"
 }

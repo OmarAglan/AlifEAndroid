@@ -1,21 +1,27 @@
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
+import "../../../../constants.dart";
 import "../../../../core/services/run_command.dart";
 import "../../../../core/theme/colors.dart";
 import "../../../../data/ide_data.dart";
 
-class TerminalInput extends StatelessWidget {
-  TerminalInput({super.key});
+class TerminalInput extends StatefulWidget {
+  const TerminalInput({super.key});
+
+  @override
+  State<TerminalInput> createState() => _TerminalInputState();
+}
+
+class _TerminalInputState extends State<TerminalInput> {
   final TextEditingController inputController = TextEditingController();
-  final FocusNode _focusNode = FocusNode();
 
   void runCommandHandler(IdeData data, BuildContext context) async {
     if (data.runningProcess?.exitCode == null) {
-      if (inputController.text == "clear" || inputController.text == "مسح") {
+      if (inputController.text.toLowerCase() == l10n.clear) {
         data.clearOutput();
         inputController.clear();
-        FocusScope.of(context).requestFocus(_focusNode);
+        FocusScope.of(context).requestFocus(data.terminalFocus);
         return;
       } else {
         await runCommand(context, inputController.text);
@@ -25,7 +31,7 @@ class TerminalInput extends StatelessWidget {
     }
     inputController.clear();
     if (!context.mounted) return;
-    FocusScope.of(context).requestFocus(_focusNode);
+    FocusScope.of(context).requestFocus(data.terminalFocus);
   }
 
   @override
@@ -35,12 +41,13 @@ class TerminalInput extends StatelessWidget {
         children: [
           Expanded(
             child: TextField(
-              focusNode: _focusNode,
+              focusNode: data.terminalFocus,
+              autofocus: true,
               controller: inputController,
               onSubmitted: (_) => runCommandHandler(data, context),
               style: TextStyle(color: context.foreground),
               decoration: InputDecoration(
-                hintText: "ادخل هنا",
+                hintText: l10n.enterCommand,
                 hintStyle: TextStyle(color: context.secondary),
                 border: InputBorder.none,
               ),

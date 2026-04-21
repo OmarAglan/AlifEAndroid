@@ -24,3 +24,5 @@ final String kCodeSpace = " " * kCodeSpaceLength;
 // Global Variables
 final S l10n = S.current;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<ScaffoldMessengerState> messengerKey =
+    GlobalKey<ScaffoldMessengerState>();
