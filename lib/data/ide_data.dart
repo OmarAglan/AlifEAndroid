@@ -3,9 +3,10 @@ import "dart:io";
 
 import "package:flutter/material.dart";
 import "package:shared_preferences/shared_preferences.dart";
-import "package:taif/core/services/files/open_file.dart";
-import "package:taif/core/services/files/save_file.dart";
-import "package:taif/data/data_types.dart";
+import "../constants.dart";
+import "../core/services/files/open_file.dart";
+import "../core/services/files/save_file.dart";
+import "data_types.dart";
 
 class IdeData extends ChangeNotifier {
   static const String appVersion = "1.1.0";
@@ -24,13 +25,13 @@ class IdeData extends ChangeNotifier {
   }
 
   bool autoSave = true;
-  double fontSize = 15;
+  double fontSize = kMediumFont;
 
   Future<void> _init() async {
     _prefs = await SharedPreferences.getInstance();
     _lastFile = _prefs?.getInt("lastFile") ?? 0;
     autoSave = _prefs?.getBool("autoSave") ?? true;
-    fontSize = _prefs?.getDouble("fontSize") ?? 16;
+    fontSize = _prefs?.getDouble("fontSize") ?? kMediumFont;
     notifyListeners();
   }
 

@@ -3,17 +3,18 @@ import "dart:io";
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
-import "package:taif/core/services/files/create_file.dart";
-import "package:taif/core/services/files/open_file.dart";
-import "package:taif/core/services/files/save_file.dart";
-import "package:taif/core/services/run_command.dart";
-import "package:taif/core/theme/colors.dart";
-import "package:taif/core/theme/text.dart";
-import "package:taif/core/utils/file_picker.dart";
-import "package:taif/data/ide_data.dart";
-import "package:taif/features/settings/view/settings_view.dart";
-import "package:taif/features/terminal/view/terminal_view.dart";
-import "package:taif/generated/l10n.dart";
+
+import "../../constants.dart";
+import "../../data/ide_data.dart";
+import "../../features/settings/view/settings_view.dart";
+import "../../features/terminal/view/terminal_view.dart";
+import "../services/files/create_file.dart";
+import "../services/files/open_file.dart";
+import "../services/files/save_file.dart";
+import "../services/run_command.dart";
+import "../theme/colors.dart";
+import "../theme/text.dart";
+import "../utils/file_picker.dart";
 
 class CustomAppBar extends StatelessWidget {
   const CustomAppBar({super.key});
@@ -54,7 +55,11 @@ class CustomAppBar extends StatelessWidget {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 10, right: 10, left: 10),
+            padding: const EdgeInsets.only(
+              top: kMediumPadding,
+              right: kMediumPadding,
+              left: kMediumPadding,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -66,15 +71,15 @@ class CustomAppBar extends StatelessWidget {
                       builder: (context) => const SettingsView(),
                     );
                   },
-                  child: Text(S.of(context).title, style: ThemeText.title),
+                  child: Text(l10n.title, style: ThemeText.title),
                 ),
                 Row(
                   children: [
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         LucideIcons.terminal,
-                        color: ThemeColors.foreground,
-                        size: 20,
+                        color: context.foreground,
+                        size: kLargeFont,
                       ),
                       onPressed: () {
                         showModalBottomSheet(
@@ -85,10 +90,10 @@ class CustomAppBar extends StatelessWidget {
                       },
                     ),
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         LucideIcons.play,
-                        color: ThemeColors.foreground,
-                        size: 20,
+                        color: context.foreground,
+                        size: kLargeFont,
                       ),
                       onPressed: () => {
                         context.read<IdeData>().clearOutput(),
@@ -102,20 +107,20 @@ class CustomAppBar extends StatelessWidget {
                     ),
 
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         LucideIcons.save,
-                        color: ThemeColors.foreground,
-                        size: 20,
+                        color: context.foreground,
+                        size: kLargeFont,
                       ),
                       onPressed: () => saveFileToStorage(context),
                       onLongPress: () =>
                           saveFileToStorage(context, asNew: true),
                     ),
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         LucideIcons.folderOpen,
-                        color: ThemeColors.foreground,
-                        size: 20,
+                        color: context.foreground,
+                        size: kLargeFont,
                       ),
                       onPressed: () => openFileFromStorage(context),
                     ),

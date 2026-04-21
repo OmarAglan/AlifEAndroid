@@ -1,8 +1,8 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:taif/core/theme/colors.dart";
-import "package:taif/core/theme/text.dart";
-import "package:taif/features/shortcuts/data/shortcuts_data.dart";
+import "../../../core/theme/colors.dart";
+import "../../../core/theme/text.dart";
+import "../data/shortcuts_data.dart";
 
 class ShortcutsView extends StatelessWidget {
   const ShortcutsView({super.key});
@@ -31,7 +31,7 @@ class ShortcutsView extends StatelessWidget {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0x601A2340),
-                      foregroundColor: ThemeColors.foreground,
+                      foregroundColor: context.foreground,
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       shape: RoundedRectangleBorder(

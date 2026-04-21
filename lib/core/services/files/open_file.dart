@@ -1,7 +1,8 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:taif/core/services/files/save_file.dart";
-import "package:taif/data/ide_data.dart";
+
+import "../../../data/ide_data.dart";
+import "save_file.dart";
 
 Future<void> openFile(int fileID, BuildContext context) async {
   final data = Provider.of<IdeData>(context, listen: false);

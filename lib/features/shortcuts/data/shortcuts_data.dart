@@ -2,7 +2,7 @@ import "dart:convert";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
-import "package:taif/data/ide_data.dart";
+import "../../../data/ide_data.dart";
 
 class ShortcutsData extends ChangeNotifier {
   late SharedPreferences prefs;

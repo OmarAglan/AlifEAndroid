@@ -2,12 +2,12 @@ import "package:flutter/material.dart";
 import "package:input_quantity/input_quantity.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
-import "package:taif/core/theme/colors.dart";
-import "package:taif/core/theme/text.dart";
-import "package:taif/core/widgets/custom_bottom_sheet.dart";
-import "package:taif/data/ide_data.dart";
-import "package:taif/features/settings/view/widgets/about.dart";
-import "package:taif/generated/l10n.dart";
+import "../../../constants.dart";
+import "../../../core/theme/colors.dart";
+import "../../../core/theme/text.dart";
+import "../../../core/widgets/custom_bottom_sheet.dart";
+import "../../../data/ide_data.dart";
+import "widgets/about.dart";
 
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
@@ -15,10 +15,9 @@ class SettingsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final data = Provider.of<IdeData>(context, listen: false);
-    final txt = S.of(context);
 
     return CustomBottomSheet(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(kMediumPadding),
       height: MediaQuery.of(context).size.height * 0.7,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -29,33 +28,36 @@ class SettingsView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    txt.settings,
-                    style: const TextStyle(
-                      color: ThemeColors.foreground,
-                      fontSize: 25,
+                    l10n.settings,
+                    style: TextStyle(
+                      color: context.foreground,
+                      fontSize: kSoLargeFont,
                     ),
                   ),
-                  const SizedBox(width: 5),
-                  const Icon(
+                  const SizedBox(width: kSmallPadding),
+                  Icon(
                     LucideIcons.settings,
-                    color: ThemeColors.foreground,
-                    size: 25,
+                    color: context.foreground,
+                    size: kSoLargeFont,
                   ),
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(kMediumPadding),
                 child: Column(
-                  spacing: 10,
+                  spacing: kMediumPadding,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
                           children: [
-                            Text(txt.fontSize, style: ThemeText.title),
-                            const SizedBox(width: 5),
-                            const Text("(15)", style: ThemeText.smallG),
+                            Text(l10n.fontSize, style: ThemeText.title),
+                            const SizedBox(width: kSmallPadding),
+                            const Text(
+                              "($kSmallFont)",
+                              style: ThemeText.smallG,
+                            ),
                           ],
                         ),
                         ScaleTransition(
@@ -65,8 +67,8 @@ class SettingsView extends StatelessWidget {
                             maxVal: 50,
                             minVal: 10,
                             steps: 1,
-                            qtyFormProps: const QtyFormProps(
-                              style: TextStyle(color: ThemeColors.foreground),
+                            qtyFormProps: QtyFormProps(
+                              style: TextStyle(color: context.foreground),
                               enableTyping: false,
                             ),
                             decoration: const QtyDecorationProps(
@@ -90,7 +92,7 @@ class SettingsView extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(txt.autoSave, style: ThemeText.title),
+                        Text(l10n.autoSave, style: ThemeText.title),
                         Consumer<IdeData>(
                           builder: (context, data, child) => Switch(
                             value: data.autoSave,

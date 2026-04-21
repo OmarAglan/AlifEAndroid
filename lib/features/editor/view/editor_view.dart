@@ -1,13 +1,14 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:taif/core/services/files/load_saved_files.dart";
-import "package:taif/core/services/premissions.dart";
-import "package:taif/core/utils/setup.dart";
-import "package:taif/core/widgets/custom_app_bar.dart";
-import "package:taif/data/ide_data.dart";
-import "package:taif/features/editor/view/widgets/ide.dart";
-import "package:taif/features/editor/view/widgets/opened_files.dart";
-import "package:taif/features/shortcuts/view/shortcuts_view.dart";
+
+import "../../../core/services/files/load_saved_files.dart";
+import "../../../core/services/premissions.dart";
+import "../../../core/utils/setup.dart";
+import "../../../core/widgets/custom_app_bar.dart";
+import "../../../data/ide_data.dart";
+import "../../shortcuts/view/shortcuts_view.dart";
+import "widgets/ide.dart";
+import "widgets/opened_files.dart";
 
 class EditorView extends StatefulWidget {
   const EditorView({super.key});

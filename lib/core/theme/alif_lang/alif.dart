@@ -1,4 +1,6 @@
 import "package:re_highlight/re_highlight.dart";
+import "keywords.dart";
+export "alif_snippets.dart";
 
 final allModes = [
   Mode(ref: "~string"),
@@ -97,8 +99,7 @@ final alif = Mode(
     "~operator": Mode(
       className: "operator",
       relevance: 0,
-      begin:
-          r"(\+|\-|\*|\\|%|=|==|!=|>=|<=|<|>|\^|\\\^|\\\\|في|ليس| او| أو| و )",
+      begin: "($operatorPattern)",
     ),
 
     // ---------- Meta ----------
@@ -124,11 +125,9 @@ final alif = Mode(
   keywords: {
     "\$pattern":
         r"[\u0600-\u06FF_][\u0600-\u06FFa-zA-Z0-9_]*|[a-zA-Z_][a-zA-Z0-9_]*|__\w+__",
-    "keyword":
-        "ادخل صحيح مفاتيح اقصى ادنى طول اضف امسح ادرج مفاتيح عشري مصفوفة اطبع مدى صح هذا عدم خطا خطأ اواذا اوإذا اذا إذا والا وإلا صنف دالة استورد عام لكل نهاية ارجع توقف حاول __تهيئة__ __عرض__ __استدعاء__ __اجمع__ __اجمع_ع__ بينما استمر خلل احذف الزمن الرياضيات نوع",
-    "literal": "صح خطا خطأ هذا",
-    "built_in":
-        "ادخل اطبع مصفوفة تحقق_اي احضر استبدل منطق افصل قسم رتب اقرا اقرا_سطر طول مدى",
+    "keyword": alifKeywords.join(" "),
+    "literal": alifLiterals.join(" "),
+    "built_in": alifBuiltIns.join(" "),
   },
   illegal: "(<\\/|->|\\?)|=>",
   contains: allModes,

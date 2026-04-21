@@ -2,7 +2,7 @@ import "dart:io";
 import "package:flutter/material.dart";
 import "package:path_provider/path_provider.dart";
 import "package:provider/provider.dart";
-import "package:taif/data/ide_data.dart";
+import "../../data/ide_data.dart";
 
 Future<void> runCommand(BuildContext context, String commandInput) async {
   final data = Provider.of<IdeData>(context, listen: false);

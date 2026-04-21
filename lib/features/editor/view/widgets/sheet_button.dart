@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "../../../../constants.dart";
 
 class SheetButton extends StatelessWidget {
   const SheetButton({
@@ -26,7 +27,10 @@ class SheetButton extends StatelessWidget {
         },
         borderRadius: BorderRadius.circular(20),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          padding: const EdgeInsets.symmetric(
+            horizontal: kLargePadding,
+            vertical: kMediumPadding,
+          ),
           decoration: BoxDecoration(
             color: bg,
             borderRadius: BorderRadius.circular(20),
@@ -34,7 +38,7 @@ class SheetButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 8,
+            spacing: kSmallPadding,
             children: [
               Icon(icon, color: color),
               Text(

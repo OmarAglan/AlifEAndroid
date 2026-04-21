@@ -3,9 +3,10 @@ import "dart:io";
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:permission_handler/permission_handler.dart";
-import "package:taif/core/theme/colors.dart";
-import "package:taif/core/theme/text.dart";
-import "package:taif/core/widgets/custom_bottom_sheet.dart";
+import "../../constants.dart";
+import "../theme/colors.dart";
+import "../theme/text.dart";
+import "../widgets/custom_bottom_sheet.dart";
 
 Future<bool> requestStoragePermission(BuildContext context) async {
   if (Platform.isLinux) return true;
@@ -22,23 +23,23 @@ Future<bool> requestStoragePermission(BuildContext context) async {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Column(
-              spacing: 10,
+            Column(
+              spacing: kMediumPadding,
               children: [
                 Icon(
                   LucideIcons.folderCog,
-                  size: 40,
-                  color: ThemeColors.foreground,
+                  size: kLargeFont * 2,
+                  color: context.foreground,
                 ),
                 Text(
                   "الوصول للتخزين",
                   style: TextStyle(
-                    color: ThemeColors.foreground,
-                    fontSize: 22,
+                    color: context.foreground,
+                    fontSize: kSoLargeFont,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Text(
+                const Text(
                   "يحتاج التطبيق الإذن للوصول للملفات لتعديل ملفات شفرة ألف",
                   textAlign: TextAlign.center,
                   style: ThemeText.title,
@@ -50,17 +51,17 @@ Future<bool> requestStoragePermission(BuildContext context) async {
                 ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: WidgetStateProperty.all(
-                      ThemeColors.foreground,
+                      context.foreground,
                     ),
                   ),
                   onPressed: () => Navigator.pop(context, true),
-                  child: const SizedBox(
+                  child: SizedBox(
                     width: double.infinity,
                     child: Center(
                       child: Text(
                         "منح الإذن",
                         style: TextStyle(
-                          color: ThemeColors.background,
+                          color: context.background,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),

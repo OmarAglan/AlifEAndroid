@@ -5,7 +5,7 @@ import "package:flutter/services.dart";
 import "package:path_provider/path_provider.dart";
 import "package:provider/provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
-import "package:taif/data/ide_data.dart";
+import "../../data/ide_data.dart";
 
 Future<void> setupAlif(BuildContext context) async {
   final data = Provider.of<IdeData>(context, listen: false);

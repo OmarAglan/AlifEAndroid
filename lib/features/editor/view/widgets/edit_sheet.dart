@@ -1,12 +1,12 @@
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
-import "package:taif/core/theme/colors.dart";
-import "package:taif/core/theme/text.dart";
-import "package:taif/core/widgets/custom_bottom_sheet.dart";
-import "package:taif/data/ide_data.dart";
-import "package:taif/features/editor/view/widgets/sheet_button.dart";
-import "package:taif/generated/l10n.dart";
+import "../../../../constants.dart";
+import "../../../../core/theme/colors.dart";
+import "../../../../core/theme/text.dart";
+import "../../../../core/widgets/custom_bottom_sheet.dart";
+import "../../../../data/ide_data.dart";
+import "sheet_button.dart";
 
 class EditSheet extends StatelessWidget {
   const EditSheet({super.key, required this.id});
@@ -16,7 +16,6 @@ class EditSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final data = Provider.of<IdeData>(context, listen: false);
-    final texts = S.of(context);
     final file = data.files[id];
 
     final TextEditingController controller = TextEditingController(
@@ -31,12 +30,12 @@ class EditSheet extends StatelessWidget {
       child: Column(
         spacing: 16,
         children: [
-          Text(texts.editFile, style: ThemeText.title),
+          Text(l10n.editFile, style: ThemeText.title),
           const SizedBox(height: 16),
           TextField(
             controller: controller,
             decoration: InputDecoration(
-              labelText: texts.fileName,
+              labelText: l10n.fileName,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(15),
               ),
@@ -49,15 +48,15 @@ class EditSheet extends StatelessWidget {
           SelectableText(
             hasPath
                 ? file.path!.replaceAll("/storage/emulated/0", "~")
-                : texts.noPath,
+                : l10n.noPath,
             style: const TextStyle(color: Colors.white),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               SheetButton(
-                title: texts.save,
-                color: ThemeColors.background,
+                title: l10n.save,
+                color: context.background,
                 bg: Colors.white,
                 icon: LucideIcons.save,
                 onTap: () => data.updateFile(
@@ -69,13 +68,13 @@ class EditSheet extends StatelessWidget {
               ),
               if (hasPath)
                 SheetButton(
-                  title: texts.close,
+                  title: l10n.close,
                   color: Colors.amber,
                   icon: LucideIcons.x,
                   onTap: () => data.updateFile(context, id, "close"),
                 ),
               SheetButton(
-                title: texts.delete,
+                title: l10n.delete,
                 color: Colors.red,
                 icon: LucideIcons.trash,
                 onTap: () => data.updateFile(context, id, "delete"),

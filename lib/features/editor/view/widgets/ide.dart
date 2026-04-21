@@ -1,10 +1,12 @@
 import "package:code_forge/code_forge.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:taif/core/services/files/save_file.dart";
-import "package:taif/core/theme/alif.dart";
-import "package:taif/core/theme/alif_dark_theme.dart";
-import "package:taif/data/ide_data.dart";
+
+import "../../../../constants.dart";
+import "../../../../core/services/files/save_file.dart";
+import "../../../../core/theme/alif_dark_theme.dart";
+import "../../../../core/theme/alif_lang/alif.dart";
+import "../../../../data/ide_data.dart";
 
 extension CodeForgeControllerValueExt on CodeForgeController {
   set value(TextEditingValue newValue) {
@@ -122,12 +124,13 @@ class _IDEState extends State<IDE> {
               builder: (context, data, child) {
                 return CodeForge(
                   controller: codeController,
+                  customCodeSnippets: alifSnippets,
                   language: alif,
                   editorTheme: alifDarkTheme,
                   focusNode: data.focusNode,
                   textDirection: TextDirection.rtl,
                   textStyle: TextStyle(
-                    fontFamily: "Tajawal",
+                    fontFamily: kMainFont,
                     fontSize: data.fontSize,
                   ),
                   enableFolding: false,

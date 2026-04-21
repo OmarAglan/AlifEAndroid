@@ -1,10 +1,10 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
-import "package:taif/core/theme/text.dart";
-import "package:taif/core/widgets/custom_bottom_sheet.dart";
-import "package:taif/data/ide_data.dart";
-import "package:taif/features/terminal/view/widgets/terminal_input.dart";
-import "package:taif/features/terminal/view/widgets/terminal_top_bar.dart";
+import "../../../core/theme/text.dart";
+import "../../../core/widgets/custom_bottom_sheet.dart";
+import "../../../data/ide_data.dart";
+import "widgets/terminal_input.dart";
+import "widgets/terminal_top_bar.dart";
 
 class TerminalView extends StatelessWidget {
   const TerminalView({super.key});

@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
-import "package:taif/core/services/run_command.dart";
-import "package:taif/core/theme/colors.dart";
-import "package:taif/data/ide_data.dart";
+import "../../../../core/services/run_command.dart";
+import "../../../../core/theme/colors.dart";
+import "../../../../data/ide_data.dart";
 
 class TerminalInput extends StatelessWidget {
   TerminalInput({super.key});
@@ -38,20 +38,17 @@ class TerminalInput extends StatelessWidget {
               focusNode: _focusNode,
               controller: inputController,
               onSubmitted: (_) => runCommandHandler(data, context),
-              style: const TextStyle(color: ThemeColors.foreground),
-              decoration: const InputDecoration(
+              style: TextStyle(color: context.foreground),
+              decoration: InputDecoration(
                 hintText: "ادخل هنا",
-                hintStyle: TextStyle(color: ThemeColors.secondary),
+                hintStyle: TextStyle(color: context.secondary),
                 border: InputBorder.none,
               ),
             ),
           ),
           IconButton(
             onPressed: () => runCommandHandler(data, context),
-            icon: const Icon(
-              LucideIcons.arrowRight,
-              color: ThemeColors.foreground,
-            ),
+            icon: Icon(LucideIcons.arrowRight, color: context.foreground),
           ),
         ],
       ),

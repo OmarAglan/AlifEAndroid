@@ -6,8 +6,8 @@ import "package:file_saver/file_saver.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
-import "package:taif/data/data_types.dart";
-import "package:taif/data/ide_data.dart";
+import "../../../data/data_types.dart";
+import "../../../data/ide_data.dart";
 
 Future<bool> saveFileToStorage(
   BuildContext context, {

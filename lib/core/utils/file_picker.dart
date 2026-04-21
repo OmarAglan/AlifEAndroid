@@ -2,9 +2,9 @@ import "dart:io";
 
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
-import "package:taif/core/theme/colors.dart";
-import "package:taif/core/theme/text.dart";
-import "package:taif/core/widgets/custom_bottom_sheet.dart";
+import "../theme/colors.dart";
+import "../theme/text.dart";
+import "../widgets/custom_bottom_sheet.dart";
 
 Future<void> showFileManagerModal(
   BuildContext context,
@@ -70,9 +70,9 @@ Future<void> showFileManagerModal(
           children: [
             Container(
               padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
-                color: ThemeColors.background,
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                color: context.background,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(25),
                   topRight: Radius.circular(25),
                 ),
@@ -90,10 +90,7 @@ Future<void> showFileManagerModal(
                     overflow: TextOverflow.ellipsis,
                   ),
                   IconButton(
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: ThemeColors.foreground,
-                    ),
+                    icon: Icon(Icons.arrow_back, color: context.foreground),
                     onPressed: () {
                       final parentPath = Directory(rootPath).parent.path;
 
@@ -125,21 +122,17 @@ Future<void> showFileManagerModal(
                             isDir ? LucideIcons.folder : LucideIcons.fileCode,
                             color: isDir
                                 ? const Color(0xFFDAB744)
-                                : ThemeColors.foreground,
+                                : context.foreground,
                           ),
                           title: Text(
                             name,
-                            style: const TextStyle(
-                              color: ThemeColors.foreground,
-                            ),
+                            style: TextStyle(color: context.foreground),
                           ),
                           subtitle: Text(
                             isDir
                                 ? "عدد الملفات ${Directory(entity.path).listSync().length}"
                                 : "الحجم ${formatFileSize(File(entity.path).statSync().size)}",
-                            style: const TextStyle(
-                              color: ThemeColors.secondary,
-                            ),
+                            style: TextStyle(color: context.secondary),
                           ),
                           onTap: () {
                             if (isDir) {
@@ -157,9 +150,9 @@ Future<void> showFileManagerModal(
                         );
                       },
                     )
-                  : const Text(
+                  : Text(
                       "لا يوجد ملفات للغة ألف في هذا المجلد",
-                      style: TextStyle(color: ThemeColors.secondary),
+                      style: TextStyle(color: context.secondary),
                     ),
             ),
           ],

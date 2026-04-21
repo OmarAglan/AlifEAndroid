@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import "package:taif/core/theme/colors.dart";
+import "../theme/colors.dart";
 
 class CustomBottomSheet extends StatelessWidget {
   const CustomBottomSheet({
@@ -24,9 +24,9 @@ class CustomBottomSheet extends StatelessWidget {
       child: Container(
         height: height ?? totalHeight,
         padding: padding ?? const EdgeInsets.only(top: 10),
-        decoration: const BoxDecoration(
-          color: ThemeColors.background,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+        decoration: BoxDecoration(
+          color: context.background,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
         ),
         child: child,
       ),

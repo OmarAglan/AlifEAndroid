@@ -5,9 +5,9 @@ import "package:http/http.dart" as http;
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:ota_update/ota_update.dart";
 import "package:package_info_plus/package_info_plus.dart";
-import "package:taif/core/theme/colors.dart";
-import "package:taif/core/theme/text.dart";
-import "package:taif/core/widgets/custom_bottom_sheet.dart";
+import "../theme/colors.dart";
+import "../theme/text.dart";
+import "../widgets/custom_bottom_sheet.dart";
 
 String repoName = "iskepr/TaifIDE";
 String appName = "app.apk";
@@ -35,22 +35,22 @@ Future<void> checkUpdate(BuildContext context) async {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Column(
+                Column(
                   children: [
                     Icon(
                       LucideIcons.refreshCw,
                       size: 40,
-                      color: ThemeColors.foreground,
+                      color: context.foreground,
                     ),
                     Text(
                       "تحديث متاح",
                       style: TextStyle(
-                        color: ThemeColors.foreground,
+                        color: context.foreground,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text(
+                    const Text(
                       "يوجد تحديث جديد للتطبيق يُفضل تحديث المُحرر لتلقي المميزات الجديدة",
                       textAlign: TextAlign.center,
                       style: ThemeText.title,
@@ -63,7 +63,7 @@ Future<void> checkUpdate(BuildContext context) async {
                     ElevatedButton(
                       style: ButtonStyle(
                         backgroundColor: WidgetStateProperty.all(
-                          ThemeColors.foreground,
+                          context.foreground,
                         ),
                       ),
                       onPressed: () {
@@ -73,13 +73,13 @@ Future<void> checkUpdate(BuildContext context) async {
                           "https://github.com/$repoName/releases/download/$latestVersion/$appName",
                         );
                       },
-                      child: const SizedBox(
+                      child: SizedBox(
                         width: double.infinity,
                         child: Center(
                           child: Text(
                             "تحديث وتثبيت",
                             style: TextStyle(
-                              color: ThemeColors.background,
+                              color: context.background,
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),

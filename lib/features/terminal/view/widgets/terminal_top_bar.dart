@@ -1,11 +1,11 @@
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
-import "package:taif/core/services/run_command.dart";
-import "package:taif/core/theme/colors.dart";
-import "package:taif/core/theme/text.dart";
-import "package:taif/data/ide_data.dart";
-import "package:taif/generated/l10n.dart";
+import "../../../../constants.dart";
+import "../../../../core/services/run_command.dart";
+import "../../../../core/theme/colors.dart";
+import "../../../../core/theme/text.dart";
+import "../../../../data/ide_data.dart";
 
 class TerminalTopBar extends StatelessWidget {
   const TerminalTopBar({super.key});
@@ -17,15 +17,15 @@ class TerminalTopBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(S.of(context).terminal, style: ThemeText.title),
+          Text(l10n.terminal, style: ThemeText.title),
           Consumer<IdeData>(
             builder: (context, data, child) => Row(
               children: [
                 IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.clear_all_rounded,
-                    color: ThemeColors.foreground,
-                    size: 30,
+                    color: context.foreground,
+                    size: kSmallFont * 2,
                   ),
                   onPressed: data.clearOutput,
                 ),
@@ -34,9 +34,9 @@ class TerminalTopBar extends StatelessWidget {
                     data.runningProcess?.exitCode == null
                         ? LucideIcons.play
                         : LucideIcons.square,
-                    size: 20,
+                    size: kLargeFont,
                     color: data.runningProcess?.exitCode == null
-                        ? ThemeColors.foreground
+                        ? context.foreground
                         : Colors.red,
                   ),
                   onPressed: () => runCommand(context, "الف ملف"),

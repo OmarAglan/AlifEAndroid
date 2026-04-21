@@ -15,7 +15,7 @@ analyzer:
 linter:
     rules:
         - directives_ordering
-        - always_use_package_imports
+        - prefer_relative_imports
 
         - use_super_parameters
         - unnecessary_this

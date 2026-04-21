@@ -1,9 +1,11 @@
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
-import "package:taif/core/theme/colors.dart";
-import "package:taif/core/theme/text.dart";
-import "package:taif/data/ide_data.dart";
 import "package:url_launcher/url_launcher.dart";
+
+import "../../../../constants.dart";
+import "../../../../core/theme/colors.dart";
+import "../../../../core/theme/text.dart";
+import "../../../../data/ide_data.dart";
 
 class About extends StatelessWidget {
   const About({super.key});
@@ -12,30 +14,34 @@ class About extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Column(
+        Column(
+          spacing: kMediumPadding,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
                   LucideIcons.cpu,
-                  color: ThemeColors.secondary,
-                  size: ThemeText.smallF,
+                  color: context.secondary,
+                  size: kSmallFont,
                 ),
-                SizedBox(width: 5),
-                Text(
+                const SizedBox(width: kSmallPadding),
+                const Text(
                   "لغة ألف نـ5 النسخة ${IdeData.alifVersion}",
                   style: ThemeText.smallG,
                 ),
               ],
             ),
-            SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(LucideIcons.info, color: ThemeColors.secondary, size: 13),
-                SizedBox(width: 5),
-                Text(
+                Icon(
+                  LucideIcons.info,
+                  color: context.secondary,
+                  size: kSoSmallFont,
+                ),
+                const SizedBox(width: kSmallPadding),
+                const Text(
                   "محرر طيف النسخة ${IdeData.appVersion} (تجريبية)",
                   style: ThemeText.smallG,
                 ),
@@ -47,9 +53,9 @@ class About extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextButton.icon(
-              icon: const Icon(
+              icon: Icon(
                 LucideIcons.github,
-                color: ThemeColors.secondary,
+                color: context.secondary,
                 size: 13,
               ),
               onPressed: () =>
@@ -57,11 +63,7 @@ class About extends StatelessWidget {
               label: const Text("الشفرة على جيت هاب", style: ThemeText.smallG),
             ),
             TextButton.icon(
-              icon: const Icon(
-                LucideIcons.earth,
-                color: ThemeColors.secondary,
-                size: 13,
-              ),
+              icon: Icon(LucideIcons.earth, color: context.secondary, size: 13),
               onPressed: () =>
                   _launchUrl("https://skepr.vercel.app/?from=TaifIDE"),
               label: const Text("تطـوير محـمـد سكيبر", style: ThemeText.smallG),
