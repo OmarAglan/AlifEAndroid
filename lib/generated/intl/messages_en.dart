@@ -33,6 +33,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "open_file": MessageLookupByLibrary.simpleMessage("Open File"),
     "save": MessageLookupByLibrary.simpleMessage("Save"),
     "save_as": MessageLookupByLibrary.simpleMessage("Save As"),
+    "search": MessageLookupByLibrary.simpleMessage("Search"),
     "settings": MessageLookupByLibrary.simpleMessage("Settings"),
     "terminal": MessageLookupByLibrary.simpleMessage("Terminal"),
     "title": MessageLookupByLibrary.simpleMessage("Taif IDE"),

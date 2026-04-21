@@ -9,6 +9,7 @@ import "../../../../core/services/files/save_file.dart";
 import "../../../../core/theme/alif_dark_theme.dart";
 import "../../../../core/theme/alif_lang/alif.dart";
 import "../../../../data/ide_data.dart";
+import "search_view.dart";
 
 class IDE extends StatefulWidget {
   const IDE({super.key});
@@ -61,7 +62,12 @@ class _IDEState extends State<IDE> {
           enableGuideLines: false,
           enableSuggestions: !Platform.isAndroid,
           customCodeSnippets: alifSnippets,
-          // styleing
+          findController: data.findController,
+          finderBuilder: (context, findController) => PreferredSize(
+            preferredSize: const Size.fromHeight(30),
+            child: SearchView(findController: findController, data: data),
+          ),
+          // styling
           editorTheme: alifDarkTheme,
           textDirection: TextDirection.rtl,
           innerPadding: const EdgeInsets.only(left: kDefaultPadding * 2),

@@ -33,6 +33,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "open_file": MessageLookupByLibrary.simpleMessage("فتح ملف"),
     "save": MessageLookupByLibrary.simpleMessage("حفظ"),
     "save_as": MessageLookupByLibrary.simpleMessage("حفظ ك"),
+    "search": MessageLookupByLibrary.simpleMessage("بحث"),
     "settings": MessageLookupByLibrary.simpleMessage("الإعدادات"),
     "terminal": MessageLookupByLibrary.simpleMessage("الطرفية"),
     "title": MessageLookupByLibrary.simpleMessage("مُحرر طيف"),

@@ -12,5 +12,6 @@
     "autoSave": "Auto Save",
     "editFile": "Edit File",
     "noPath": "No Path",
-    "fileName": "File Name"
+    "fileName": "File Name",
+    "search": "Search"
 }

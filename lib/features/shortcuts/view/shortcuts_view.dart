@@ -1,7 +1,9 @@
 import "package:flutter/material.dart";
+import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
 import "../../../core/theme/colors.dart";
 import "../../../core/theme/text.dart";
+import "../../../data/ide_data.dart";
 import "../data/shortcuts_data.dart";
 
 class ShortcutsView extends StatelessWidget {
@@ -9,7 +11,8 @@ class ShortcutsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final data = context.watch<ShortcutsData>();
+    final shortCustsData = context.watch<ShortcutsData>();
+    final ideData = context.watch<IdeData>();
     return SafeArea(
       top: false,
       child: Container(
@@ -18,37 +21,62 @@ class ShortcutsView extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
-            children: List.generate(
-              data.shortcuts.length,
-              (index) => Padding(
-                padding: const EdgeInsets.all(1),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    minWidth: 0,
-                    maxWidth: 37,
-                    maxHeight: 30,
-                  ),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0x601A2340),
-                      foregroundColor: context.foreground,
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      textStyle: ThemeText.mid,
-                    ),
-                    onPressed: () => data.insertText(context, index),
-                    child: Text(
-                      data.shortcuts[index].name,
-                      textAlign: TextAlign.center,
-                    ),
+            children: [
+              ShortCutButton(
+                onPressed: () => ideData.toggleSearch(),
+                child: const Icon(LucideIcons.search),
+              ),
+              ...List.generate(
+                shortCustsData.shortcuts.length,
+                (index) => ShortCutButton(
+                  onPressed: () => shortCustsData.insertText(context, index),
+                  child: Text(
+                    shortCustsData.shortcuts[index].name,
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),
-            ),
+            ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class ShortCutButton extends StatelessWidget {
+  const ShortCutButton({
+    super.key,
+    required this.child,
+    required this.onPressed,
+  });
+
+  final Widget child;
+  final Function() onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(1),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          minWidth: 0,
+          maxWidth: 37,
+          maxHeight: 30,
+        ),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0x601A2340),
+            foregroundColor: context.foreground,
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            textStyle: ThemeText.mid,
+          ),
+          onPressed: () => onPressed(),
+          child: child,
         ),
       ),
     );

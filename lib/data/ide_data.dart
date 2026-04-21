@@ -1,7 +1,7 @@
 import "dart:convert";
 import "dart:io";
 
-import "package:code_forge/code_forge/controller.dart";
+import "package:code_forge/code_forge.dart";
 import "package:flutter/material.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import "../constants.dart";
@@ -14,6 +14,10 @@ class IdeData extends ChangeNotifier {
   static const String alifVersion = "5.3.0";
 
   SharedPreferences? _prefs;
+
+  late final CodeForgeController code;
+  late final FindController findController;
+
   bool isReady = false;
   void setReady() {
     isReady = true;
@@ -21,6 +25,8 @@ class IdeData extends ChangeNotifier {
   }
 
   IdeData() {
+    code = CodeForgeController();
+    findController = FindController(code);
     _selectedFile = const FileEntity(id: -1, name: "", code: "", saved: true);
     _init();
   }
@@ -165,7 +171,6 @@ class IdeData extends ChangeNotifier {
     notifyListeners();
   }
 
-  CodeForgeController code = CodeForgeController();
   void editCode(
     String newCode, {
     TextSelection? selection,
@@ -186,10 +191,14 @@ class IdeData extends ChangeNotifier {
   }
 
   // search
-  bool searchActive = false;
+  void toggleSearch() {
+    findController.isActive = !findController.isActive;
+    if (findController.isActive) {
+      Future.microtask(() => findController.findInputFocusNode.requestFocus());
+    } else {
+      focusNode.requestFocus();
+    }
 
-  void openSearch() {
-    searchActive = true;
     notifyListeners();
   }
 

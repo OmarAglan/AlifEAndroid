@@ -123,6 +123,11 @@ class S {
   String get fileName {
     return Intl.message('File Name', name: 'fileName', desc: '', args: []);
   }
+
+  /// `Search`
+  String get search {
+    return Intl.message('Search', name: 'search', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
