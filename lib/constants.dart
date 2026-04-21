@@ -18,7 +18,7 @@ const double kLargePadding = 15;
 const double kDefaultPadding = 20;
 
 // ide
-const int kCodeSpaceLength = 2;
+const int kCodeSpaceLength = 4;
 final String kCodeSpace = " " * kCodeSpaceLength;
 
 // Global Variables

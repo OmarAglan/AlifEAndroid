@@ -39,11 +39,7 @@ class ShortcutsView extends StatelessWidget {
                       ),
                       textStyle: ThemeText.mid,
                     ),
-                    onPressed: () => data.insertText(
-                      context,
-                      data.shortcuts[index].insert,
-                      index,
-                    ),
+                    onPressed: () => data.insertText(context, index),
                     child: Text(
                       data.shortcuts[index].name,
                       textAlign: TextAlign.center,

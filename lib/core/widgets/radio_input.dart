@@ -32,25 +32,118 @@ class RadioInput extends StatefulWidget {
 
 class _RadioInputState extends State<RadioInput> {
   int _selectedValue = -1;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _updateSelectedIndex();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _initialScroll());
+  }
+
+  void _initialScroll() {
+    if (_selectedValue != -1) {
+      _scrollToSelected(isInitial: true);
+    }
   }
 
   @override
   void didUpdateWidget(RadioInput oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.value != widget.value) {
+    // لو القيمة اتغيرت أو عدد العناصر اتغير (عشان الحذف)
+    if (oldWidget.value != widget.value ||
+        oldWidget.items.length != widget.items.length) {
       _updateSelectedIndex();
+
+      // بلاش Future.delayed يا محمد، استخدم دي عشان تستنى الفريم الجديد
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _scrollToSelected();
+      });
     }
   }
 
   void _updateSelectedIndex() {
-    _selectedValue = widget.items.indexWhere(
-      (item) => item.value == widget.value,
+    setState(() {
+      _selectedValue = widget.items.indexWhere(
+        (item) => item.value == widget.value,
+      );
+    });
+  }
+
+  void _scrollToSelected({bool isInitial = false}) {
+    if (!mounted ||
+        !_scrollController.hasClients ||
+        widget.items.isEmpty ||
+        _selectedValue == -1 ||
+        _selectedValue >= widget.items.length) {
+      return;
+    }
+
+    const double iconWidth = 40.0;
+    const double paddingVal = 2;
+
+    final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+    final double maxWidth = renderBox.size.width;
+
+    final int totalFlex = widget.items.fold(
+      0,
+      (sum, item) => sum + item.name.length,
     );
+    if (totalFlex == 0) return;
+
+    final double innerContainerWidth = maxWidth - (paddingVal * 4);
+    final double requiredWidth =
+        (totalFlex * 10) +
+        (widget.onAdd != null ? iconWidth : 0) +
+        (widget.onOpen != null ? iconWidth : 0);
+
+    final double scrollableWidth = max(innerContainerWidth, requiredWidth);
+    final double offsetForIcons =
+        (widget.onAdd != null ? iconWidth : 0) +
+        (widget.onOpen != null ? iconWidth : 0);
+
+    int flexBefore = 0;
+    for (int i = 0; i < _selectedValue; i++) {
+      flexBefore += widget.items[i].name.length;
+    }
+
+    final double itemsAvailableWidth = scrollableWidth - offsetForIcons;
+    final double targetStart =
+        offsetForIcons + ((flexBefore / totalFlex) * itemsAvailableWidth);
+
+    final double targetOffset = targetStart - (maxWidth / 2) + 20;
+    final double finalOffset = targetOffset.clamp(
+      0.0,
+      _scrollController.position.maxScrollExtent,
+    );
+
+    if (isInitial) {
+      _scrollController.jumpTo(finalOffset);
+    } else {
+      _scrollController.animateTo(
+        finalOffset,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+
+    try {
+      final double maxScroll = _scrollController.position.maxScrollExtent;
+      final double finalOffset = targetOffset.clamp(0.0, maxScroll);
+
+      if (isInitial) {
+        _scrollController.jumpTo(finalOffset);
+      } else {
+        _scrollController.animateTo(
+          finalOffset,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    } catch (e) {
+      debugPrint("Scroll error: $e");
+    }
   }
 
   @override
@@ -97,13 +190,14 @@ class _RadioInputState extends State<RadioInput> {
               itemsAvailableWidth;
         }
 
-        return Container(
+        return SizedBox(
           height: height,
           width: maxWidth,
-          padding: const EdgeInsets.symmetric(horizontal: paddingVal * 2),
           child: SingleChildScrollView(
+            controller: _scrollController,
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: paddingVal * 2),
             child: SizedBox(
               width: scrollableWidth,
               child: Stack(

@@ -1,3 +1,5 @@
+import "dart:io";
+
 import "package:code_forge/code_forge.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
@@ -8,13 +10,6 @@ import "../../../../core/theme/alif_dark_theme.dart";
 import "../../../../core/theme/alif_lang/alif.dart";
 import "../../../../data/ide_data.dart";
 
-extension CodeForgeControllerValueExt on CodeForgeController {
-  set value(TextEditingValue newValue) {
-    text = newValue.text;
-    selection = newValue.selection;
-  }
-}
-
 class IDE extends StatefulWidget {
   const IDE({super.key});
 
@@ -23,121 +18,68 @@ class IDE extends StatefulWidget {
 }
 
 class _IDEState extends State<IDE> {
-  CodeForgeController? codeController;
-  bool isSyncing = false;
   late IdeData data;
 
   @override
   void initState() {
     super.initState();
     data = Provider.of<IdeData>(context, listen: false);
-
-    if (data.isReady) {
-      _initController();
-    } else {
-      data.addListener(_onDataReady);
-    }
+    data.code.addListener(_onCodeChanged);
   }
 
   @override
   void dispose() {
-    data.removeListener(_onDataReady);
-    codeController?.dispose();
+    data.code.removeListener(_onCodeChanged);
     super.dispose();
   }
 
-  void _onDataReady() {
-    if (data.isReady && codeController == null) {
-      _initController();
-      data.removeListener(_onDataReady);
-    }
-  }
+  void _onCodeChanged() async {
+    if (data.selectedFile.code != data.code.text) {
+      data.editCode(data.code.text, markDirty: true);
 
-  void _initController() {
-    codeController = CodeForgeController();
-
-    codeController!.value = TextEditingValue(
-      text: data.code.text,
-      selection: data.code.selection,
-    );
-
-    codeController!.addListener(() async {
-      if (isSyncing) return;
-
-      if (data.code.text != codeController!.text ||
-          data.code.selection != codeController!.selection) {
-        isSyncing = true;
-
-        data.editCode(
-          codeController!.text,
-          selection: codeController!.selection,
-          markDirty: true,
-        );
-
-        if (data.autoSave) {
-          if (data.selectedFile.path?.isNotEmpty ?? false) {
-            await saveFileToStorage(context);
-          } else {
-            await saveFilesLocal(context);
-          }
+      if (data.autoSave) {
+        if (data.selectedFile.path?.isNotEmpty ?? false) {
+          await saveFileToStorage(context);
+        } else {
+          await saveFilesLocal(context);
         }
-
-        isSyncing = false;
       }
-    });
-
-    data.code.addListener(() {
-      if (!mounted || codeController == null || isSyncing) return;
-
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted || isSyncing) return;
-
-        if (codeController!.text != data.code.text ||
-            codeController!.selection != data.code.selection) {
-          isSyncing = true;
-
-          final newText = data.code.text;
-          final newSelection = data.code.selection;
-
-          codeController!.value = TextEditingValue(
-            text: newText,
-            selection: newSelection.copyWith(
-              baseOffset: newSelection.baseOffset.clamp(0, newText.length),
-              extentOffset: newSelection.extentOffset.clamp(0, newText.length),
-            ),
-          );
-
-          isSyncing = false;
-        }
-      });
-    });
-
-    setState(() {});
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: codeController == null
-          ? const Center(child: CircularProgressIndicator())
-          : Consumer<IdeData>(
-              builder: (context, data, child) {
-                return CodeForge(
-                  controller: codeController,
-                  customCodeSnippets: alifSnippets,
-                  language: alif,
-                  editorTheme: alifDarkTheme,
-                  focusNode: data.focusNode,
-                  textDirection: TextDirection.rtl,
-                  textStyle: TextStyle(
+      child: Consumer<IdeData>(
+        builder: (context, ideData, child) => CodeForge(
+          // init
+          controller: ideData.code,
+          focusNode: ideData.focusNode,
+          language: alif,
+          // features
+          enableFolding: false,
+          enableGuideLines: false,
+          enableSuggestions: !Platform.isAndroid,
+          customCodeSnippets: alifSnippets,
+          // styleing
+          editorTheme: alifDarkTheme,
+          textDirection: TextDirection.rtl,
+          innerPadding: const EdgeInsets.only(left: kDefaultPadding * 2),
+          textStyle: TextStyle(
+            fontFamily: kMainFont,
+            fontSize: ideData.fontSize,
+            height: Platform.isAndroid ? 1.4 : null,
+          ),
+          gutterStyle: Platform.isAndroid
+              ? GutterStyle(
+                  lineNumberStyle: TextStyle(
+                    fontSize: ideData.fontSize * 0.95,
                     fontFamily: kMainFont,
-                    fontSize: data.fontSize,
                   ),
-                  enableFolding: false,
-                  enableGuideLines: false,
-                );
-              },
-            ),
+                )
+              : null,
+        ),
+      ),
     );
   }
 }

@@ -1,6 +1,7 @@
 import "dart:convert";
 import "dart:io";
 
+import "package:code_forge/code_forge/controller.dart";
 import "package:flutter/material.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import "../constants.dart";
@@ -164,7 +165,7 @@ class IdeData extends ChangeNotifier {
     notifyListeners();
   }
 
-  TextEditingController code = TextEditingController();
+  CodeForgeController code = CodeForgeController();
   void editCode(
     String newCode, {
     TextSelection? selection,

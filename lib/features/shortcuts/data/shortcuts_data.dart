@@ -2,6 +2,7 @@ import "dart:convert";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
+import "../../../constants.dart";
 import "../../../data/ide_data.dart";
 
 class ShortcutsData extends ChangeNotifier {
@@ -14,25 +15,25 @@ class ShortcutsData extends ChangeNotifier {
   List<ShortcutsEntity> shortcuts = [];
 
   final List<ShortcutsEntity> _defaultShortcuts = [
-    ShortcutsEntity(id: 1, name: "↹", insert: "  "),
-    ShortcutsEntity(id: 2, name: "("),
-    ShortcutsEntity(id: 3, name: '"'),
-    ShortcutsEntity(id: 4, name: "'"),
+    ShortcutsEntity(id: 1, name: "↹", insert: kCodeSpace),
+    ShortcutsEntity(id: 2, name: "(", closing: ")"),
+    ShortcutsEntity(id: 3, name: '"', closing: '"'),
+    ShortcutsEntity(id: 4, name: "'", closing: "'"),
     ShortcutsEntity(id: 5, name: "="),
     ShortcutsEntity(id: 6, name: ":"),
     ShortcutsEntity(id: 7, name: "-"),
     ShortcutsEntity(id: 8, name: "+"),
     ShortcutsEntity(id: 9, name: ")"),
-    ShortcutsEntity(id: 10, name: "["),
+    ShortcutsEntity(id: 10, name: "[", closing: "]"),
     ShortcutsEntity(id: 11, name: "]"),
-    ShortcutsEntity(id: 12, name: "{"),
+    ShortcutsEntity(id: 12, name: "{", closing: "}"),
     ShortcutsEntity(id: 13, name: "}"),
     ShortcutsEntity(id: 14, name: "#"),
     ShortcutsEntity(id: 15, name: ","),
     ShortcutsEntity(id: 16, name: "\\"),
     ShortcutsEntity(id: 17, name: "*"),
     ShortcutsEntity(id: 18, name: "^"),
-    ShortcutsEntity(id: 19, name: "<"),
+    ShortcutsEntity(id: 19, name: "<", closing: ">"),
     ShortcutsEntity(id: 20, name: ">"),
     ShortcutsEntity(id: 21, name: "_"),
     ShortcutsEntity(id: 22, name: "⏎", insert: "\\س"),
@@ -40,7 +41,6 @@ class ShortcutsData extends ChangeNotifier {
 
   void _initShortcuts() async {
     prefs = await SharedPreferences.getInstance();
-
     shortcuts = List.from(_defaultShortcuts);
     final String? savedCounts = prefs.getString("shortcuts_counts");
 
@@ -48,9 +48,7 @@ class ShortcutsData extends ChangeNotifier {
       final Map<String, dynamic> countsMap = jsonDecode(savedCounts);
       for (var item in shortcuts) {
         final String idKey = item.id.toString();
-        if (countsMap.containsKey(idKey)) {
-          item.usageCount = countsMap[idKey];
-        }
+        if (countsMap.containsKey(idKey)) item.usageCount = countsMap[idKey];
       }
     }
 
@@ -58,19 +56,23 @@ class ShortcutsData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void insertText(BuildContext context, String value, int index) {
+  void insertText(BuildContext context, int index) {
     final ideData = Provider.of<IdeData>(context, listen: false);
+    final controller = ideData.code;
+    final shortcut = shortcuts[index];
 
-    final text = ideData.code.text;
-    final selection = ideData.code.selection;
+    if (shortcut.insert == kCodeSpace) {
+      controller.indent();
+    } else if (shortcut.closing != null) {
+      controller.insertAtCurrentCursor(shortcut.insert + shortcut.closing!);
 
-    final newText = text.replaceRange(selection.start, selection.end, value);
-    final newPos = selection.start + value.length;
-
-    ideData.code.value = ideData.code.value.copyWith(
-      text: newText,
-      selection: TextSelection.collapsed(offset: newPos),
-    );
+      final currentOffset = controller.selection.extentOffset;
+      controller.selection = TextSelection.collapsed(
+        offset: currentOffset - shortcut.closing!.length,
+      );
+    } else {
+      controller.insertAtCurrentCursor(shortcut.insert);
+    }
 
     _updateUsage(index);
   }
@@ -82,19 +84,14 @@ class ShortcutsData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _sortShortcuts() {
-    shortcuts.sort((a, b) => b.usageCount.compareTo(a.usageCount));
-  }
+  void _sortShortcuts() =>
+      shortcuts.sort((a, b) => b.usageCount.compareTo(a.usageCount));
 
   Future<void> _saveCountsOnly() async {
     final Map<String, int> countsMap = {};
-
     for (var item in shortcuts) {
-      if (item.usageCount > 0) {
-        countsMap[item.id.toString()] = item.usageCount;
-      }
+      if (item.usageCount > 0) countsMap[item.id.toString()] = item.usageCount;
     }
-
     await prefs.setString("shortcuts_counts", jsonEncode(countsMap));
   }
 }
@@ -103,12 +100,14 @@ class ShortcutsEntity {
   final int id;
   final String name;
   final String insert;
+  final String? closing;
   int usageCount;
 
   ShortcutsEntity({
     required this.id,
     required this.name,
     String? insert,
+    this.closing,
     this.usageCount = 0,
   }) : insert = insert ?? name;
 }
