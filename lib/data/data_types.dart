@@ -4,6 +4,7 @@ class FileEntity {
   final String? path;
   final String code;
   final bool saved;
+  final List<int> cursor; 
 
   const FileEntity({
     required this.id,
@@ -11,6 +12,7 @@ class FileEntity {
     this.path,
     required this.code,
     this.saved = false,
+    this.cursor = const [0, 0], // القيمة الافتراضية أول السطر
   });
 
   factory FileEntity.fromJson(Map<String, dynamic> json) {
@@ -20,11 +22,19 @@ class FileEntity {
       path: json["Path"],
       code: json["Code"] ?? "",
       saved: json["Saved"] ?? false,
+      cursor: List<int>.from(json["Cursor"] ?? [0, 0]),
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {"id": id, "Name": name, "Path": path, "Code": code, "Saved": saved};
+    return {
+      "id": id,
+      "Name": name,
+      "Path": path,
+      "Code": code,
+      "Saved": saved,
+      "Cursor": cursor,
+    };
   }
 
   FileEntity copyWith({
@@ -33,6 +43,7 @@ class FileEntity {
     String? path,
     String? code,
     bool? saved,
+    List<int>? cursor,
   }) {
     return FileEntity(
       id: id ?? this.id,
@@ -40,9 +51,7 @@ class FileEntity {
       path: path ?? this.path,
       code: code ?? this.code,
       saved: saved ?? this.saved,
+      cursor: cursor ?? this.cursor,
     );
   }
-
-  @override
-  String toString() => toJson().toString();
 }

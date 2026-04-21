@@ -167,7 +167,23 @@ class IdeData extends ChangeNotifier {
   FileEntity get selectedFile => _selectedFile;
 
   void setSelectedFile(FileEntity file) {
+    if (_selectedFile.id != -1) {
+      final currentIndex = files.indexWhere((f) => f.id == _selectedFile.id);
+      if (currentIndex != -1) {
+        files[currentIndex] = files[currentIndex].copyWith(
+          cursor: [code.selection.start, code.selection.end],
+        );
+      }
+    }
+
     _selectedFile = file;
+
+    Future.microtask(() {
+      final int start = file.cursor[0].clamp(0, code.text.length);
+      final int end = file.cursor[1].clamp(0, code.text.length);
+      code.selection = TextSelection(baseOffset: start, extentOffset: end);
+    });
+
     notifyListeners();
   }
 

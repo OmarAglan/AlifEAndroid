@@ -212,10 +212,10 @@ class _RadioInputState extends State<RadioInput> {
                       curve: Curves.easeInOut,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: context.primary.withOpacity(0.1),
+                          color: context.sacheme.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(50),
                           boxShadow: [
-                            BoxShadow(color: context.primary, blurRadius: 5),
+                            BoxShadow(color: context.sacheme, blurRadius: 5),
                           ],
                         ),
                       ),

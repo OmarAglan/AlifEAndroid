@@ -2,7 +2,8 @@ import "package:flutter/material.dart";
 import "../../constants.dart";
 
 abstract class AppColors {
-  static final Color primary = Colors.purpleAccent.withOpacity(0.5);
+  static final Color primary = Colors.blueAccent.withOpacity(0.5);
+  static final Color sacheme = Colors.purpleAccent.withOpacity(0.5);
   static const Color secondary = Colors.grey;
   static const Color foreground = Colors.white;
   static const Color background = Color(0xFF081433);
@@ -26,6 +27,7 @@ extension ThemeContext on BuildContext {
   Color get error => colorScheme.error;
   Color get success => colorScheme.tertiary;
   Color get warning => AppColors.warning;
+  Color get sacheme => AppColors.sacheme;
 }
 
 abstract class AppThemes {
