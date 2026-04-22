@@ -22,7 +22,11 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "alifLangCore": MessageLookupByLibrary.simpleMessage(
+      "Alif Language Core v5",
+    ),
     "autoSave": MessageLookupByLibrary.simpleMessage("Auto Save"),
+    "beta": MessageLookupByLibrary.simpleMessage("Beta"),
     "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
     "clear": MessageLookupByLibrary.simpleMessage("Clear"),
     "close": MessageLookupByLibrary.simpleMessage("Close"),
@@ -32,6 +36,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "error": MessageLookupByLibrary.simpleMessage("Error"),
     "fileName": MessageLookupByLibrary.simpleMessage("File Name"),
     "fontSize": MessageLookupByLibrary.simpleMessage("Font Size"),
+    "ideVersion": MessageLookupByLibrary.simpleMessage("Taif IDE Version"),
     "new_file": MessageLookupByLibrary.simpleMessage("New File"),
     "noPath": MessageLookupByLibrary.simpleMessage("No Path"),
     "open_file": MessageLookupByLibrary.simpleMessage("Open File"),
@@ -39,8 +44,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "save_as": MessageLookupByLibrary.simpleMessage("Save As"),
     "search": MessageLookupByLibrary.simpleMessage("Search"),
     "settings": MessageLookupByLibrary.simpleMessage("Settings"),
+    "successInstallAlifVersion": MessageLookupByLibrary.simpleMessage(
+      "Successfully installed Alif version",
+    ),
+    "successUpdateAlifVersionFrom": MessageLookupByLibrary.simpleMessage(
+      "Successfully updated Alif from version",
+    ),
     "terminal": MessageLookupByLibrary.simpleMessage("Terminal"),
     "title": MessageLookupByLibrary.simpleMessage("Taif IDE"),
+    "to": MessageLookupByLibrary.simpleMessage("to"),
     "warning": MessageLookupByLibrary.simpleMessage("Warning"),
   };
 }

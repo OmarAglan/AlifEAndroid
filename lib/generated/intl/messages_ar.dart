@@ -22,7 +22,9 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "alifLangCore": MessageLookupByLibrary.simpleMessage("لغة ألف نـ5 النسخة"),
     "autoSave": MessageLookupByLibrary.simpleMessage("الحفظ التلقائي"),
+    "beta": MessageLookupByLibrary.simpleMessage("تجريبية"),
     "cancel": MessageLookupByLibrary.simpleMessage("إلغاء"),
     "clear": MessageLookupByLibrary.simpleMessage("مسح"),
     "close": MessageLookupByLibrary.simpleMessage("اغلاق"),
@@ -32,6 +34,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "error": MessageLookupByLibrary.simpleMessage("خطأ"),
     "fileName": MessageLookupByLibrary.simpleMessage("اسم الملف"),
     "fontSize": MessageLookupByLibrary.simpleMessage("حجم الخط"),
+    "ideVersion": MessageLookupByLibrary.simpleMessage("محرر طيف النسخة"),
     "new_file": MessageLookupByLibrary.simpleMessage("ملف جديد"),
     "noPath": MessageLookupByLibrary.simpleMessage("لا يوجد مسار"),
     "open_file": MessageLookupByLibrary.simpleMessage("فتح ملف"),
@@ -39,8 +42,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "save_as": MessageLookupByLibrary.simpleMessage("حفظ ك"),
     "search": MessageLookupByLibrary.simpleMessage("بحث"),
     "settings": MessageLookupByLibrary.simpleMessage("الإعدادات"),
+    "successInstallAlifVersion": MessageLookupByLibrary.simpleMessage(
+      "تم تثبيت لغة ألف الإصدار",
+    ),
+    "successUpdateAlifVersionFrom": MessageLookupByLibrary.simpleMessage(
+      "تم تحديث لغة الف من الإصدار",
+    ),
     "terminal": MessageLookupByLibrary.simpleMessage("الطرفية"),
     "title": MessageLookupByLibrary.simpleMessage("مُحرر طيف"),
+    "to": MessageLookupByLibrary.simpleMessage("الى"),
     "warning": MessageLookupByLibrary.simpleMessage("تحذير"),
   };
 }

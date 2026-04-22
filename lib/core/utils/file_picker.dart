@@ -60,6 +60,7 @@ Future<void> showFileManagerModal(
   }
 
   if (!context.mounted) return;
+  final parentPath = Directory(rootPath).parent.path;
   showMyBottomSheet(
     context: context,
     header: Row(
@@ -71,12 +72,10 @@ Future<void> showFileManagerModal(
           overflow: TextOverflow.ellipsis,
         ),
         IconButton(
-          icon: Icon(Icons.arrow_back, color: context.foreground),
+          icon: Icon(LucideIcons.chevronLeft, color: context.secondary),
           onPressed: () {
-            final parentPath = Directory(rootPath).parent.path;
-
+            if (!context.mounted) return;
             if (parentPath == rootPath || parentPath == "/") return;
-
             Navigator.pop(context);
             showFileManagerModal(
               context,
@@ -93,7 +92,7 @@ Future<void> showFileManagerModal(
           child: items.isNotEmpty
               ? ListView.builder(
                   itemCount: items.length,
-                  itemBuilder: (context, index) {
+                  itemBuilder: (listContext, index) {
                     final entity = items[index];
                     final isDir = FileSystemEntity.isDirectorySync(entity.path);
                     final name = entity.path.split("/").last;
@@ -110,20 +109,21 @@ Future<void> showFileManagerModal(
                       ),
                       subtitle: Text(
                         isDir
-                            ? "عدد الملفات ${Directory(entity.path).listSync().length}"
+                            ? getSafeDirCount(entity.path)
                             : "الحجم ${formatFileSize(File(entity.path).statSync().size)}",
                         style: TextStyle(color: context.secondary),
                       ),
                       onTap: () {
+                        if (!listContext.mounted) return;
                         if (isDir) {
-                          Navigator.pop(context);
+                          Navigator.pop(listContext);
                           showFileManagerModal(
                             context,
                             onFileSelected,
                             startPath: entity.path,
                           );
                         } else {
-                          Navigator.pop(context);
+                          Navigator.pop(listContext);
                           onFileSelected(entity.path);
                         }
                       },
@@ -138,4 +138,13 @@ Future<void> showFileManagerModal(
       ],
     ),
   );
+}
+
+String getSafeDirCount(String path) {
+  try {
+    final dir = Directory(path);
+    return "عدد الملفات ${dir.listSync().length}";
+  } catch (e) {
+    return "مجلد محمي";
+  }
 }

@@ -16,106 +16,154 @@ class TerminalOutputs extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<IdeData>(
       builder: (context, data, child) {
-        final Map<int, List<TerminalLine>> sessions = {};
+        final Map<int, List<TerminalLine>> sessionsMap = {};
         for (var line in data.outputLines) {
-          sessions.putIfAbsent(line.sessionId, () => []).add(line);
+          sessionsMap.putIfAbsent(line.sessionId, () => []).add(line);
         }
 
-        final sessionIds = sessions.keys.toList().reversed.toList();
+        final sessionIds = sessionsMap.keys.toList().reversed.toList();
 
         return ListView.builder(
           reverse: true,
+          padding: const EdgeInsets.all(kSmallPadding),
           itemCount: sessionIds.length,
           itemBuilder: (context, index) {
             final sessionId = sessionIds[index];
-            final List<TerminalLine> sessionLines = sessions[sessionId]!;
-            final String fullSessionText = sessionLines
-                .map((e) => e.text)
-                .join("\n");
+            final sessionLines = sessionsMap[sessionId]!;
 
-            final List<Widget> groupedWidgets = [];
-            if (sessionLines.isNotEmpty) {
-              List<TerminalLine> currentGroup = [];
-              bool? lastType = sessionLines[0].isError;
-
-              for (var line in sessionLines) {
-                if (line.isError == lastType) {
-                  currentGroup.add(line);
-                } else {
-                  groupedWidgets.add(
-                    _buildGroupedText(context, currentGroup, lastType),
-                  );
-                  currentGroup = [line];
-                  lastType = line.isError;
-                }
-              }
-              groupedWidgets.add(
-                _buildGroupedText(context, currentGroup, lastType),
-              );
-            }
-
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(kSmallPadding),
-                decoration: BoxDecoration(
-                  color: sessionId % 2 == 0
-                      ? Colors.white.withAlpha(5)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(kSmallPadding),
-                ),
-                child: Stack(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: groupedWidgets,
-                    ),
-                    if (sessionLines.length > 1)
-                      PositionedDirectional(
-                        top: 0,
-                        end: 0,
-                        child: IconButton(
-                          onPressed: () async {
-                            await Clipboard.setData(
-                              ClipboardData(text: fullSessionText),
-                            );
-                            showMessage(
-                              "تم نسخ مخرجات العملية بالكامل",
-                              isError: false,
-                            );
-                          },
-                          icon: const Icon(LucideIcons.copy, size: kLargeFont),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
+            return _SessionWidget(
+              sessionId: sessionId,
+              lines: sessionLines,
+              fullText: sessionLines.map((e) => e.text).join("\n"),
             );
           },
         );
       },
     );
   }
+}
 
-  Widget _buildGroupedText(
-    BuildContext context,
-    List<TerminalLine> group,
-    bool? type,
-  ) {
+class _SessionWidget extends StatelessWidget {
+  final int sessionId;
+  final List<TerminalLine> lines;
+  final String fullText;
+
+  const _SessionWidget({
+    required this.sessionId,
+    required this.lines,
+    required this.fullText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(kSmallPadding),
+      margin: const EdgeInsets.only(top: kSmallPadding),
+      decoration: BoxDecoration(
+        color: sessionId % 2 == 0
+            ? Colors.white.withAlpha(5)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(kSmallPadding),
+      ),
+      child: Stack(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: _buildGroupedLines(context),
+          ),
+          if (lines.length > 1)
+            PositionedDirectional(
+              top: 0,
+              end: 0,
+              child: IconButton(
+                onPressed: () async {
+                  await Clipboard.setData(ClipboardData(text: fullText));
+                  showMessage("تم نسخ مخرجات العملية بالكامل", isError: false);
+                },
+                constraints: const BoxConstraints(),
+                icon: const Icon(LucideIcons.copy, size: kLargeFont),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildGroupedLines(BuildContext context) {
+    if (lines.isEmpty) return [];
+
+    final List<Widget> widgets = [];
+    List<TerminalLine> currentGroup = [];
+
+    bool? currentType = lines.first.isError;
+    bool currentIsCommand = lines.first.text.trim().startsWith("~ >");
+
+    for (var line in lines) {
+      final bool lineIsCommand = line.text.trim().startsWith("~ >");
+
+      if (line.isError == currentType &&
+          lineIsCommand == currentIsCommand &&
+          !lineIsCommand) {
+        currentGroup.add(line);
+      } else {
+        widgets.add(
+          _TextGroup(
+            group: currentGroup,
+            type: currentType,
+            isCommand: currentIsCommand,
+          ),
+        );
+        currentGroup = [line];
+        currentType = line.isError;
+        currentIsCommand = lineIsCommand;
+      }
+    }
+    widgets.add(
+      _TextGroup(
+        group: currentGroup,
+        type: currentType,
+        isCommand: currentIsCommand,
+      ),
+    );
+
+    return widgets;
+  }
+}
+
+class _TextGroup extends StatelessWidget {
+  final List<TerminalLine> group;
+  final bool? type;
+  final bool isCommand;
+
+  const _TextGroup({
+    required this.group,
+    required this.type,
+    this.isCommand = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final String combinedText = group.map((e) => e.text).join("\n");
+    if (combinedText.isEmpty) return const SizedBox.shrink();
+
+    Color? textColor;
+    if (isCommand) {
+      textColor = context.secondary.withOpacity(0.7);
+    } else if (type == true) {
+      textColor = context.error;
+    } else if (type == false) {
+      textColor = context.warning;
+    }
 
     return SelectableText(
       combinedText,
       style: TextStyle(
         fontSize: kSmallFont,
-        color: type == true
-            ? context.error
-            : type == false
-            ? context.warning
-            : null,
-        fontWeight: type != null ? FontWeight.bold : FontWeight.normal,
-        height: 1.5,
+        color: textColor,
+        fontStyle: isCommand ? FontStyle.italic : FontStyle.normal,
+        fontWeight: (type != null || isCommand) ? FontWeight.bold : null,
+        height: isCommand ? 2.2 : 1.5,
       ),
     );
   }

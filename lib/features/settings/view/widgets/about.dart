@@ -26,8 +26,8 @@ class About extends StatelessWidget {
                   size: kSmallFont,
                 ),
                 const SizedBox(width: kSmallPadding),
-                const Text(
-                  "لغة ألف نـ5 النسخة ${IdeData.alifVersion}",
+                Text(
+                  "${l10n.alifLangCore} ${IdeData.alifVersion}",
                   style: ThemeText.smallG,
                 ),
               ],
@@ -41,16 +41,15 @@ class About extends StatelessWidget {
                   size: kSoSmallFont,
                 ),
                 const SizedBox(width: kSmallPadding),
-                const Text(
-                  "محرر طيف النسخة ${IdeData.appVersion} (تجريبية)",
+                Text(
+                  "${l10n.ideVersion} ${IdeData.appVersion} (${l10n.beta})",
                   style: ThemeText.smallG,
                 ),
               ],
             ),
           ],
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Wrap(
           children: [
             TextButton.icon(
               icon: Icon(
@@ -58,15 +57,14 @@ class About extends StatelessWidget {
                 color: context.secondary,
                 size: 13,
               ),
-              onPressed: () =>
-                  _launchUrl("https://github.com/iskepr/AlifEAndroid"),
+              onPressed: () => _launchUrl("https://github.com/iskepr/TaifIDE"),
               label: const Text("الشفرة على جيت هاب", style: ThemeText.smallG),
             ),
             TextButton.icon(
               icon: Icon(LucideIcons.earth, color: context.secondary, size: 13),
               onPressed: () =>
                   _launchUrl("https://skepr.vercel.app/?from=TaifIDE"),
-              label: const Text("تطـوير محـمـد سكيبر", style: ThemeText.smallG),
+              label: const Text("تطـوير مُحمد سكيبر", style: ThemeText.smallG),
             ),
           ],
         ),

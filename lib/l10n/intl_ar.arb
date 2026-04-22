@@ -18,5 +18,11 @@
     "error": "خطأ",
     "warning": "تحذير",
     "clear": "مسح",
-    "cancel": "إلغاء"
+    "cancel": "إلغاء",
+    "successInstallAlifVersion": "تم تثبيت لغة ألف الإصدار",
+    "successUpdateAlifVersionFrom": "تم تحديث لغة الف من الإصدار",
+    "to": "الى",
+    "alifLangCore": "لغة ألف نـ5 النسخة",
+    "ideVersion": "محرر طيف النسخة",
+    "beta": "تجريبية"
 }

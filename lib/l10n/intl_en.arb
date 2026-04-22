@@ -18,5 +18,11 @@
     "error": "Error",
     "warning": "Warning",
     "clear": "Clear",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "successInstallAlifVersion": "Successfully installed Alif version",
+    "successUpdateAlifVersionFrom": "Successfully updated Alif from version",
+    "to": "to",
+    "alifLangCore": "Alif Language Core v5",
+    "ideVersion": "Taif IDE Version",
+    "beta": "Beta"
 }

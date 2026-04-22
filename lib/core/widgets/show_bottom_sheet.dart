@@ -12,6 +12,7 @@ class MyBottomSheet extends StatefulWidget {
     this.closeButton = false,
     this.actionButtons = const [],
     this.header,
+    this.height,
   });
 
   final Widget child;
@@ -20,6 +21,7 @@ class MyBottomSheet extends StatefulWidget {
   final bool closeButton;
   final List<Widget> actionButtons;
   final Widget? header;
+  final double? height;
 
   @override
   State<MyBottomSheet> createState() => _MyBottomSheetState();
@@ -111,6 +113,7 @@ Future<T?> showMyBottomSheet<T>({
   bool? closeButton,
   List<Widget>? actionButtons,
   Widget? header,
+  double? height,
 }) {
   return showModalBottomSheet<T>(
     context: context,
@@ -137,6 +140,7 @@ Future<T?> showMyBottomSheet<T>({
           closeButton: closeButton ?? false,
           actionButtons: actionButtons ?? [],
           header: header,
+          height: height,
           child: child,
         ),
       );

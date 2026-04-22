@@ -90,7 +90,7 @@ Future<void> runCommand(BuildContext context, String commandInput) async {
         : (command.length > 1 ? command[1] : "");
 
     data.addOutput(
-      "~ > ${isAlif ? "الف $outputCommandName" : [firstC, ...processArguments].join(" ")}",
+      "~ >  ${isAlif ? "الف $outputCommandName" : [firstC, ...processArguments].join(" ")}",
     );
 
     final process = await Process.start(
@@ -111,6 +111,10 @@ Future<void> runCommand(BuildContext context, String commandInput) async {
     });
     process.stdout.transform(const SystemEncoding().decoder).listen((result) {
       data.terminalFocus.requestFocus();
+      final lines = result.trim().split("\n");
+      if (lines.isNotEmpty && lines.last.isNotEmpty) {
+        data.updateTerminalHint(lines.last.replaceAll(":", ""));
+      }
       data.addOutput(result, newLine: false);
     });
     process.exitCode.then((exitCode) {
@@ -118,6 +122,7 @@ Future<void> runCommand(BuildContext context, String commandInput) async {
         data.addOutput("في الشفرة [رقم $exitCode]", isError: true);
       }
       data.clearRunningProcess();
+      data.updateTerminalHint(null);
     });
   } catch (e, s) {
     debugPrint("استثناء: $e\n$s");

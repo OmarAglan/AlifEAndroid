@@ -47,7 +47,7 @@ class _TerminalInputState extends State<TerminalInput> {
               onSubmitted: (_) => runCommandHandler(data, context),
               style: TextStyle(color: context.foreground),
               decoration: InputDecoration(
-                hintText: l10n.enterCommand,
+                hintText: data.terminalHint,
                 hintStyle: TextStyle(color: context.secondary),
                 border: InputBorder.none,
               ),

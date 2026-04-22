@@ -158,6 +158,56 @@ class S {
   String get cancel {
     return Intl.message('Cancel', name: 'cancel', desc: '', args: []);
   }
+
+  /// `Successfully installed Alif version`
+  String get successInstallAlifVersion {
+    return Intl.message(
+      'Successfully installed Alif version',
+      name: 'successInstallAlifVersion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Successfully updated Alif from version`
+  String get successUpdateAlifVersionFrom {
+    return Intl.message(
+      'Successfully updated Alif from version',
+      name: 'successUpdateAlifVersionFrom',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `to`
+  String get to {
+    return Intl.message('to', name: 'to', desc: '', args: []);
+  }
+
+  /// `Alif Language Core v5`
+  String get alifLangCore {
+    return Intl.message(
+      'Alif Language Core v5',
+      name: 'alifLangCore',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Taif IDE Version`
+  String get ideVersion {
+    return Intl.message(
+      'Taif IDE Version',
+      name: 'ideVersion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Beta`
+  String get beta {
+    return Intl.message('Beta', name: 'beta', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

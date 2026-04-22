@@ -3,16 +3,17 @@ import "dart:io";
 
 import "package:code_forge/code_forge.dart";
 import "package:flutter/material.dart";
-import "package:flutter/services.dart";
 import "package:shared_preferences/shared_preferences.dart";
+import "package:vibration/vibration.dart";
+
 import "../constants.dart";
 import "../core/services/files/open_file.dart";
 import "../core/services/files/save_file.dart";
 import "data_types.dart";
 
 class IdeData extends ChangeNotifier {
-  static const String appVersion = "1.1.0";
-  static const String alifVersion = "5.3.0";
+  static const String appVersion = "v1.1.0";
+  static const String alifVersion = "v5.3.0";
 
   SharedPreferences? _prefs;
 
@@ -145,13 +146,11 @@ class IdeData extends ChangeNotifier {
     String prefix = "";
     if (isError == true) {
       prefix = "${l10n.error}: ";
-      HapticFeedback.heavyImpact();
     } else if (isError == false) {
       prefix = "${l10n.warning}: ";
-      HapticFeedback.mediumImpact();
     }
 
-    final String toAdd = "$prefix$text${newLine ? '\n' : ''}";
+    final String toAdd = "$prefix$text${newLine ? "\n" : ""}";
 
     if (outputLines.isEmpty) {
       outputLines.add(TerminalLine(text: "", sessionId: _currentSessionId));
@@ -178,6 +177,7 @@ class IdeData extends ChangeNotifier {
     }
 
     notifyListeners();
+    _triggerHapticFeedback(isError);
   }
 
   void clearOutput() {
@@ -186,9 +186,28 @@ class IdeData extends ChangeNotifier {
     notifyListeners();
   }
 
+  void _triggerHapticFeedback(bool? isError) {
+    if (isError == null) return;
+    Vibration.hasVibrator().then((has) {
+      if (has == true) {
+        if (isError) {
+          Vibration.vibrate(pattern: [0, 100, 50, 100]);
+        } else {
+          Vibration.vibrate(duration: 50);
+        }
+      }
+    });
+  }
+
   void sendOutput(String input) {
     runningProcess?.stdin.writeln(input);
     addOutput(input);
+  }
+
+  String terminalHint = l10n.enterCommand;
+  void updateTerminalHint(String? hint) {
+    terminalHint = hint ?? l10n.enterCommand;
+    notifyListeners();
   }
 
   // alif Path
