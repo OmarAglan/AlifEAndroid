@@ -24,7 +24,11 @@ class ShortcutsView extends StatelessWidget {
             children: [
               ShortCutButton(
                 onPressed: () => ideData.toggleSearch(),
-                child: const Icon(LucideIcons.search),
+                child: Icon(
+                  ideData.findController.isActive
+                      ? LucideIcons.x
+                      : LucideIcons.search,
+                ),
               ),
               ...List.generate(
                 shortCustsData.shortcuts.length,

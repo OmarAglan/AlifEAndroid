@@ -15,6 +15,7 @@ import "../services/run_command.dart";
 import "../theme/colors.dart";
 import "../theme/text.dart";
 import "../utils/file_picker.dart";
+import "show_bottom_sheet.dart";
 
 class CustomAppBar extends StatelessWidget {
   const CustomAppBar({super.key});
@@ -65,10 +66,9 @@ class CustomAppBar extends StatelessWidget {
               children: [
                 TextButton(
                   onPressed: () {
-                    showModalBottomSheet(
+                    showMyBottomSheet(
                       context: context,
-                      isScrollControlled: true,
-                      builder: (context) => const SettingsView(),
+                      child: const SettingsView(),
                     );
                   },
                   child: Text(l10n.title, style: ThemeText.title),
@@ -81,13 +81,7 @@ class CustomAppBar extends StatelessWidget {
                         color: context.foreground,
                         size: kLargeFont,
                       ),
-                      onPressed: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          builder: (context) => const TerminalView(),
-                        );
-                      },
+                      onPressed: () => showTerminalView(context),
                     ),
                     IconButton(
                       icon: Icon(
@@ -98,11 +92,7 @@ class CustomAppBar extends StatelessWidget {
                       onPressed: () => {
                         context.read<IdeData>().clearOutput(),
                         runCommand(context, "الف ملف"),
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          builder: (context) => const TerminalView(),
-                        ),
+                        showTerminalView(context),
                       },
                     ),
 

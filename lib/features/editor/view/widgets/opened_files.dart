@@ -4,6 +4,7 @@ import "../../../../constants.dart";
 import "../../../../core/services/files/create_file.dart";
 import "../../../../core/services/files/open_file.dart";
 import "../../../../core/widgets/radio_input.dart";
+import "../../../../core/widgets/show_bottom_sheet.dart";
 import "../../../../data/ide_data.dart";
 import "edit_sheet.dart";
 
@@ -11,10 +12,9 @@ class OpenedFiles extends StatelessWidget {
   const OpenedFiles({super.key});
 
   void onLongPress(BuildContext context, dynamic id) {
-    showModalBottomSheet(
+    showMyBottomSheet(
       context: context,
-      isScrollControlled: true,
-      builder: (context) => EditSheet(id: id as int),
+      child: EditSheet(id: id as int),
     );
   }
 

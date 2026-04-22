@@ -3,6 +3,7 @@ import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 
 import "../../../../constants.dart";
+import "../../../../core/theme/colors.dart";
 import "../../../../data/ide_data.dart";
 
 class SearchView extends StatelessWidget {
@@ -20,7 +21,10 @@ class SearchView extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: kLargePadding),
       child: Row(
+        spacing: kSmallPadding,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Icon(LucideIcons.search, color: context.secondary, size: kMediumFont),
           Expanded(
             child: TextField(
               autofocus: true,
@@ -31,11 +35,6 @@ class SearchView extends StatelessWidget {
               ),
               onChanged: (value) => findController.find(value),
             ),
-          ),
-          IconButton(
-            icon: const Icon(LucideIcons.x, size: kLargeFont),
-            constraints: const BoxConstraints(),
-            onPressed: () => data.toggleSearch(),
           ),
         ],
       ),

@@ -12,40 +12,43 @@ class TerminalTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(l10n.terminal, style: ThemeText.title),
-          Consumer<IdeData>(
-            builder: (context, data, child) => Row(
-              children: [
-                IconButton(
-                  icon: Icon(
-                    Icons.clear_all_rounded,
-                    color: context.foreground,
-                    size: kSmallFont * 2,
-                  ),
-                  onPressed: data.clearOutput,
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            const SizedBox(width: kMediumPadding),
+            Text(l10n.terminal, style: ThemeText.title),
+          ],
+        ),
+        Consumer<IdeData>(
+          builder: (context, data, child) => Row(
+            children: [
+              IconButton(
+                icon: Icon(
+                  Icons.clear_all_rounded,
+                  color: context.foreground,
+                  size: kSmallFont * 2,
                 ),
-                IconButton(
-                  icon: Icon(
-                    data.runningProcess?.exitCode == null
-                        ? LucideIcons.play
-                        : LucideIcons.square,
-                    size: kLargeFont,
-                    color: data.runningProcess?.exitCode == null
-                        ? context.foreground
-                        : Colors.red,
-                  ),
-                  onPressed: () => runCommand(context, "الف ملف"),
+                onPressed: data.clearOutput,
+              ),
+              IconButton(
+                icon: Icon(
+                  data.runningProcess?.exitCode == null
+                      ? LucideIcons.play
+                      : LucideIcons.square,
+                  size: kLargeFont,
+                  color: data.runningProcess?.exitCode == null
+                      ? context.foreground
+                      : Colors.red,
                 ),
-              ],
-            ),
+                onPressed: () => runCommand(context, "الف ملف"),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
