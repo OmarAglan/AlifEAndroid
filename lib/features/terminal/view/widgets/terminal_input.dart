@@ -18,7 +18,8 @@ class _TerminalInputState extends State<TerminalInput> {
 
   void runCommandHandler(IdeData data, BuildContext context) async {
     if (data.runningProcess?.exitCode == null) {
-      if (inputController.text.toLowerCase() == l10n.clear) {
+      if (inputController.text.toLowerCase() == l10n.clear ||
+          inputController.text.toLowerCase() == "clear") {
         data.clearOutput();
         inputController.clear();
         FocusScope.of(context).requestFocus(data.terminalFocus);

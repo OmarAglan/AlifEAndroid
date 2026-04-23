@@ -21,7 +21,6 @@ class EditSheet extends StatelessWidget {
       text: file.name,
     );
 
-    // سطر واحد يحللك أزمة الـ null والنص الفاضي مع بعض
     final bool hasPath = file.path != null && file.path!.isNotEmpty;
 
     return Column(
@@ -41,9 +40,7 @@ class EditSheet extends StatelessWidget {
           ),
         ),
         SelectableText(
-          hasPath
-              ? file.path!.replaceAll("/storage/emulated/0", "~")
-              : l10n.noPath,
+          hasPath ? file.path!.replaceAll(kHomeDir, "~") : l10n.noPath,
           style: const TextStyle(color: Colors.white),
         ),
         Row(

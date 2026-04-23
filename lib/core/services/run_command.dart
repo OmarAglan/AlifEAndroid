@@ -2,6 +2,7 @@ import "dart:io";
 import "package:flutter/material.dart";
 import "package:path_provider/path_provider.dart";
 import "package:provider/provider.dart";
+import "../../constants.dart";
 import "../../data/ide_data.dart";
 
 Future<void> runCommand(BuildContext context, String commandInput) async {
@@ -99,7 +100,7 @@ Future<void> runCommand(BuildContext context, String commandInput) async {
       environment: (isAlif && Platform.isAndroid && libDir != null)
           ? {"LD_LIBRARY_PATH": libDir}
           : {},
-      workingDirectory: isAlif && userDir != null ? userDir.path : null,
+      workingDirectory: isAlif ? File(file.path!).parent.path : kHomeDir,
     );
 
     data.editProcess(process);

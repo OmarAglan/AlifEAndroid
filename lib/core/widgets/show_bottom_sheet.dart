@@ -54,7 +54,12 @@ class _MyBottomSheetState extends State<MyBottomSheet> {
               ),
               child: widget.header ?? _buildDefaultHeader(context),
             ),
-            Expanded(child: widget.child),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: kMediumPadding),
+                child: widget.child,
+              ),
+            ),
           ],
         ),
       ),

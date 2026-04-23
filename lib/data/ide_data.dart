@@ -226,6 +226,7 @@ class IdeData extends ChangeNotifier {
 
   void clearRunningProcess() {
     runningProcess = null;
+    updateTerminalHint(null);
     notifyListeners();
   }
 

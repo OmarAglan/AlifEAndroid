@@ -1,4 +1,6 @@
 // Fonts Family
+import "dart:io";
+
 import "package:flutter/material.dart";
 import "generated/l10n.dart";
 
@@ -35,6 +37,13 @@ const Curve kCurveEaseOutBack = Curves.easeOutBack;
 // ide
 const int kCodeSpaceLength = 4;
 final String kCodeSpace = " " * kCodeSpaceLength;
+
+// directories
+final String kHomeDir = Platform.isAndroid
+    ? "/storage/emulated/0"
+    : Platform.isLinux
+    ? "${Platform.environment["HOME"]}"
+    : "";
 
 // Global Variables
 final S l10n = S.current;

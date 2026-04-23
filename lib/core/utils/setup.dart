@@ -67,7 +67,7 @@ Future<void> setupAlif(BuildContext context) async {
       if (Platform.isLinux) await Process.run("chmod", ["+x", finalPath]);
 
       await prefs.setString("alif_version", alifVersion);
-      data.addOutput(updateMessage);
+      if (installedVersion.isNotEmpty) data.addOutput(updateMessage);
     }
 
     if (finalPath.isNotEmpty) {

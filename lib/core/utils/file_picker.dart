@@ -2,6 +2,7 @@ import "dart:io";
 
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
+import "../../constants.dart";
 import "../theme/colors.dart";
 import "../theme/text.dart";
 import "../widgets/show_bottom_sheet.dart";
@@ -11,13 +12,7 @@ Future<void> showFileManagerModal(
   void Function(String) onFileSelected, {
   String? startPath,
 }) async {
-  final rootPath =
-      startPath ??
-      (Platform.isAndroid
-          ? "/storage/emulated/0"
-          : Platform.isLinux
-          ? "${Platform.environment["HOME"]}"
-          : "");
+  final rootPath = startPath ?? kHomeDir;
 
   final directory = Directory(rootPath);
 
@@ -66,10 +61,11 @@ Future<void> showFileManagerModal(
     header: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          rootPath.replaceAll(RegExp(r"^(/storage/emulated/0|/home)"), "~"),
-          style: ThemeText.mid,
-          overflow: TextOverflow.ellipsis,
+        Expanded(
+          child: SelectableText(
+            rootPath.replaceAll(kHomeDir, "~"),
+            style: ThemeText.mid,
+          ),
         ),
         IconButton(
           icon: Icon(LucideIcons.chevronLeft, color: context.secondary),
