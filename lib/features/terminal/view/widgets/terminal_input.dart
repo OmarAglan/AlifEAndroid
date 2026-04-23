@@ -1,9 +1,10 @@
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
-import "../../functions/run_command.dart";
+
 import "../../../../core/theme/colors.dart";
 import "../../../../data/ide_data.dart";
+import "../../functions/run_command.dart";
 
 class TerminalInput extends StatefulWidget {
   const TerminalInput({super.key});

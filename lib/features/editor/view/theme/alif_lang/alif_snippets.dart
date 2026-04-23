@@ -1,6 +1,6 @@
 import "package:code_forge/code_forge.dart";
 
-import "../../../constants.dart";
+import "../../../../../constants.dart";
 
 List<CustomCodeSnippet> alifSnippets = [
   CustomCodeSnippet(label: "اطبع", value: "اطبع()", cursorLocations: {5}),

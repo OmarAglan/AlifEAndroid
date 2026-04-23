@@ -3,11 +3,11 @@ import "package:provider/provider.dart";
 
 import "../../../core/services/files/load_saved_files.dart";
 import "../../../core/services/premissions.dart";
-import "../../../core/utils/setup.dart";
+import "../../../core/utils/setup_alif.dart";
 import "../../../core/widgets/custom_app_bar.dart";
 import "../../../data/ide_data.dart";
 import "../../shortcuts/view/shortcuts_view.dart";
-import "widgets/ide.dart";
+import "widgets/ide_view.dart";
 import "widgets/opened_files.dart";
 
 class EditorView extends StatefulWidget {
@@ -18,7 +18,7 @@ class EditorView extends StatefulWidget {
 }
 
 class _EditorViewState extends State<EditorView> {
-@override
+  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -50,7 +50,7 @@ class _EditorViewState extends State<EditorView> {
         ),
         child: Column(
           spacing: 1,
-          children: [CustomAppBar(), OpenedFiles(), IDE(), ShortcutsView()],
+          children: [CustomAppBar(), OpenedFiles(), IDEView(), ShortcutsView()],
         ),
       ),
     );

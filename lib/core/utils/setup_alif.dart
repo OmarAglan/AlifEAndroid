@@ -38,6 +38,7 @@ Future<void> setupAlif(BuildContext context) async {
 
     if (Platform.isAndroid) {
       filesToCopy.addAll([
+        "aliflang/arm64-v8a/alif_lsp",
         "aliflang/arm64-v8a/libalif.so",
         "aliflang/arm64-v8a/libc++_shared.so",
       ]);

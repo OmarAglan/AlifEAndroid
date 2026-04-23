@@ -1,3 +1,5 @@
+// ترتيب الـ imports يا بطل
+import "dart:async";
 import "dart:io";
 
 import "package:code_forge/code_forge.dart";
@@ -6,20 +8,22 @@ import "package:provider/provider.dart";
 
 import "../../../../constants.dart";
 import "../../../../core/services/files/save_file.dart";
-import "../../../../core/theme/alif_dark_theme.dart";
-import "../../../../core/theme/alif_lang/alif.dart";
 import "../../../../data/ide_data.dart";
+import "../theme/alif_dark_theme.dart";
+import "../theme/alif_lang/alif.dart";
 import "search_view.dart";
 
-class IDE extends StatefulWidget {
-  const IDE({super.key});
+class IDEView extends StatefulWidget {
+  const IDEView({super.key});
 
   @override
-  State<IDE> createState() => _IDEState();
+  State<IDEView> createState() => _IDEViewState();
 }
 
-class _IDEState extends State<IDE> {
+class _IDEViewState extends State<IDEView> {
   late IdeData data;
+  LspStdioConfig? _lspConfig;
+  bool _lspInitializing = false;
 
   @override
   void initState() {
@@ -28,13 +32,9 @@ class _IDEState extends State<IDE> {
       if (!mounted) return;
       data = Provider.of<IdeData>(context, listen: false);
       data.code.addListener(_onCodeChanged);
+      _checkAndInitLsp();
+      data.addListener(_checkAndInitLsp);
     });
-  }
-
-  @override
-  void dispose() {
-    data.code.removeListener(_onCodeChanged);
-    super.dispose();
   }
 
   void _onCodeChanged() async {
@@ -65,8 +65,8 @@ class _IDEState extends State<IDE> {
           enableFolding: false,
           enableGuideLines: false,
           enableSuggestions: !Platform.isAndroid,
-          readOnly: ideData.selectedFile.readOnly,
           customCodeSnippets: alifSnippets,
+          readOnly: ideData.selectedFile.readOnly,
           findController: ideData.findController,
           finderBuilder: (context, findController) => PreferredSize(
             preferredSize: const Size.fromHeight(30),
@@ -92,5 +92,58 @@ class _IDEState extends State<IDE> {
         ),
       ),
     );
+  }
+
+  void _checkAndInitLsp() {
+    if (data.alifBinPath != null && _lspConfig == null && !_lspInitializing) {
+      _lspInitializing = true;
+      _initAlifLsp();
+    }
+  }
+
+  Future<void> _initAlifLsp() async {
+    try {
+      final workspace = data.workspacePath != null
+          ? data.workspacePath!
+          : Directory.current.path;
+
+      final alifDir = File(data.alifBinPath!).parent.path;
+      const String executableName = "alif_lsp";
+      final executablePath = "$alifDir/$executableName";
+
+      if (Platform.isAndroid) {
+        await Process.run("chmod", ["+x", executablePath]);
+      }
+
+      final env = <String, String>{};
+      if (Platform.isAndroid) env["LD_LIBRARY_PATH"] = alifDir;
+
+      _lspConfig = await LspStdioConfig.start(
+        executable: executablePath,
+        args: [],
+        workspacePath: workspace,
+        languageId: "alif",
+        environment: env,
+      );
+
+      data.code.lspConfig = _lspConfig;
+
+      if (data.selectedFile.path != null) {
+        data.code.openedFile = data.selectedFile.path;
+      }
+      debugPrint("Alif LSP Initialized at: $executablePath");
+    } catch (e) {
+      debugPrint("LSP Initialization Error: $e");
+    } finally {
+      _lspInitializing = false;
+    }
+  }
+
+  @override
+  void dispose() {
+    data.removeListener(_checkAndInitLsp);
+    _lspConfig?.dispose();
+    data.code.removeListener(_onCodeChanged);
+    super.dispose();
   }
 }

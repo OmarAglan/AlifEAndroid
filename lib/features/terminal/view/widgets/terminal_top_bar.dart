@@ -1,11 +1,12 @@
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
+
 import "../../../../constants.dart";
-import "../../functions/run_command.dart";
 import "../../../../core/theme/colors.dart";
 import "../../../../core/theme/text.dart";
 import "../../../../data/ide_data.dart";
+import "../../functions/run_command.dart";
 
 class TerminalTopBar extends StatelessWidget {
   const TerminalTopBar({super.key});

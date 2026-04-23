@@ -39,6 +39,7 @@ flutter:
     assets:
         - assets/
         - assets/aliflang/
+        - assets/aliflang/arm64-v8a/alif_lsp
         - assets/aliflang/arm64-v8a/libalif.so
         - assets/aliflang/arm64-v8a/libc++_shared.so
         - assets/aliflang/library/
