@@ -4,6 +4,7 @@ import "../../../../../constants.dart";
 
 List<CustomCodeSnippet> alifSnippets = [
   CustomCodeSnippet(label: "اطبع", value: "اطبع()", cursorLocations: {5}),
+  CustomCodeSnippet(label: "ادخل", value: 'ادخل("")', cursorLocations: {6}),
   CustomCodeSnippet(label: "دالة", value: "دالة ():", cursorLocations: {5}),
   CustomCodeSnippet(
     label: "صنف",

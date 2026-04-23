@@ -32,8 +32,10 @@ class _IDEViewState extends State<IDEView> {
       if (!mounted) return;
       data = Provider.of<IdeData>(context, listen: false);
       data.code.addListener(_onCodeChanged);
-      _checkAndInitLsp();
-      data.addListener(_checkAndInitLsp);
+      if (Platform.isAndroid) {
+        _checkAndInitLsp();
+        data.addListener(_checkAndInitLsp);
+      }
     });
   }
 
@@ -66,7 +68,6 @@ class _IDEViewState extends State<IDEView> {
           enableGuideLines: false,
           enableSuggestions: !Platform.isAndroid,
           customCodeSnippets: alifSnippets,
-          readOnly: ideData.selectedFile.readOnly,
           findController: ideData.findController,
           finderBuilder: (context, findController) => PreferredSize(
             preferredSize: const Size.fromHeight(30),

@@ -29,7 +29,10 @@ class OpenedFiles extends StatelessWidget {
             items: data.files.map((file) {
               return SelectEntity(
                 value: file.id,
-                name: file.name + (!file.saved ? "*" : ""),
+                name:
+                    file.name +
+                    (!file.saved ? "*" : "") +
+                    (file.readOnly ? "!" : ""),
               );
             }).toList(),
             onAdd: () => createFile(context: context),

@@ -51,25 +51,43 @@ class EditSheet extends StatelessWidget {
               color: context.background,
               bg: Colors.white,
               icon: LucideIcons.save,
-              onTap: () => data.updateFile(
-                context,
-                id,
-                "reName",
-                newName: controller.text,
-              ),
+              onTap: () {
+                data.updateFile(
+                  context,
+                  id,
+                  "reName",
+                  newName: controller.text,
+                );
+                Navigator.pop(context);
+              },
             ),
             if (hasPath)
               SheetButton(
                 title: l10n.close,
                 color: Colors.amber,
                 icon: LucideIcons.x,
-                onTap: () => data.updateFile(context, id, "close"),
+                onTap: () {
+                  data.updateFile(context, id, "close");
+                  Navigator.pop(context);
+                },
               ),
+            SheetButton(
+              title: file.readOnly ? "للقرائة فقط" : "للقراءة والكتابة",
+              color: file.readOnly ? Colors.red : Colors.green,
+              icon: file.readOnly ? LucideIcons.penOff : LucideIcons.pen,
+              onTap: () {
+                data.updateFile(context, id, "readOnly");
+                Navigator.pop(context);
+              },
+            ),
             SheetButton(
               title: l10n.delete,
               color: Colors.red,
               icon: LucideIcons.trash,
-              onTap: () => data.updateFile(context, id, "delete"),
+              onTap: () {
+                data.updateFile(context, id, "delete");
+                Navigator.pop(context);
+              },
             ),
           ],
         ),

@@ -125,7 +125,12 @@ class IdeData extends ChangeNotifier {
         files.add(newFile);
         openFile(0, context);
       }
+    } else if (type == "readOnly") {
+      final updatedFile = file.copyWith(readOnly: !file.readOnly);
+      files[id] = updatedFile;
+      code.readOnly = updatedFile.readOnly;
     }
+
     saveFilesLocal(context);
     notifyListeners();
   }
@@ -252,6 +257,7 @@ class IdeData extends ChangeNotifier {
     }
 
     _selectedFile = file;
+    code.readOnly = file.readOnly;
 
     Future.microtask(() {
       final int start = file.cursor[0].clamp(0, code.text.length);
