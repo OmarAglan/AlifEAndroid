@@ -18,11 +18,12 @@ class EditorView extends StatefulWidget {
 }
 
 class _EditorViewState extends State<EditorView> {
-  @override
+@override
   void initState() {
     super.initState();
-    final ideData = Provider.of<IdeData>(context, listen: false);
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) return;
+      final ideData = Provider.of<IdeData>(context, listen: false);
       init(context, ideData);
     });
   }

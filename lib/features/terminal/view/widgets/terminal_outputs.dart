@@ -97,10 +97,10 @@ class _SessionWidget extends StatelessWidget {
     List<TerminalLine> currentGroup = [];
 
     bool? currentType = lines.first.isError;
-    bool currentIsCommand = lines.first.text.trim().startsWith("~ >");
+    bool currentIsCommand = lines.first.text.trim().startsWith("~");
 
     for (var line in lines) {
-      final bool lineIsCommand = line.text.trim().startsWith("~ >");
+      final bool lineIsCommand = line.text.trim().startsWith("~");
 
       if (line.isError == currentType &&
           lineIsCommand == currentIsCommand &&

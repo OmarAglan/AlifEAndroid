@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
 import "../../../../constants.dart";
-import "../../../../core/services/run_command.dart";
+import "../../functions/run_command.dart";
 import "../../../../core/theme/colors.dart";
 import "../../../../core/theme/text.dart";
 import "../../../../data/ide_data.dart";
@@ -43,7 +43,7 @@ class TerminalTopBar extends StatelessWidget {
                       ? context.foreground
                       : Colors.red,
                 ),
-                onPressed: () => runCommand(context, "الف ملف"),
+                onPressed: () => runCommand(context, kAlifBin),
               ),
             ],
           ),

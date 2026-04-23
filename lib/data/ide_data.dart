@@ -217,6 +217,13 @@ class IdeData extends ChangeNotifier {
     notifyListeners();
   }
 
+  // workspace path
+  String? workspacePath;
+  void setWorkspacePath(String? path) {
+    workspacePath = path;
+    notifyListeners();
+  }
+
   // run Alif
   Process? runningProcess;
   void editProcess(Process process) {
@@ -280,6 +287,7 @@ class IdeData extends ChangeNotifier {
     if (findController.isActive) {
       Future.microtask(() => findController.findInputFocusNode.requestFocus());
     } else {
+      findController.clear();
       focusNode.requestFocus();
     }
 

@@ -44,6 +44,10 @@ final String kHomeDir = Platform.isAndroid
     : Platform.isLinux
     ? "${Platform.environment["HOME"]}"
     : "";
+const String kAlifBin = "الف";
+const String kTempFileName = "ملفkمؤقت.الف";
+const String kLinkerPath = "/system/bin/linker64";
+const String kLibAlifSuffix = "/libalif.so";
 
 // Global Variables
 final S l10n = S.current;

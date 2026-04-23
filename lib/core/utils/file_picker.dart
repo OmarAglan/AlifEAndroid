@@ -11,6 +11,7 @@ Future<void> showFileManagerModal(
   BuildContext context,
   void Function(String) onFileSelected, {
   String? startPath,
+  void Function(String)? onFolderSelected,
 }) async {
   final rootPath = startPath ?? kHomeDir;
 
@@ -109,6 +110,19 @@ Future<void> showFileManagerModal(
                             : "الحجم ${formatFileSize(File(entity.path).statSync().size)}",
                         style: TextStyle(color: context.secondary),
                       ),
+                      trailing: isDir && onFolderSelected != null
+                          ? IconButton(
+                              icon: Icon(
+                                LucideIcons.plus,
+                                color: context.secondary,
+                              ),
+                              onPressed: () {
+                                if (!listContext.mounted) return;
+                                onFolderSelected(entity.path);
+                                Navigator.pop(listContext);
+                              },
+                            )
+                          : null,
                       onTap: () {
                         if (!listContext.mounted) return;
                         if (isDir) {
@@ -117,6 +131,7 @@ Future<void> showFileManagerModal(
                             context,
                             onFileSelected,
                             startPath: entity.path,
+                            onFolderSelected: onFolderSelected,
                           );
                         } else {
                           Navigator.pop(listContext);

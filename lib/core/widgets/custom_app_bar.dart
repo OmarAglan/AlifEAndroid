@@ -11,7 +11,7 @@ import "../../features/terminal/view/terminal_view.dart";
 import "../services/files/create_file.dart";
 import "../services/files/open_file.dart";
 import "../services/files/save_file.dart";
-import "../services/run_command.dart";
+import "../../features/terminal/functions/run_command.dart";
 import "../theme/colors.dart";
 import "../theme/text.dart";
 import "../utils/file_picker.dart";
@@ -23,27 +23,33 @@ class CustomAppBar extends StatelessWidget {
   Future<void> openFileFromStorage(BuildContext context) async {
     final data = Provider.of<IdeData>(context, listen: false);
     try {
-      showFileManagerModal(context, (selectedPath) async {
-        final file = File(selectedPath);
-        final code = await file.readAsString();
-        final fileName = selectedPath.split(Platform.pathSeparator).last;
+      showFileManagerModal(
+        context,
+        (selectedPath) async {
+          final file = File(selectedPath);
+          final code = await file.readAsString();
+          final fileName = selectedPath.split(Platform.pathSeparator).last;
 
-        final existingIndex = data.files.indexWhere(
-          (f) => f.path == selectedPath,
-        );
-
-        if (!context.mounted) return;
-        if (existingIndex >= 0) {
-          openFile(existingIndex, context);
-        } else {
-          createFile(
-            name: fileName,
-            path: selectedPath,
-            code: code,
-            context: context,
+          final existingIndex = data.files.indexWhere(
+            (f) => f.path == selectedPath,
           );
-        }
-      });
+
+          if (!context.mounted) return;
+          if (existingIndex >= 0) {
+            openFile(existingIndex, context);
+          } else {
+            createFile(
+              name: fileName,
+              path: selectedPath,
+              code: code,
+              context: context,
+            );
+          }
+        },
+        onFolderSelected: (folderPath) {
+          data.setWorkspacePath(folderPath);
+        },
+      );
     } catch (e) {
       data.addOutput("خطأ أثناء الفتح: $e");
     }
@@ -91,7 +97,7 @@ class CustomAppBar extends StatelessWidget {
                       ),
                       onPressed: () => {
                         context.read<IdeData>().clearOutput(),
-                        runCommand(context, "الف ملف"),
+                        runCommand(context, kAlifBin),
                         showTerminalView(context),
                       },
                     ),

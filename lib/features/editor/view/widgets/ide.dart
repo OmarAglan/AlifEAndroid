@@ -24,8 +24,11 @@ class _IDEState extends State<IDE> {
   @override
   void initState() {
     super.initState();
-    data = Provider.of<IdeData>(context, listen: false);
-    data.code.addListener(_onCodeChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      data = Provider.of<IdeData>(context, listen: false);
+      data.code.addListener(_onCodeChanged);
+    });
   }
 
   @override
@@ -35,6 +38,7 @@ class _IDEState extends State<IDE> {
   }
 
   void _onCodeChanged() async {
+    if (data.selectedFile.readOnly) return;
     if (data.selectedFile.code != data.code.text) {
       data.editCode(data.code.text, markDirty: true);
 
@@ -61,11 +65,12 @@ class _IDEState extends State<IDE> {
           enableFolding: false,
           enableGuideLines: false,
           enableSuggestions: !Platform.isAndroid,
+          readOnly: ideData.selectedFile.readOnly,
           customCodeSnippets: alifSnippets,
-          findController: data.findController,
+          findController: ideData.findController,
           finderBuilder: (context, findController) => PreferredSize(
             preferredSize: const Size.fromHeight(30),
-            child: SearchView(findController: findController, data: data),
+            child: SearchView(findController: findController),
           ),
           // styling
           editorTheme: alifDarkTheme,
