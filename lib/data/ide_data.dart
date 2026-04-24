@@ -19,6 +19,7 @@ class IdeData extends ChangeNotifier {
 
   late final CodeForgeController code;
   late final FindController findController;
+  late final UndoRedoController undoController;
   late final FocusNode terminalFocus;
 
   bool isReady = false;
@@ -30,6 +31,7 @@ class IdeData extends ChangeNotifier {
   IdeData() {
     code = CodeForgeController();
     findController = FindController(code);
+    undoController = UndoRedoController();
     terminalFocus = FocusNode();
     _selectedFile = const FileEntity(id: -1, name: "", code: "", saved: true);
     _init();

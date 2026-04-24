@@ -61,6 +61,7 @@ class _IDEViewState extends State<IDEView> {
         builder: (context, ideData, child) => CodeForge(
           // init
           controller: ideData.code,
+          undoController: ideData.undoController,
           focusNode: ideData.focusNode,
           language: alif,
           // features

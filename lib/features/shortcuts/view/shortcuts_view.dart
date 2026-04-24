@@ -30,6 +30,16 @@ class ShortcutsView extends StatelessWidget {
                       : LucideIcons.search,
                 ),
               ),
+              if (ideData.undoController.canUndo)
+                ShortCutButton(
+                  onPressed: () => ideData.undoController.undo(),
+                  child: const Icon(LucideIcons.undo2, size: 15),
+                ),
+              if (ideData.undoController.canRedo)
+                ShortCutButton(
+                  onPressed: () => ideData.undoController.redo(),
+                  child: const Icon(LucideIcons.redo2, size: 15),
+                ),
               ...List.generate(
                 shortCustsData.shortcuts.length,
                 (index) => ShortCutButton(
