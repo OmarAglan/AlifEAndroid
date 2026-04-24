@@ -3,12 +3,12 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import "../../../constants.dart";
-import "../../../data/ide_data.dart";
+import "../../../core/providers/workspace_provider.dart";
 
-class ShortcutsData extends ChangeNotifier {
+class ShortcutsProvider extends ChangeNotifier {
   late SharedPreferences prefs;
 
-  ShortcutsData() {
+  ShortcutsProvider() {
     _initShortcuts();
   }
 
@@ -57,8 +57,8 @@ class ShortcutsData extends ChangeNotifier {
   }
 
   void insertText(BuildContext context, int index) {
-    final ideData = Provider.of<IdeData>(context, listen: false);
-    final controller = ideData.code;
+    final workspace = context.read<WorkspaceProvider>();
+    final controller = workspace.code;
     final shortcut = shortcuts[index];
     final selection = controller.selection;
 

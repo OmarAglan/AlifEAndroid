@@ -63,3 +63,7 @@ final S l10n = S.current;
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<ScaffoldMessengerState> messengerKey =
     GlobalKey<ScaffoldMessengerState>();
+
+// Versions
+const String kAppVersion = "v1.1.0";
+const String kAlifVersion = "v5.3.0";

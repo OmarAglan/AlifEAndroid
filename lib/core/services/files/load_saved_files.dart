@@ -1,14 +1,17 @@
 import "dart:convert";
 
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
 import "../../../constants.dart";
-import "../../../data/data_types.dart";
+import "../../models/data_typs.dart";
+import "../../providers/workspace_provider.dart";
 import "create_file.dart";
 import "open_file.dart";
 
-Future<void> loadFilesFromStorage(BuildContext context, data) async {
+Future<void> loadFilesFromStorage(BuildContext context) async {
+  final workspace = context.read<WorkspaceProvider>();
   final prefs = await SharedPreferences.getInstance();
   final savedFiles = prefs.getString(kKeyOpenedFiles);
   final lastFile = prefs.getInt(kKeyLastFile) ?? 0;
@@ -17,15 +20,17 @@ Future<void> loadFilesFromStorage(BuildContext context, data) async {
     try {
       final decoded = jsonDecode(savedFiles);
       if (decoded is List) {
-        data.files = decoded.map((file) => FileEntity.fromJson(file)).toList();
+        workspace.files = decoded
+            .map((file) => FileEntity.fromJson(file))
+            .toList();
       }
     } catch (e) {
       debugPrint("خطأ في قراءة الملفات المخزنة: $e");
     }
   }
   if (!context.mounted) return;
-  if (data.files.isNotEmpty) {
-    final selectedIndex = lastFile >= 0 && lastFile < data.files.length
+  if (workspace.files.isNotEmpty) {
+    final selectedIndex = lastFile >= 0 && lastFile < workspace.files.length
         ? lastFile
         : 0;
     await openFile(selectedIndex, context);

@@ -3,9 +3,9 @@ import "package:input_quantity/input_quantity.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
 import "../../../constants.dart";
+import "../../../core/providers/settings_provider.dart";
 import "../../../core/theme/colors.dart";
 import "../../../core/theme/text.dart";
-import "../../../data/ide_data.dart";
 import "widgets/about.dart";
 
 class SettingsView extends StatelessWidget {
@@ -13,7 +13,7 @@ class SettingsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final data = Provider.of<IdeData>(context, listen: false);
+    final data = context.watch<SettingsProvider>();
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -87,11 +87,9 @@ class SettingsView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(l10n.autoSave, style: ThemeText.title),
-                      Consumer<IdeData>(
-                        builder: (context, data, child) => Switch(
-                          value: data.autoSave,
-                          onChanged: (value) => data.setAutoSave(value),
-                        ),
+                      Switch(
+                        value: data.autoSave,
+                        onChanged: (value) => data.setAutoSave(value),
                       ),
                     ],
                   ),

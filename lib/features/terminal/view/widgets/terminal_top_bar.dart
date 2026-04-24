@@ -3,9 +3,9 @@ import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
 
 import "../../../../constants.dart";
+import "../../../../core/providers/terminal_provider.dart";
 import "../../../../core/theme/colors.dart";
 import "../../../../core/theme/text.dart";
-import "../../../../data/ide_data.dart";
 import "../../functions/run_command.dart";
 
 class TerminalTopBar extends StatelessWidget {
@@ -23,7 +23,7 @@ class TerminalTopBar extends StatelessWidget {
             Text(l10n.terminal, style: ThemeText.title),
           ],
         ),
-        Consumer<IdeData>(
+        Consumer<TerminalProvider>(
           builder: (context, data, child) => Row(
             children: [
               IconButton(

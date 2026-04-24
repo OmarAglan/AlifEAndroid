@@ -2,8 +2,8 @@ import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
 
+import "../../../../core/providers/terminal_provider.dart";
 import "../../../../core/theme/colors.dart";
-import "../../../../data/ide_data.dart";
 import "../../functions/run_command.dart";
 
 class TerminalInput extends StatefulWidget {
@@ -16,7 +16,7 @@ class TerminalInput extends StatefulWidget {
 class _TerminalInputState extends State<TerminalInput> {
   final TextEditingController inputController = TextEditingController();
 
-  void runCommandHandler(IdeData data, BuildContext context) async {
+  void runCommandHandler(TerminalProvider data, BuildContext context) async {
     if (data.runningProcess?.exitCode == null) {
       await runCommand(context, inputController.text);
     } else {
@@ -29,7 +29,7 @@ class _TerminalInputState extends State<TerminalInput> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<IdeData>(
+    return Consumer<TerminalProvider>(
       builder: (context, data, child) => Row(
         children: [
           Expanded(

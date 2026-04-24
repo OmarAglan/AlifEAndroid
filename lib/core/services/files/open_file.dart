@@ -1,26 +1,30 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
-import "../../../data/ide_data.dart";
+import "../../providers/settings_provider.dart";
+import "../../providers/workspace_provider.dart";
 import "save_file.dart";
 
 Future<void> openFile(int fileID, BuildContext context) async {
-  final data = Provider.of<IdeData>(context, listen: false);
-  final files = data.files;
+  final workspace = context.read<WorkspaceProvider>();
+  final settings = context.read<SettingsProvider>();
+  final files = workspace.files;
   if (fileID < 0 || fileID >= files.length) return;
 
-  if (data.selectedFile.id != -1 && !data.selectedFile.saved) {
+  if (workspace.selectedFile.id != -1 &&
+      !workspace.selectedFile.saved) {
     await saveFilesLocal(context);
-    if (data.selectedFile.path != null && data.selectedFile.path!.isNotEmpty) {
+    if (workspace.selectedFile.path != null &&
+        workspace.selectedFile.path!.isNotEmpty) {
       if (!context.mounted) return;
       await saveFileToStorage(context);
     }
   }
 
-  data.setLastFile(fileID);
+  workspace.setLastFile(fileID);
 
   final openedFile = files[fileID];
-  data.setSelectedFile(openedFile.copyWith(id: fileID));
-  data.editCode(openedFile.code, markDirty: false);
-  data.focusNode.requestFocus();
+  workspace.setSelectedFile(openedFile.copyWith(id: fileID));
+  workspace.editCode(openedFile.code, settings.autoSave, markDirty: false);
+  workspace.focusNode.requestFocus();
 }

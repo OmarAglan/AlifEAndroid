@@ -9,13 +9,14 @@ import "package:provider/provider.dart";
 import "package:share_plus/share_plus.dart";
 
 import "../../constants.dart";
-import "../../data/ide_data.dart";
+import "../providers/settings_provider.dart";
+import "../providers/workspace_provider.dart";
 import "../utils/show_message.dart";
 
 class ShareAsImageService {
   static Future<void> shareCodeAsImage(BuildContext context) async {
-    final data = Provider.of<IdeData>(context, listen: false);
-    final code = data.code;
+    final workspace = context.read<WorkspaceProvider>();
+    final code = workspace.code;
     final lines = code.text.split("\n");
 
     if (lines.isEmpty || code.text.isEmpty) {
@@ -26,8 +27,8 @@ class ShareAsImageService {
     try {
       final image = await _captureCodeAsImage(
         code,
-        data.fontSize,
-        data.selectedFile.name,
+        context.read<SettingsProvider>().fontSize,
+        workspace.selectedFile.name,
       );
 
       if (image == null) {
@@ -39,7 +40,7 @@ class ShareAsImageService {
 
       final downloadsDir = await _getDownloadsDirectory();
       final fileName =
-          "${data.selectedFile.name.replaceAll(RegExp(r'\.[^.]+$'), '')}_code.png";
+          "${workspace.selectedFile.name.replaceAll(RegExp(r'\.[^.]+$'), '')}_code.png";
       final filePath = "${downloadsDir.path}/$fileName";
       final file = File(filePath);
       await file.writeAsBytes(image);
@@ -57,7 +58,7 @@ class ShareAsImageService {
 
       await Share.shareXFiles([
         XFile(filePath),
-      ], text: "كود ${data.selectedFile.name}");
+      ], text: "كود ${workspace.selectedFile.name}");
     } catch (e) {
       debugPrint("share error: $e");
       showMessage("خطأ في المشاركة: $e");

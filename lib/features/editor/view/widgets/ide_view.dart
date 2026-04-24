@@ -6,8 +6,9 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
 import "../../../../constants.dart";
+import "../../../../core/providers/settings_provider.dart";
+import "../../../../core/providers/workspace_provider.dart";
 import "../../../../core/services/files/save_file.dart";
-import "../../../../data/ide_data.dart";
 import "../theme/alif_dark_theme.dart";
 import "../theme/alif_lang/alif.dart";
 import "search_view.dart";
@@ -20,7 +21,9 @@ class IDEView extends StatefulWidget {
 }
 
 class _IDEViewState extends State<IDEView> {
-  late IdeData data;
+  late WorkspaceProvider workspace;
+  late SettingsProvider settings;
+
   LspStdioConfig? _lspConfig;
   bool _lspInitializing = false;
 
@@ -29,22 +32,31 @@ class _IDEViewState extends State<IDEView> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      data = Provider.of<IdeData>(context, listen: false);
-      data.code.addListener(_onCodeChanged);
+
+      workspace = context.read<WorkspaceProvider>();
+      settings = context.read<SettingsProvider>();
+
+      workspace.code.addListener(_onCodeChanged);
+
       if (Platform.isAndroid) {
         _checkAndInitLsp();
-        data.addListener(_checkAndInitLsp);
+        settings.addListener(_checkAndInitLsp);
       }
     });
   }
 
   void _onCodeChanged() async {
-    if (data.selectedFile.readOnly) return;
-    if (data.selectedFile.code != data.code.text) {
-      data.editCode(data.code.text, markDirty: true);
+    if (workspace.selectedFile.readOnly) return;
 
-      if (data.autoSave) {
-        if (data.selectedFile.path?.isNotEmpty ?? false) {
+    if (workspace.selectedFile.code != workspace.code.text) {
+      workspace.editCode(
+        workspace.code.text,
+        settings.autoSave,
+        markDirty: true,
+      );
+
+      if (settings.autoSave) {
+        if (workspace.selectedFile.path?.isNotEmpty ?? false) {
           await saveFileToStorage(context);
         } else {
           await saveFilesLocal(context);
@@ -55,48 +67,51 @@ class _IDEViewState extends State<IDEView> {
 
   @override
   Widget build(BuildContext context) {
+    final workspace = context.watch<WorkspaceProvider>();
+    final settings = context.watch<SettingsProvider>();
+
     return Expanded(
-      child: Consumer<IdeData>(
-        builder: (context, ideData, child) => CodeForge(
-          // init
-          controller: ideData.code,
-          undoController: ideData.undoController,
-          focusNode: ideData.focusNode,
-          language: alif,
-          // features
-          enableFolding: false,
-          enableGuideLines: false,
-          enableSuggestions: !Platform.isAndroid,
-          customCodeSnippets: alifSnippets,
-          findController: ideData.findController,
-          finderBuilder: (context, findController) => PreferredSize(
-            preferredSize: const Size.fromHeight(30),
-            child: SearchView(findController: findController),
-          ),
-          // styling
-          editorTheme: alifDarkTheme,
-          textDirection: TextDirection.rtl,
-          innerPadding: const EdgeInsets.only(left: kDefaultPadding * 2),
-          textStyle: TextStyle(
-            fontFamily: kMainFont,
-            fontSize: ideData.fontSize,
-            height: Platform.isAndroid ? 1.4 : null,
-          ),
-          gutterStyle: Platform.isAndroid
-              ? GutterStyle(
-                  lineNumberStyle: TextStyle(
-                    fontSize: ideData.fontSize * 0.95,
-                    fontFamily: kMainFont,
-                  ),
-                )
-              : null,
+      child: CodeForge(
+        // init
+        controller: workspace.code,
+        undoController: workspace.undoController,
+        focusNode: workspace.focusNode,
+        language: alif,
+        // features
+        enableFolding: false,
+        enableGuideLines: false,
+        enableSuggestions: !Platform.isAndroid,
+        customCodeSnippets: alifSnippets,
+        findController: workspace.findController,
+        finderBuilder: (context, findController) => PreferredSize(
+          preferredSize: const Size.fromHeight(30),
+          child: SearchView(findController: findController),
         ),
+        // styling
+        editorTheme: alifDarkTheme,
+        textDirection: TextDirection.rtl,
+        innerPadding: const EdgeInsets.only(left: kDefaultPadding * 2),
+        textStyle: TextStyle(
+          fontFamily: kMainFont,
+          fontSize: settings.fontSize,
+          height: Platform.isAndroid ? 1.4 : null,
+        ),
+        gutterStyle: Platform.isAndroid
+            ? GutterStyle(
+                lineNumberStyle: TextStyle(
+                  fontSize: settings.fontSize * 0.95,
+                  fontFamily: kMainFont,
+                ),
+              )
+            : null,
       ),
     );
   }
 
   void _checkAndInitLsp() {
-    if (data.alifBinPath != null && _lspConfig == null && !_lspInitializing) {
+    if (settings.alifBinPath != null &&
+        _lspConfig == null &&
+        !_lspInitializing) {
       _lspInitializing = true;
       _initAlifLsp();
     }
@@ -104,11 +119,9 @@ class _IDEViewState extends State<IDEView> {
 
   Future<void> _initAlifLsp() async {
     try {
-      final workspace = data.workspacePath != null
-          ? data.workspacePath!
-          : Directory.current.path;
-
-      final alifDir = File(data.alifBinPath!).parent.path;
+      final currentWorkspace =
+          workspace.workspacePath ?? Directory.current.path;
+      final alifDir = File(settings.alifBinPath!).parent.path;
       const String executableName = "alif_lsp";
       final executablePath = "$alifDir/$executableName";
 
@@ -122,15 +135,15 @@ class _IDEViewState extends State<IDEView> {
       _lspConfig = await LspStdioConfig.start(
         executable: executablePath,
         args: [],
-        workspacePath: workspace,
+        workspacePath: currentWorkspace,
         languageId: "alif",
         environment: env,
       );
 
-      data.code.lspConfig = _lspConfig;
+      workspace.code.lspConfig = _lspConfig;
 
-      if (data.selectedFile.path != null) {
-        data.code.openedFile = data.selectedFile.path;
+      if (workspace.selectedFile.path != null) {
+        workspace.code.openedFile = workspace.selectedFile.path;
       }
       debugPrint("Alif LSP Initialized at: $executablePath");
     } catch (e) {
@@ -142,9 +155,9 @@ class _IDEViewState extends State<IDEView> {
 
   @override
   void dispose() {
-    data.removeListener(_checkAndInitLsp);
+    settings.removeListener(_checkAndInitLsp);
+    workspace.code.removeListener(_onCodeChanged);
     _lspConfig?.dispose();
-    data.code.removeListener(_onCodeChanged);
     super.dispose();
   }
 }

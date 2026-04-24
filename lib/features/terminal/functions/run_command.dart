@@ -2,56 +2,67 @@ import "dart:io";
 import "package:flutter/material.dart";
 import "package:path_provider/path_provider.dart";
 import "package:provider/provider.dart";
+
 import "../../../constants.dart";
-import "../../../data/ide_data.dart";
+import "../../../core/providers/settings_provider.dart";
+import "../../../core/providers/terminal_provider.dart";
+import "../../../core/providers/workspace_provider.dart";
 import "handle_commands.dart";
 
 Future<void> runCommand(BuildContext context, String commandInput) async {
-  final data = Provider.of<IdeData>(context, listen: false);
+  final workspace = context.read<WorkspaceProvider>();
+  final terminal = context.read<TerminalProvider>();
+  final settings = context.read<SettingsProvider>();
+
   final input = commandInput.trim();
 
   if (input.isEmpty) return;
 
-  if (data.runningProcess?.exitCode != null) {
-    data.clearRunningProcess();
-    data.addOutput("\n ---");
+  if (terminal.runningProcess?.exitCode != null) {
+    terminal.clearRunningProcess();
+    terminal.addOutput("\n ---");
     return;
   }
 
   final commandParts = input.split(" ").map((c) => c.trim()).toList();
   final isAlifCommand = commandParts[0] == kAlifBin;
 
-  data.startNewTerminalSession();
+  terminal.startNewTerminalSession();
 
   try {
     if (isAlifCommand) {
-      await _runAlifCommand(data, commandParts);
+      await _runAlifCommand(settings, workspace, terminal, commandParts);
     } else {
-      await _runGeneralCommand(data, commandParts);
+      await _runGeneralCommand(context, workspace, terminal, commandParts);
     }
   } catch (e, s) {
     debugPrint("استثناء: $e\n$s");
-    data.addOutput("استثناء أثناء التشغيل: $e", isError: true);
-    data.clearRunningProcess();
+    terminal.addOutput("استثناء أثناء التشغيل: $e", isError: true);
+    terminal.clearRunningProcess();
   }
 }
 
-Future<void> _runAlifCommand(IdeData data, List<String> commandParts) async {
-  final binPath = data.alifBinPath;
+Future<void> _runAlifCommand(
+  SettingsProvider settings,
+  WorkspaceProvider workspace,
+  TerminalProvider terminal,
+  List<String> commandParts,
+) async {
+  final binPath = settings.alifBinPath;
   if (binPath == null) {
-    data.addOutput("لم يتم العثور على مسار لغة ألف", isError: true);
+    terminal.addOutput("لم يتم العثور على مسار لغة ألف", isError: true);
     return;
   }
 
   final alifFile = File(binPath);
   if (!await alifFile.exists()) {
-    data.addOutput("لم يتم العثور على ملف تشغيل اللغة", isError: true);
+    terminal.addOutput("لم يتم العثور على ملف تشغيل اللغة", isError: true);
     return;
   }
 
   await _ensureExecutablePermissions(alifFile.path);
   await _prepareUserDirectory();
-  final codeFile = await _prepareCodeFile(data);
+  final codeFile = await _prepareCodeFile(workspace, terminal);
 
   final isAndroid = Platform.isAndroid;
   final executable = isAndroid ? kLinkerPath : binPath;
@@ -67,48 +78,72 @@ Future<void> _runAlifCommand(IdeData data, List<String> commandParts) async {
     processArgs.addAll(commandParts.sublist(1));
   }
 
-  final workingDir = (data.workspacePath?.isNotEmpty == true)
-      ? data.workspacePath!
+  final workingDir = (workspace.workspacePath?.isNotEmpty == true)
+      ? workspace.workspacePath!
       : File(codeFile.path).parent.path;
 
   final outputName = isFileCommand
-      ? data.selectedFile.name
+      ? workspace.selectedFile.name
       : (commandParts.length > 1 ? commandParts[1] : "");
 
-  final prompt = getPromptPath(data);
-  data.addOutput("$prompt > $kAlifBin $outputName");
+  // لازم تعدل دالة getPromptPath عشان تقبل WorkspaceProvider
+  final prompt = getPromptPath(workspace);
+  terminal.addOutput("$prompt > $kAlifBin $outputName");
 
   final env = isAndroid ? {"LD_LIBRARY_PATH": libDir} : <String, String>{};
-  await _executeAndListen(data, executable, processArgs, workingDir, env);
+  await _executeAndListen(
+    workspace,
+    terminal,
+    executable,
+    processArgs,
+    workingDir,
+    env,
+  );
 }
 
-Future<void> _runGeneralCommand(IdeData data, List<String> commandParts) async {
-  final isBuiltIn = await handleCommands(data, commandParts);
+Future<void> _runGeneralCommand(
+  BuildContext context,
+  WorkspaceProvider workspace,
+  TerminalProvider terminal,
+  List<String> commandParts,
+) async {
+  // مررنا الـ context هنا عشان الدالة دي تعتمد على نفسها وتقرا اللي هي عايزاه
+  final isBuiltIn = await handleCommands(context, commandParts);
   if (isBuiltIn) return;
 
   final executable = commandParts[0];
   final processArgs = commandParts.length > 1
       ? commandParts.sublist(1)
       : <String>[];
-  final workingDir = (data.workspacePath?.isNotEmpty == true)
-      ? data.workspacePath!
+  final workingDir = (workspace.workspacePath?.isNotEmpty == true)
+      ? workspace.workspacePath!
       : kHomeDir;
 
-  final prompt = getPromptPath(data);
-  data.addOutput("$prompt > ${[executable, ...processArgs].join(" ")}");
+  final prompt = getPromptPath(workspace);
+  terminal.addOutput("$prompt > ${[executable, ...processArgs].join(" ")}");
 
-  await _executeAndListen(data, executable, processArgs, workingDir, {});
+  await _executeAndListen(
+    workspace,
+    terminal,
+    executable,
+    processArgs,
+    workingDir,
+    {},
+  );
 }
 
-Future<File> _prepareCodeFile(IdeData data) async {
-  final fileData = data.selectedFile;
+Future<File> _prepareCodeFile(
+  WorkspaceProvider workspace,
+  TerminalProvider terminal,
+) async {
+  final fileData = workspace.selectedFile;
   final isSaved = fileData.path?.isNotEmpty == true;
 
   if (isSaved) {
     final file = File(fileData.path!);
     final content = await file.readAsString();
     if (content != fileData.code) {
-      data.addOutput("لم يتم حفظ التعديلات الأخيرة", isError: false);
+      terminal.addOutput("لم يتم حفظ التعديلات الأخيرة", isError: false);
     }
     return file;
   } else {
@@ -136,7 +171,8 @@ Future<void> _ensureExecutablePermissions(String path) async {
 }
 
 Future<void> _executeAndListen(
-  IdeData data,
+  WorkspaceProvider workspace,
+  TerminalProvider terminal,
   String executable,
   List<String> args,
   String workingDir,
@@ -149,12 +185,12 @@ Future<void> _executeAndListen(
     workingDirectory: workingDir,
   );
 
-  data.editProcess(process);
+  terminal.editProcess(process);
 
   final stderrFuture = process.stderr
       .transform(const SystemEncoding().decoder)
       .forEach((result) {
-        data.addOutput(
+        terminal.addOutput(
           result.trim(),
           isError: !result.toLowerCase().contains("warning"),
         );
@@ -163,24 +199,24 @@ Future<void> _executeAndListen(
   final stdoutFuture = process.stdout
       .transform(const SystemEncoding().decoder)
       .forEach((result) {
-        data.terminalFocus.requestFocus();
+        terminal.terminalFocus.requestFocus();
         final lines = result.trim().split("\n");
 
         if (lines.isNotEmpty &&
             lines.last.isNotEmpty &&
             lines.last.trim().endsWith(":")) {
-          data.updateTerminalHint(lines.last.replaceAll(":", "").trim());
+          terminal.updateTerminalHint(lines.last.replaceAll(":", "").trim());
         }
 
-        data.addOutput(result, newLine: false);
+        terminal.addOutput(result, newLine: false);
       });
 
   await Future.wait([stdoutFuture, stderrFuture]);
 
   final exitCode = await process.exitCode;
   if (exitCode != 0) {
-    data.addOutput("انتهت العملية برمز خطأ [$exitCode]", isError: true);
+    terminal.addOutput("انتهت العملية برمز خطأ [$exitCode]", isError: true);
   }
 
-  data.clearRunningProcess();
+  terminal.clearRunningProcess();
 }

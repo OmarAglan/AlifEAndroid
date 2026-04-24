@@ -5,7 +5,6 @@ import "package:url_launcher/url_launcher.dart";
 import "../../../../constants.dart";
 import "../../../../core/theme/colors.dart";
 import "../../../../core/theme/text.dart";
-import "../../../../data/ide_data.dart";
 
 class About extends StatelessWidget {
   const About({super.key});
@@ -27,7 +26,7 @@ class About extends StatelessWidget {
                 ),
                 const SizedBox(width: kSmallPadding),
                 Text(
-                  "${l10n.alifLangCore} ${IdeData.alifVersion}",
+                  "${l10n.alifLangCore} $kAlifVersion",
                   style: ThemeText.smallG,
                 ),
               ],
@@ -42,7 +41,7 @@ class About extends StatelessWidget {
                 ),
                 const SizedBox(width: kSmallPadding),
                 Text(
-                  "${l10n.ideVersion} ${IdeData.appVersion} (${l10n.beta})",
+                  "${l10n.ideVersion} $kAppVersion (${l10n.beta})",
                   style: ThemeText.smallG,
                 ),
               ],

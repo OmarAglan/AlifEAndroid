@@ -5,18 +5,17 @@ import "package:path_provider/path_provider.dart";
 import "package:provider/provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import "../../constants.dart";
-import "../../data/ide_data.dart";
+import "../providers/settings_provider.dart";
+import "../providers/terminal_provider.dart";
 
 Future<void> setupAlif(BuildContext context) async {
-  final data = Provider.of<IdeData>(context, listen: false);
-  const alifVersion = IdeData.alifVersion;
-
+  final terminal = context.read<TerminalProvider>();
   try {
     final prefs = await SharedPreferences.getInstance();
     final installedVersion = prefs.getString(kKeyAlifVersion) ?? "";
-    final bool needsUpdate = installedVersion != alifVersion;
+    final bool needsUpdate = installedVersion != kAlifVersion;
     final String updateMessage =
-        "${l10n.successUpdateAlifVersionFrom} $installedVersion ${l10n.to} $alifVersion";
+        "${l10n.successUpdateAlifVersionFrom} $installedVersion ${l10n.to} $kAlifVersion";
 
     final appDir = await getApplicationSupportDirectory();
     final alifDir = Directory("${appDir.path}/alif");
@@ -67,16 +66,17 @@ Future<void> setupAlif(BuildContext context) async {
 
       if (Platform.isLinux) await Process.run("chmod", ["+x", finalPath]);
 
-      await prefs.setString(kKeyAlifVersion, alifVersion);
-      if (installedVersion.isNotEmpty) data.addOutput(updateMessage);
+      await prefs.setString(kKeyAlifVersion, kAlifVersion);
+      if (installedVersion.isNotEmpty) terminal.addOutput(updateMessage);
     }
 
     if (finalPath.isNotEmpty) {
-      data.setAlifPath(finalPath);
-      data.addOutput("${l10n.successInstallAlifVersion} $alifVersion");
+      if (!context.mounted) return;
+      context.read<SettingsProvider>().setAlifPath(finalPath);
+      terminal.addOutput("${l10n.successInstallAlifVersion} $kAlifVersion");
     }
   } catch (e, s) {
-    data.addOutput("$e", isError: true);
+    terminal.addOutput("$e", isError: true);
     debugPrint("خطأ: $e\n$s");
   }
 }

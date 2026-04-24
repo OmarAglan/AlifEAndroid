@@ -1,6 +1,9 @@
 import "dart:io";
+import "package:flutter/material.dart";
+import "package:provider/provider.dart";
 import "../../../constants.dart";
-import "../../../data/ide_data.dart";
+import "../../../core/providers/terminal_provider.dart";
+import "../../../core/providers/workspace_provider.dart";
 
 enum BuiltIn { clear, pwd, cd, echo, date, ls, mkdir, touch, rm, help, exit }
 
@@ -26,8 +29,15 @@ const List<CommandDef> _commands = [
   CommandDef(BuiltIn.exit, ["إنهاء", "انهاء", "exit"], "إنهاء العملية الحالية"),
 ];
 
-Future<bool> handleCommands(IdeData data, List<String> commandParts) async {
+Future<bool> handleCommands(
+  BuildContext context,
+  List<String> commandParts,
+) async {
   if (commandParts.isEmpty) return false;
+
+  // بنقرا البروفايدرات من الكونتكست من غير ما نعمل rebuild
+  final terminal = context.read<TerminalProvider>();
+  final workspace = context.read<WorkspaceProvider>();
 
   final command = commandParts[0].toLowerCase();
   final args = commandParts.length > 1 ? commandParts.sublist(1) : <String>[];
@@ -44,45 +54,49 @@ Future<bool> handleCommands(IdeData data, List<String> commandParts) async {
 
   switch (matchedCmd) {
     case BuiltIn.clear:
-      data.clearOutput();
+      terminal.clearOutput();
       return true;
     case BuiltIn.pwd:
-      data.addOutput(_getCurrentPath(data));
+      terminal.addOutput(_getCurrentPath(workspace));
       return true;
     case BuiltIn.cd:
-      await _handleCdCommand(data, args.isEmpty ? kHomeDir : args[0]);
+      await _handleCdCommand(
+        workspace,
+        terminal,
+        args.isEmpty ? kHomeDir : args[0],
+      );
       return true;
     case BuiltIn.echo:
-      data.addOutput(args.join(" "));
+      terminal.addOutput(args.join(" "));
       return true;
     case BuiltIn.date:
-      data.addOutput(DateTime.now().toString());
+      terminal.addOutput(DateTime.now().toString());
       return true;
     case BuiltIn.ls:
-      await _handleLsCommand(data, args);
+      await _handleLsCommand(workspace, terminal, args);
       return true;
     case BuiltIn.mkdir:
-      await _handleMkdirCommand(data, args);
+      await _handleMkdirCommand(workspace, terminal, args);
       return true;
     case BuiltIn.touch:
-      await _handleTouchCommand(data, args);
+      await _handleTouchCommand(workspace, terminal, args);
       return true;
     case BuiltIn.rm:
-      await _handleRmCommand(data, args);
+      await _handleRmCommand(workspace, terminal, args);
       return true;
     case BuiltIn.help:
-      _showHelp(data);
+      _showHelp(terminal);
       return true;
     case BuiltIn.exit:
-      data.clearRunningProcess();
-      data.addOutput("\n ---");
+      terminal.clearRunningProcess();
+      terminal.addOutput("\n ---");
       return true;
   }
 }
 
-String _getCurrentPath(IdeData data) {
-  return data.workspacePath?.isNotEmpty == true
-      ? data.workspacePath!
+String _getCurrentPath(WorkspaceProvider workspace) {
+  return workspace.workspacePath?.isNotEmpty == true
+      ? workspace.workspacePath!
       : kHomeDir;
 }
 
@@ -96,37 +110,51 @@ String _resolvePath(String currentPath, String targetDir) {
   return newPath;
 }
 
-void _showHelp(IdeData data) {
+void _showHelp(TerminalProvider terminal) {
   final buffer = StringBuffer("الأوامر الداخلية المتاحة:\n");
   for (final cmd in _commands) {
     final aliasesStr = cmd.aliases.join(" | ");
     buffer.writeln("$aliasesStr: ${cmd.description}");
   }
-  data.addOutput(buffer.toString().trim(), isError: false);
+  terminal.addOutput(buffer.toString().trim(), isError: false);
 }
 
-Future<void> _handleCdCommand(IdeData data, String targetDir) async {
-  final newPath = _resolvePath(_getCurrentPath(data), targetDir);
+Future<void> _handleCdCommand(
+  WorkspaceProvider workspace,
+  TerminalProvider terminal,
+  String targetDir,
+) async {
+  final newPath = _resolvePath(_getCurrentPath(workspace), targetDir);
   final dir = Directory(newPath);
 
   if (await dir.exists()) {
-    data.workspacePath = dir.path;
-    data.addOutput("تم الانتقال إلى: ${dir.path}", isError: false);
-    await _handleLsCommand(data, []);
+    workspace.setWorkspacePath(dir.path);
+    terminal.addOutput("تم الانتقال إلى: ${dir.path}", isError: false);
+    await _handleLsCommand(workspace, terminal, []);
   } else {
-    data.addOutput("cd: $targetDir: لا يوجد مجلد بهذا الاسم", isError: true);
+    terminal.addOutput(
+      "cd: $targetDir: لا يوجد مجلد بهذا الاسم",
+      isError: true,
+    );
   }
-  data.clearRunningProcess();
+  terminal.clearRunningProcess();
 }
 
-Future<void> _handleLsCommand(IdeData data, List<String> args) async {
+Future<void> _handleLsCommand(
+  WorkspaceProvider workspace,
+  TerminalProvider terminal,
+  List<String> args,
+) async {
   final targetDir = args.isEmpty
-      ? _getCurrentPath(data)
-      : _resolvePath(_getCurrentPath(data), args[0]);
+      ? _getCurrentPath(workspace)
+      : _resolvePath(_getCurrentPath(workspace), args[0]);
   final dir = Directory(targetDir);
 
   if (!await dir.exists()) {
-    data.addOutput("ls: $targetDir: لا يوجد مجلد بهذا الاسم", isError: true);
+    terminal.addOutput(
+      "ls: $targetDir: لا يوجد مجلد بهذا الاسم",
+      isError: true,
+    );
     return;
   }
 
@@ -147,35 +175,46 @@ Future<void> _handleLsCommand(IdeData data, List<String> args) async {
     files.sort();
 
     final output = [...directories, ...files].join("  ");
-    data.addOutput(output);
+    terminal.addOutput(output);
   } catch (e) {
-    data.addOutput("ls: لا يمكن قراءة المحتوى: $e", isError: true);
+    terminal.addOutput("ls: لا يمكن قراءة المحتوى: $e", isError: true);
   }
 }
 
-Future<void> _handleMkdirCommand(IdeData data, List<String> args) async {
+Future<void> _handleMkdirCommand(
+  WorkspaceProvider workspace,
+  TerminalProvider terminal,
+  List<String> args,
+) async {
   if (args.isEmpty) {
-    data.addOutput("mkdir: يجب تحديد اسم المجلد", isError: true);
+    terminal.addOutput("mkdir: يجب تحديد اسم المجلد", isError: true);
     return;
   }
 
-  final newPath = _resolvePath(_getCurrentPath(data), args[0]);
+  final newPath = _resolvePath(_getCurrentPath(workspace), args[0]);
   final dir = Directory(newPath);
 
   if (await dir.exists()) {
-    data.addOutput("mkdir: المجلد '${args[0]}' موجود بالفعل", isError: true);
+    terminal.addOutput(
+      "mkdir: المجلد '${args[0]}' موجود بالفعل",
+      isError: true,
+    );
   } else {
     await dir.create(recursive: true);
   }
 }
 
-Future<void> _handleTouchCommand(IdeData data, List<String> args) async {
+Future<void> _handleTouchCommand(
+  WorkspaceProvider workspace,
+  TerminalProvider terminal,
+  List<String> args,
+) async {
   if (args.isEmpty) {
-    data.addOutput("touch: يجب تحديد اسم الملف", isError: true);
+    terminal.addOutput("touch: يجب تحديد اسم الملف", isError: true);
     return;
   }
 
-  final newPath = _resolvePath(_getCurrentPath(data), args[0]);
+  final newPath = _resolvePath(_getCurrentPath(workspace), args[0]);
   final file = File(newPath);
 
   if (!await file.exists()) {
@@ -187,15 +226,22 @@ Future<void> _handleTouchCommand(IdeData data, List<String> args) async {
   }
 }
 
-Future<void> _handleRmCommand(IdeData data, List<String> args) async {
+Future<void> _handleRmCommand(
+  WorkspaceProvider workspace,
+  TerminalProvider terminal,
+  List<String> args,
+) async {
   if (args.isEmpty) {
-    data.addOutput("rm: يجب تحديد اسم الملف أو المجلد للحذف", isError: true);
+    terminal.addOutput(
+      "rm: يجب تحديد اسم الملف أو المجلد للحذف",
+      isError: true,
+    );
     return;
   }
 
   final isRecursive = args.contains("-r") || args.contains("-rf");
   final targetName = args.last;
-  final targetPath = _resolvePath(_getCurrentPath(data), targetName);
+  final targetPath = _resolvePath(_getCurrentPath(workspace), targetName);
 
   final type = await FileSystemEntity.type(targetPath);
 
@@ -206,24 +252,24 @@ Future<void> _handleRmCommand(IdeData data, List<String> args) async {
       if (isRecursive) {
         await Directory(targetPath).delete(recursive: true);
       } else {
-        data.addOutput(
+        terminal.addOutput(
           "rm: '$targetName' مجلد، استخدم -r لحذفه",
           isError: true,
         );
       }
     } else {
-      data.addOutput(
+      terminal.addOutput(
         "rm: $targetName: لا يوجد ملف أو مجلد بهذا الاسم",
         isError: true,
       );
     }
   } catch (e) {
-    data.addOutput("rm: فشل الحذف: $e", isError: true);
+    terminal.addOutput("rm: فشل الحذف: $e", isError: true);
   }
 }
 
-String getPromptPath(IdeData data) {
-  final path = _getCurrentPath(data);
+String getPromptPath(WorkspaceProvider workspace) {
+  final path = _getCurrentPath(workspace);
   if (path.startsWith(kHomeDir)) {
     return path.replaceFirst(kHomeDir, "~");
   }

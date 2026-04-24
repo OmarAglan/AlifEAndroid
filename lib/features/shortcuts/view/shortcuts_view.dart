@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
+import "../../../core/providers/workspace_provider.dart";
 import "../../../core/theme/colors.dart";
 import "../../../core/theme/text.dart";
-import "../../../data/ide_data.dart";
 import "../data/shortcuts_data.dart";
 
 class ShortcutsView extends StatelessWidget {
@@ -11,8 +11,8 @@ class ShortcutsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final shortCustsData = Provider.of<ShortcutsData>(context, listen: false);
-    final ideData = context.watch<IdeData>();
+    final shortcusts = context.read<ShortcutsProvider>();
+    final workspace = context.watch<WorkspaceProvider>();
     return SafeArea(
       top: false,
       child: Container(
@@ -23,29 +23,29 @@ class ShortcutsView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               ShortCutButton(
-                onPressed: () => ideData.toggleSearch(),
+                onPressed: () => workspace.toggleSearch(),
                 child: Icon(
-                  ideData.findController.isActive
+                  workspace.findController.isActive
                       ? LucideIcons.x
                       : LucideIcons.search,
                 ),
               ),
-              if (ideData.undoController.canUndo)
+              if (workspace.undoController.canUndo)
                 ShortCutButton(
-                  onPressed: () => ideData.undoController.undo(),
+                  onPressed: () => workspace.undoController.undo(),
                   child: const Icon(LucideIcons.undo2, size: 15),
                 ),
-              if (ideData.undoController.canRedo)
+              if (workspace.undoController.canRedo)
                 ShortCutButton(
-                  onPressed: () => ideData.undoController.redo(),
+                  onPressed: () => workspace.undoController.redo(),
                   child: const Icon(LucideIcons.redo2, size: 15),
                 ),
               ...List.generate(
-                shortCustsData.shortcuts.length,
+                shortcusts.shortcuts.length,
                 (index) => ShortCutButton(
-                  onPressed: () => shortCustsData.insertText(context, index),
+                  onPressed: () => shortcusts.insertText(context, index),
                   child: Text(
-                    shortCustsData.shortcuts[index].name,
+                    shortcusts.shortcuts[index].name,
                     textAlign: TextAlign.center,
                   ),
                 ),

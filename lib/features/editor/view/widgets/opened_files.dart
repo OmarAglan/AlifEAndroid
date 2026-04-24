@@ -1,19 +1,19 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "../../../../constants.dart";
+import "../../../../core/models/data_typs.dart";
+import "../../../../core/providers/workspace_provider.dart";
 import "../../../../core/services/files/create_file.dart";
 import "../../../../core/services/files/open_file.dart";
 import "../../../../core/services/files/open_file_from_storage.dart";
 import "../../../../core/utils/show_dialog.dart";
 import "../../../../core/widgets/radio_input.dart";
-import "../../../../data/data_types.dart";
-import "../../../../data/ide_data.dart";
 import "edit_file_view.dart";
 
 class OpenedFiles extends StatelessWidget {
   const OpenedFiles({super.key});
 
-  void onLongPress(BuildContext context, dynamic id, IdeData data) {
+  void onLongPress(BuildContext context, dynamic id, WorkspaceProvider data) {
     final file = data.files[id];
     final TextEditingController controller = TextEditingController(
       text: file.name,
@@ -34,7 +34,7 @@ class OpenedFiles extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: kSmallPadding),
-      child: Consumer<IdeData>(
+      child: Consumer<WorkspaceProvider>(
         builder: (context, data, child) {
           return RadioInput(
             value: data.selectedFile.id,

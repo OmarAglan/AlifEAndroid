@@ -1,13 +1,14 @@
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
+
 import "../../../../constants.dart";
+import "../../../../core/models/data_typs.dart";
+import "../../../../core/providers/workspace_provider.dart";
 import "../../../../core/services/share_code_image.dart";
 import "../../../../core/theme/colors.dart";
 import "../../../../core/theme/material.dart";
 import "../../../../core/utils/show_dialog.dart";
-import "../../../../data/data_types.dart";
-import "../../../../data/ide_data.dart";
 
 class EditSheet extends StatelessWidget {
   const EditSheet({super.key, required this.file, required this.controller});
@@ -17,7 +18,7 @@ class EditSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final data = Provider.of<IdeData>(context, listen: false);
+    final workspace = context.read<WorkspaceProvider>();
     final bool hasPath = file.path != null && file.path!.isNotEmpty;
 
     return Column(
@@ -54,7 +55,7 @@ class EditSheet extends StatelessWidget {
                   title: "حذف الملف",
                   subtitle: "هل متاكد من حذف الملف؟",
                   onConfirm: () {
-                    data.updateFile(context, file.id, FileAction.delete);
+                    workspace.updateFile(context, file.id, FileAction.delete);
                     Navigator.pop(context);
                   },
                 ),
@@ -67,7 +68,7 @@ class EditSheet extends StatelessWidget {
                   color: Colors.amber,
                   icon: LucideIcons.x,
                   onTap: () {
-                    data.updateFile(context, file.id, FileAction.close);
+                    workspace.updateFile(context, file.id, FileAction.close);
                     Navigator.pop(context);
                   },
                 ),
@@ -83,7 +84,11 @@ class EditSheet extends StatelessWidget {
                 color: file.readOnly ? Colors.red : Colors.green,
                 icon: file.readOnly ? LucideIcons.penOff : LucideIcons.pen,
                 onTap: () {
-                  data.updateFile(context, file.id, FileAction.toggleReadOnly);
+                  workspace.updateFile(
+                    context,
+                    file.id,
+                    FileAction.toggleReadOnly,
+                  );
                   Navigator.pop(context);
                 },
               ),

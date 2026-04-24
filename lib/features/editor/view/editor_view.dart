@@ -1,11 +1,9 @@
 import "package:flutter/material.dart";
-import "package:provider/provider.dart";
 
 import "../../../core/services/files/load_saved_files.dart";
 import "../../../core/services/premissions.dart";
 import "../../../core/utils/setup_alif.dart";
 import "../../../core/widgets/custom_app_bar.dart";
-import "../../../data/ide_data.dart";
 import "../../shortcuts/view/shortcuts_view.dart";
 import "widgets/ide_view.dart";
 import "widgets/opened_files.dart";
@@ -21,20 +19,12 @@ class _EditorViewState extends State<EditorView> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!context.mounted) return;
-      final ideData = Provider.of<IdeData>(context, listen: false);
-      init(context, ideData);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await loadFilesFromStorage(context);
+      await requestStoragePermission();
+      if (!mounted) return;
+      await setupAlif(context);
     });
-  }
-
-  void init(BuildContext context, IdeData ideData) async {
-    await loadFilesFromStorage(context, ideData);
-    if (!context.mounted) return;
-    await requestStoragePermission(context);
-    if (!context.mounted) return;
-    await setupAlif(context);
-    ideData.setReady();
   }
 
   @override

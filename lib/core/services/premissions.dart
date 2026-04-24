@@ -4,12 +4,11 @@ import "package:flutter/material.dart";
 import "package:permission_handler/permission_handler.dart";
 import "../utils/show_dialog.dart";
 
-Future<bool> requestStoragePermission(BuildContext context) async {
+Future<bool> requestStoragePermission() async {
   if (Platform.isLinux) return true;
 
   var status = await Permission.manageExternalStorage.status;
   if (status.isGranted) return true;
-  if (!context.mounted) return false;
   final result = await showCustomDialog<bool>(
     title: "الوصول للتخزين",
     subtitle: "يحتاج التطبيق الإذن للوصول للملفات لتعديل ملفات شفرة ألف",

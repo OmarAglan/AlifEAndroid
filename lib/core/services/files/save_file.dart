@@ -7,34 +7,36 @@ import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import "../../../constants.dart";
-import "../../../data/data_types.dart";
-import "../../../data/ide_data.dart";
+import "../../models/data_typs.dart";
+import "../../providers/terminal_provider.dart";
+import "../../providers/workspace_provider.dart";
 
 Future<bool> saveFileToStorage(
   BuildContext context, {
   bool asNew = false,
 }) async {
-  final data = Provider.of<IdeData>(context, listen: false);
+  final workspace = context.read<WorkspaceProvider>();
+  final terminal = context.read<TerminalProvider>();
 
-  if (data.files.isEmpty) {
-    data.addOutput("لا يوجد ملف مفتوح للحفظ.");
+  if (workspace.files.isEmpty) {
+    terminal.addOutput("لا يوجد ملف مفتوح للحفظ.");
     return false;
   }
 
-  final code = data.code.text;
-  final selectedId = data.selectedFile.id;
-  final filesList = List<FileEntity>.from(data.files);
+  final code = workspace.code.text;
+  final selectedId = workspace.selectedFile.id;
+  final filesList = List<FileEntity>.from(workspace.files);
   final currentIndex = filesList.indexWhere((file) => file.id == selectedId);
 
-  if (data.selectedFile.path == null ||
-      data.selectedFile.path!.isEmpty ||
+  if (workspace.selectedFile.path == null ||
+      workspace.selectedFile.path!.isEmpty ||
       asNew) {
     try {
       final bytes = Uint8List.fromList(utf8.encode(code));
       final path = await FileSaver.instance.saveAs(
-        name: (data.selectedFile.name.isEmpty)
+        name: (workspace.selectedFile.name.isEmpty)
             ? "شفرة"
-            : data.selectedFile.name.replaceAll(
+            : workspace.selectedFile.name.replaceAll(
                 RegExp(r"\.(الف|alif|aliflib)$"),
                 "",
               ),
@@ -44,11 +46,11 @@ Future<bool> saveFileToStorage(
       );
 
       if (path == null || path.isEmpty) {
-        data.addOutput("تم إلغاء الحفظ.");
+        terminal.addOutput("تم إلغاء الحفظ.");
         return false;
       }
 
-      final FileEntity fileData = data.selectedFile.copyWith(
+      final FileEntity fileData = workspace.selectedFile.copyWith(
         name: path.split(Platform.pathSeparator).last,
         path: path,
         code: code,
@@ -61,27 +63,27 @@ Future<bool> saveFileToStorage(
         filesList.add(fileData);
       }
 
-      data.setSelectedFile(fileData);
-      data.setFiles(filesList);
-      data.addOutput("تم الحفظ في: $path");
+      workspace.setSelectedFile(fileData);
+      workspace.setFiles(filesList);
+      terminal.addOutput("تم الحفظ في: $path");
     } catch (e) {
-      data.addOutput("خطأ أثناء الحفظ: $e");
+      terminal.addOutput("خطأ أثناء الحفظ: $e");
       return false;
     }
   } else {
     try {
-      await File(data.selectedFile.path!).writeAsString(code);
-      final FileEntity fileData = data.selectedFile.copyWith(
+      await File(workspace.selectedFile.path!).writeAsString(code);
+      final FileEntity fileData = workspace.selectedFile.copyWith(
         code: code,
         saved: true,
       );
       if (currentIndex >= 0) {
         filesList[currentIndex] = fileData;
       }
-      data.setSelectedFile(fileData);
-      data.setFiles(filesList);
+      workspace.setSelectedFile(fileData);
+      workspace.setFiles(filesList);
     } catch (e) {
-      data.addOutput("خطأ أثناء الحفظ: $e");
+      terminal.addOutput("خطأ أثناء الحفظ: $e");
       return false;
     }
   }
@@ -91,8 +93,8 @@ Future<bool> saveFileToStorage(
 }
 
 Future<void> saveFilesLocal(BuildContext context) async {
-  final data = Provider.of<IdeData>(context, listen: false);
+  final workspace = context.read<WorkspaceProvider>();
   final prefs = await SharedPreferences.getInstance();
-  await prefs.setString(kKeyOpenedFiles, jsonEncode(data.files));
-  data.setFiles(data.files);
+  await prefs.setString(kKeyOpenedFiles, jsonEncode(workspace.files));
+  workspace.setFiles(workspace.files);
 }

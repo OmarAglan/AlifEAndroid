@@ -4,17 +4,17 @@ import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
 
 import "../../../../constants.dart";
+import "../../../../core/models/data_typs.dart";
+import "../../../../core/providers/terminal_provider.dart";
 import "../../../../core/theme/colors.dart";
 import "../../../../core/utils/show_message.dart";
-import "../../../../data/data_types.dart";
-import "../../../../data/ide_data.dart";
 
 class TerminalOutputs extends StatelessWidget {
   const TerminalOutputs({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<IdeData>(
+    return Consumer<TerminalProvider>(
       builder: (context, data, child) {
         final Map<int, List<TerminalLine>> sessionsMap = {};
         for (var line in data.outputLines) {
