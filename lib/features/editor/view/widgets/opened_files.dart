@@ -3,18 +3,24 @@ import "package:provider/provider.dart";
 import "../../../../constants.dart";
 import "../../../../core/services/files/create_file.dart";
 import "../../../../core/services/files/open_file.dart";
+import "../../../../core/utils/show_dialog.dart";
 import "../../../../core/widgets/radio_input.dart";
-import "../../../../core/widgets/show_bottom_sheet.dart";
 import "../../../../data/ide_data.dart";
-import "edit_sheet.dart";
+import "edit_file_view.dart";
 
 class OpenedFiles extends StatelessWidget {
   const OpenedFiles({super.key});
 
-  void onLongPress(BuildContext context, dynamic id) {
-    showMyBottomSheet(
-      context: context,
-      child: EditSheet(id: id as int),
+  void onLongPress(BuildContext context, dynamic id, IdeData data) {
+    final file = data.files[id];
+    final TextEditingController controller = TextEditingController(
+      text: file.name,
+    );
+    showCustomDialog(
+      title: l10n.editFile,
+      onConfirm: () =>
+          data.updateFile(context, id, "reName", newName: controller.text),
+      child: EditSheet(file: file, controller: controller),
     );
   }
 
@@ -37,7 +43,7 @@ class OpenedFiles extends StatelessWidget {
             }).toList(),
             onAdd: () => createFile(context: context),
             // onOpen: () {},
-            onLongPress: (id) => onLongPress(context, id),
+            onLongPress: (id) => onLongPress(context, id, data),
             onChanged: (id) => openFile(id as int, context),
           );
         },

@@ -4,6 +4,7 @@ import "package:lucide_icons_flutter/lucide_icons.dart";
 
 import "../../../../constants.dart";
 import "../../../../core/theme/colors.dart";
+import "../../../../core/theme/material.dart";
 
 class SearchView extends StatelessWidget {
   final FindController findController;
@@ -68,13 +69,8 @@ class _SearchInputRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: kSmallPadding),
-      decoration: BoxDecoration(
-        color: context.secondary.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: context.secondary.withOpacity(0.1)),
-      ),
+    return MyMaterial(
+      theme: MyMaterialTheme.border,
       child: Row(
         children: [
           Icon(LucideIcons.search, color: context.secondary, size: 18),
@@ -124,13 +120,8 @@ class _ReplaceInputRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: kSmallPadding),
-      decoration: BoxDecoration(
-        color: context.secondary.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: context.secondary.withOpacity(0.1)),
-      ),
+    return MyMaterial(
+      theme: MyMaterialTheme.border,
       child: Row(
         children: [
           Icon(LucideIcons.replace, color: context.secondary, size: 18),
@@ -172,15 +163,11 @@ class _NavigationControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return MyMaterial(
+      theme: MyMaterialTheme.border,
       padding: axis == Axis.horizontal
-          ? const EdgeInsets.symmetric(horizontal: 8)
-          : null,
-      decoration: BoxDecoration(
-        color: context.secondary.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: context.secondary.withOpacity(0.1)),
-      ),
+          ? const EdgeInsets.symmetric(horizontal: kSmallPadding)
+          : const EdgeInsets.all(0),
       child: Flex(
         direction: axis,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
