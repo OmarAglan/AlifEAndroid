@@ -3,43 +3,46 @@ import "dart:io";
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "../../constants.dart";
+import "../extensions/strings.dart";
 import "../theme/colors.dart";
+import "../theme/material.dart";
 import "../theme/text.dart";
 import "../widgets/show_bottom_sheet.dart";
+import "show_message.dart";
 
 Future<void> showFileManagerModal(
   BuildContext context,
   void Function(String) onFileSelected, {
+  String rootPath = "/",
   String? startPath,
   void Function(String)? onFolderSelected,
 }) async {
-  final rootPath = startPath ?? kHomeDir;
-
-  final directory = Directory(rootPath);
+  final currentPath = startPath ?? rootPath;
+  final directory = Directory(currentPath);
 
   if (!await directory.exists()) {
     if (!context.mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text("المجلد غير موجود: $rootPath")));
+    showMessage("المجلد غير موجود: $currentPath", isError: true);
     return;
   }
 
   final List<FileSystemEntity> items = directory.listSync().where((entity) {
+    final name = entity.path.split(Platform.pathSeparator).last;
+    if (name.startsWith(".")) return false;
     if (FileSystemEntity.isDirectorySync(entity.path)) return true;
 
-    final name = entity.path.toLowerCase();
-    return name.endsWith(".alif") ||
-        name.endsWith(".الف") ||
-        name.endsWith(".aliflib");
+    final lowerName = name.toLowerCase();
+    return lowerName.endsWith(".alif") ||
+        lowerName.endsWith(".الف") ||
+        lowerName.endsWith(".aliflib");
   }).toList();
 
   items.sort((a, b) {
     final bool isDirA = FileSystemEntity.isDirectorySync(a.path);
     final bool isDirB = FileSystemEntity.isDirectorySync(b.path);
 
-    if (!isDirA && isDirB) return -1;
-    if (isDirA && !isDirB) return 1;
+    if (isDirA && !isDirB) return -1;
+    if (!isDirA && isDirB) return 1;
 
     return a.path.toLowerCase().compareTo(b.path.toLowerCase());
   });
@@ -47,41 +50,31 @@ Future<void> showFileManagerModal(
   String formatFileSize(int bytes) {
     if (bytes < 1024) return "$bytes بايت";
     if (bytes < 1024 * 1024) {
-      return "${(bytes / 1024).toStringAsFixed(2)} كيلو بايت";
+      return "${(bytes / 1024).toStringAsFixed(2)} كيلوبايت";
     }
     if (bytes < 1024 * 1024 * 1024) {
-      return "${(bytes / (1024 * 1024)).toStringAsFixed(2)} ميجا بايت";
+      return "${(bytes / (1024 * 1024)).toStringAsFixed(2)} ميجابايت";
     }
-    return "${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(2)} جيجا بايت";
+    return "${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(2)} جيجابايت";
   }
 
   if (!context.mounted) return;
-  final parentPath = Directory(rootPath).parent.path;
+
+  final parentPath = directory.parent.path;
+  final pathController = TextEditingController(
+    text: currentPath.handelHomePath,
+  );
+
   showMyBottomSheet(
     context: context,
-    header: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(
-          child: SelectableText(
-            rootPath.replaceAll(kHomeDir, "~"),
-            style: ThemeText.mid,
-          ),
-        ),
-        IconButton(
-          icon: Icon(LucideIcons.chevronLeft, color: context.secondary),
-          onPressed: () {
-            if (!context.mounted) return;
-            if (parentPath == rootPath || parentPath == "/") return;
-            Navigator.pop(context);
-            showFileManagerModal(
-              context,
-              onFileSelected,
-              startPath: parentPath,
-            );
-          },
-        ),
-      ],
+    header: buildHeader(
+      context,
+      rootPath,
+      parentPath,
+      currentPath,
+      pathController,
+      onFileSelected,
+      onFolderSelected,
     ),
     child: Column(
       children: [
@@ -92,7 +85,7 @@ Future<void> showFileManagerModal(
                   itemBuilder: (listContext, index) {
                     final entity = items[index];
                     final isDir = FileSystemEntity.isDirectorySync(entity.path);
-                    final name = entity.path.split("/").last;
+                    final name = entity.path.split(Platform.pathSeparator).last;
                     return ListTile(
                       leading: Icon(
                         isDir ? LucideIcons.folder : LucideIcons.fileCode,
@@ -130,6 +123,7 @@ Future<void> showFileManagerModal(
                           showFileManagerModal(
                             context,
                             onFileSelected,
+                            rootPath: rootPath,
                             startPath: entity.path,
                             onFolderSelected: onFolderSelected,
                           );
@@ -151,10 +145,123 @@ Future<void> showFileManagerModal(
   );
 }
 
+Widget buildHeader(
+  BuildContext context,
+  String rootPath,
+  String parentPath,
+  String currentPath,
+  TextEditingController pathController,
+  void Function(String) onFileSelected,
+  void Function(String)? onFolderSelected,
+) {
+  return Row(
+    spacing: kSmallPadding,
+    children: [
+      if (currentPath != rootPath && currentPath != "/")
+        MyMaterial(
+          theme: MyMaterialTheme.border,
+          padding: const EdgeInsets.all(0),
+          child: IconButton(
+            icon: Icon(LucideIcons.chevronLeft, color: context.secondary),
+            onPressed: () {
+              if (!context.mounted) return;
+              Navigator.pop(context);
+              showFileManagerModal(
+                context,
+                onFileSelected,
+                rootPath: rootPath,
+                startPath: parentPath,
+                onFolderSelected: onFolderSelected,
+              );
+            },
+          ),
+        ),
+      Expanded(
+        child: MyMaterial(
+          theme: MyMaterialTheme.border,
+          padding: const EdgeInsets.all(kSmallPadding),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                LucideIcons.folderSearch,
+                size: 18,
+                color: context.secondary,
+              ),
+              Expanded(
+                child: TextField(
+                  controller: pathController,
+                  style: ThemeText.mid,
+                  textDirection: TextDirection.ltr,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    isDense: true,
+                    hintText: "ادخل المسار هنا...",
+                    hintStyle: TextStyle(color: context.secondary),
+                  ),
+                  onSubmitted: (value) {
+                    if (value.trim().isEmpty) return;
+                    final inputPath = value.handelHomePath;
+
+                    try {
+                      final dir = Directory(inputPath);
+                      if (!dir.existsSync()) {
+                        showMessage("المسار غير موجود", isError: true);
+                        pathController.text = currentPath.handelHomePath;
+                        return;
+                      }
+
+                      final resolvedNew = dir.resolveSymbolicLinksSync();
+                      final resolvedRoot = Directory(
+                        rootPath,
+                      ).resolveSymbolicLinksSync();
+
+                      final isAllowed =
+                          resolvedNew == resolvedRoot ||
+                          resolvedNew.startsWith(
+                            resolvedRoot + Platform.pathSeparator,
+                          );
+
+                      if (!isAllowed) {
+                        showMessage(
+                          "غير مسموح بالخروج عن المسار الأساسي",
+                          isError: true,
+                        );
+                        pathController.text = currentPath.handelHomePath;
+                        return;
+                      }
+
+                      if (!context.mounted) return;
+                      Navigator.pop(context);
+                      showFileManagerModal(
+                        context,
+                        onFileSelected,
+                        rootPath: rootPath,
+                        startPath: resolvedNew,
+                        onFolderSelected: onFolderSelected,
+                      );
+                    } catch (e) {
+                      showMessage("مسار غير صالح", isError: true);
+                      pathController.text = currentPath.handelHomePath;
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
 String getSafeDirCount(String path) {
   try {
     final dir = Directory(path);
-    return "عدد الملفات ${dir.listSync().length}";
+    final count = dir.listSync().take(100).length;
+    if (count == 0) return "مجلد فارغ";
+    return count == 100 ? "+100 ملف" : "$count ملف";
   } catch (e) {
     return "مجلد محمي";
   }

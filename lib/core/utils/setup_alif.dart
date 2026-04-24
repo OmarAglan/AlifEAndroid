@@ -13,7 +13,7 @@ Future<void> setupAlif(BuildContext context) async {
 
   try {
     final prefs = await SharedPreferences.getInstance();
-    final installedVersion = prefs.getString("alif_version") ?? "";
+    final installedVersion = prefs.getString(kKeyAlifVersion) ?? "";
     final bool needsUpdate = installedVersion != alifVersion;
     final String updateMessage =
         "${l10n.successUpdateAlifVersionFrom} $installedVersion ${l10n.to} $alifVersion";
@@ -67,7 +67,7 @@ Future<void> setupAlif(BuildContext context) async {
 
       if (Platform.isLinux) await Process.run("chmod", ["+x", finalPath]);
 
-      await prefs.setString("alif_version", alifVersion);
+      await prefs.setString(kKeyAlifVersion, alifVersion);
       if (installedVersion.isNotEmpty) data.addOutput(updateMessage);
     }
 

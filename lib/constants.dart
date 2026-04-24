@@ -38,6 +38,15 @@ const Curve kCurveEaseOutBack = Curves.easeOutBack;
 const int kCodeSpaceLength = 4;
 final String kCodeSpace = " " * kCodeSpaceLength;
 
+// prefs keys
+const String kKeyLastFile = "lastFile";
+const String kKeyAlifVersion = "alif_version";
+const String kKeyAutoSave = "autoSave";
+const String kKeyShortcutsCounts = "shortcuts_counts";
+const String kKeyFontSize = "fontSize";
+const String kKeyOpenedFiles = "opened_files";
+const String kKeyWorkspacePath = "workspacePath";
+
 // directories
 final String kHomeDir = Platform.isAndroid
     ? "/storage/emulated/0"

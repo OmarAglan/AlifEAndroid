@@ -3,6 +3,7 @@ import "package:provider/provider.dart";
 import "../../../../constants.dart";
 import "../../../../core/services/files/create_file.dart";
 import "../../../../core/services/files/open_file.dart";
+import "../../../../core/services/files/open_file_from_storage.dart";
 import "../../../../core/utils/show_dialog.dart";
 import "../../../../core/widgets/radio_input.dart";
 import "../../../../data/ide_data.dart";
@@ -42,7 +43,13 @@ class OpenedFiles extends StatelessWidget {
               );
             }).toList(),
             onAdd: () => createFile(context: context),
-            // onOpen: () {},
+            onOpen: data.workspacePath != null
+                ? () => openFileFromStorage(
+                    context,
+                    rootPath: data.workspacePath!,
+                    startPath: data.workspacePath,
+                  )
+                : null,
             onLongPress: (id) => onLongPress(context, id, data),
             onChanged: (id) => openFile(id as int, context),
           );

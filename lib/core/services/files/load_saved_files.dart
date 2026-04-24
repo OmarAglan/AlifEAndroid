@@ -3,14 +3,15 @@ import "dart:convert";
 import "package:flutter/material.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
+import "../../../constants.dart";
 import "../../../data/data_types.dart";
 import "create_file.dart";
 import "open_file.dart";
 
 Future<void> loadFilesFromStorage(BuildContext context, data) async {
   final prefs = await SharedPreferences.getInstance();
-  final savedFiles = prefs.getString("opened_files");
-  final lastFile = prefs.getInt("lastFile") ?? 0;
+  final savedFiles = prefs.getString(kKeyOpenedFiles);
+  final lastFile = prefs.getInt(kKeyLastFile) ?? 0;
 
   if (savedFiles != null) {
     try {

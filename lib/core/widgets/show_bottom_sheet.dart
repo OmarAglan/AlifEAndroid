@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "../../constants.dart";
 import "../theme/colors.dart";
+import "../theme/material.dart";
 
 class MyBottomSheet extends StatefulWidget {
   const MyBottomSheet({
@@ -35,14 +36,12 @@ class _MyBottomSheetState extends State<MyBottomSheet> {
       initialChildSize: 0.7,
       minChildSize: 0.4,
       maxChildSize: 0.95,
-      builder: (_, controller) => Container(
+      builder: (_, controller) => MyMaterial(
         width: double.infinity,
-        decoration: BoxDecoration(
-          color: context.background,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(kMediumBorderRadius),
-            topRight: Radius.circular(kMediumBorderRadius),
-          ),
+        theme: MyMaterialTheme.glass,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(kMediumBorderRadius),
+          topRight: Radius.circular(kMediumBorderRadius),
         ),
         child: Column(
           children: [

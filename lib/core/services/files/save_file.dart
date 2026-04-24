@@ -6,6 +6,7 @@ import "package:file_saver/file_saver.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
+import "../../../constants.dart";
 import "../../../data/data_types.dart";
 import "../../../data/ide_data.dart";
 
@@ -92,6 +93,6 @@ Future<bool> saveFileToStorage(
 Future<void> saveFilesLocal(BuildContext context) async {
   final data = Provider.of<IdeData>(context, listen: false);
   final prefs = await SharedPreferences.getInstance();
-  await prefs.setString("opened_files", jsonEncode(data.files));
+  await prefs.setString(kKeyOpenedFiles, jsonEncode(data.files));
   data.setFiles(data.files);
 }

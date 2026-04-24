@@ -42,7 +42,7 @@ class ShortcutsData extends ChangeNotifier {
   void _initShortcuts() async {
     prefs = await SharedPreferences.getInstance();
     shortcuts = List.from(_defaultShortcuts);
-    final String? savedCounts = prefs.getString("shortcuts_counts");
+    final String? savedCounts = prefs.getString(kKeyShortcutsCounts);
 
     if (savedCounts != null) {
       final Map<String, dynamic> countsMap = jsonDecode(savedCounts);
@@ -117,7 +117,7 @@ class ShortcutsData extends ChangeNotifier {
     for (var item in shortcuts) {
       if (item.usageCount > 0) countsMap[item.id.toString()] = item.usageCount;
     }
-    await prefs.setString("shortcuts_counts", jsonEncode(countsMap));
+    await prefs.setString(kKeyShortcutsCounts, jsonEncode(countsMap));
   }
 }
 

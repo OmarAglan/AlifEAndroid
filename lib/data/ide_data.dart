@@ -42,9 +42,10 @@ class IdeData extends ChangeNotifier {
 
   Future<void> _init() async {
     _prefs = await SharedPreferences.getInstance();
-    _lastFile = _prefs?.getInt("lastFile") ?? 0;
-    autoSave = _prefs?.getBool("autoSave") ?? true;
-    fontSize = _prefs?.getDouble("fontSize") ?? kMediumFont;
+    _lastFile = _prefs?.getInt(kKeyLastFile) ?? 0;
+    autoSave = _prefs?.getBool(kKeyAutoSave) ?? true;
+    fontSize = _prefs?.getDouble(kKeyFontSize) ?? kMediumFont;
+    workspacePath = _prefs?.getString(kKeyWorkspacePath);
     notifyListeners();
   }
 
@@ -55,7 +56,7 @@ class IdeData extends ChangeNotifier {
   void addFile(FileEntity file) async {
     files.add(file);
     _prefs ??= await SharedPreferences.getInstance();
-    await _prefs!.setString("opened_files", jsonEncode(files));
+    await _prefs?.setString(kKeyOpenedFiles, jsonEncode(files));
     notifyListeners();
   }
 
@@ -108,8 +109,8 @@ class IdeData extends ChangeNotifier {
           removed.path!.isNotEmpty) {
         try {
           await File(removed.path!).delete();
-        } catch (_) {
-          // Ignore delete errors and keep working.
+        } catch (e) {
+          debugPrint("فشل حذف الملف $e");
         }
       }
 
@@ -228,6 +229,7 @@ class IdeData extends ChangeNotifier {
   String? workspacePath;
   void setWorkspacePath(String? path) {
     workspacePath = path;
+    if (path != null) _prefs?.setString(kKeyWorkspacePath, path);
     notifyListeners();
   }
 
@@ -303,27 +305,27 @@ class IdeData extends ChangeNotifier {
   }
 
   // settings
-  int _lastFile = 15;
+  int _lastFile = 0;
   int get lastFile => _lastFile;
 
   Future<void> setLastFile(int value) async {
     _lastFile = value;
     _prefs ??= await SharedPreferences.getInstance();
-    await _prefs!.setInt("lastFile", value);
+    await _prefs?.setInt(kKeyLastFile, value);
     notifyListeners();
   }
 
   Future<void> setAutoSave(bool value) async {
     autoSave = value;
     _prefs ??= await SharedPreferences.getInstance();
-    await _prefs!.setBool("autoSave", value);
+    await _prefs?.setBool(kKeyAutoSave, value);
     notifyListeners();
   }
 
   Future<void> setFontSize(double value) async {
     fontSize = value;
     _prefs ??= await SharedPreferences.getInstance();
-    await _prefs!.setDouble("fontSize", value);
+    await _prefs?.setDouble(kKeyFontSize, value);
     notifyListeners();
   }
 }
