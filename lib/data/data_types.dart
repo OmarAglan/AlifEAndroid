@@ -1,3 +1,5 @@
+enum FileAction { rename, delete, close, toggleReadOnly }
+
 class FileEntity {
   final int id;
   final String name;
@@ -40,6 +42,8 @@ class FileEntity {
       "ReadOnly": readOnly,
     };
   }
+
+  static FileEntity empty() => const FileEntity(id: -1, name: "", code: "");
 
   FileEntity copyWith({
     int? id,

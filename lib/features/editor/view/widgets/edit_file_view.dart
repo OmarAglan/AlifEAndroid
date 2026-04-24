@@ -50,10 +50,14 @@ class EditSheet extends StatelessWidget {
                 title: l10n.delete,
                 color: Colors.red,
                 icon: LucideIcons.trash,
-                onTap: () {
-                  data.updateFile(context, file.id, "delete");
-                  Navigator.pop(context);
-                },
+                onTap: () => showCustomDialog(
+                  title: "حذف الملف",
+                  subtitle: "هل متاكد من حذف الملف؟",
+                  onConfirm: () {
+                    data.updateFile(context, file.id, FileAction.delete);
+                    Navigator.pop(context);
+                  },
+                ),
               ),
             ),
             if (hasPath)
@@ -63,7 +67,7 @@ class EditSheet extends StatelessWidget {
                   color: Colors.amber,
                   icon: LucideIcons.x,
                   onTap: () {
-                    data.updateFile(context, file.id, "close");
+                    data.updateFile(context, file.id, FileAction.close);
                     Navigator.pop(context);
                   },
                 ),
@@ -79,7 +83,7 @@ class EditSheet extends StatelessWidget {
                 color: file.readOnly ? Colors.red : Colors.green,
                 icon: file.readOnly ? LucideIcons.penOff : LucideIcons.pen,
                 onTap: () {
-                  data.updateFile(context, file.id, "readOnly");
+                  data.updateFile(context, file.id, FileAction.toggleReadOnly);
                   Navigator.pop(context);
                 },
               ),

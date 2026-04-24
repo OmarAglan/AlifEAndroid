@@ -68,73 +68,59 @@ class IdeData extends ChangeNotifier {
   void updateFile(
     BuildContext context,
     int id,
-    String type, {
+    FileAction type, {
     String? newName,
   }) async {
     if (id < 0 || id >= files.length) return;
+    var file = files[id];
 
-    final file = files[id];
-    if (type == "reName") {
-      final updatedName = newName?.trim();
-      if (updatedName == null || updatedName.isEmpty) return;
-
-      final updatedFile = file.copyWith(name: updatedName);
-      files[id] = updatedFile;
-
-      if (file.path != null && file.path!.isNotEmpty) {
-        final oldFile = File(file.path!);
-        final dir = oldFile.parent.path;
-        final newPath = "$dir/$updatedName";
-
-        if (await oldFile.exists()) {
-          try {
-            final renamed = await oldFile.rename(newPath);
-            files[id] = updatedFile.copyWith(path: renamed.path);
-          } catch (_) {
-            final copied = await oldFile.copy(newPath);
-            await oldFile.delete();
-            files[id] = updatedFile.copyWith(path: copied.path);
-          }
-        }
-      }
-
-      if (_selectedFile.id == id) setSelectedFile(files[id]);
-
-      if (!context.mounted) return;
-      openFile(id, context);
-    } else if (type == "delete" || type == "close") {
-      final removed = files.removeAt(id);
-      if (type == "delete" &&
-          removed.path != null &&
-          removed.path!.isNotEmpty) {
+    if (type == FileAction.rename && newName?.trim().isNotEmpty == true) {
+      final String? newPath = file.path != null
+          ? "${File(file.path!).parent.path}/${newName!.trim()}"
+          : null;
+      if (newPath != null && await File(file.path!).exists()) {
         try {
-          await File(removed.path!).delete();
-        } catch (e) {
-          debugPrint("فشل حذف الملف $e");
+          await File(file.path!).rename(newPath);
+        } catch (_) {
+          await File(file.path!).copy(newPath);
+          await File(file.path!).delete();
         }
+        file = file.copyWith(path: newPath);
+      }
+      files[id] = file.copyWith(name: newName!.trim());
+      if (_selectedFile.id == id) setSelectedFile(files[id]);
+      if (context.mounted) openFile(id, context);
+    } else if (type == FileAction.delete || type == FileAction.close) {
+      final removed = files.removeAt(id);
+      if (_selectedFile.id == removed.id) _selectedFile = FileEntity.empty();
+
+      if (type == FileAction.delete && removed.path?.isNotEmpty == true) {
+        try {
+          final f = File(removed.path!).absolute;
+          if (f.existsSync()) f.deleteSync(recursive: true);
+        } catch (_) {}
       }
 
       if (!context.mounted) return;
       if (files.isNotEmpty) {
-        final nextIndex = id >= files.length ? files.length - 1 : id;
-        openFile(nextIndex, context);
+        openFile(id >= files.length ? files.length - 1 : id, context);
       } else {
-        const newFile = FileEntity(
-          id: 0,
-          name: "ملف_جديد_1.الف",
-          code: "",
-          saved: false,
+        files.add(
+          const FileEntity(
+            id: 0,
+            name: "ملف_جديد_1.الف",
+            code: "",
+            saved: false,
+          ),
         );
-        files.add(newFile);
         openFile(0, context);
       }
-    } else if (type == "readOnly") {
-      final updatedFile = file.copyWith(readOnly: !file.readOnly);
-      files[id] = updatedFile;
-      code.readOnly = updatedFile.readOnly;
+    } else if (type == FileAction.toggleReadOnly) {
+      files[id] = file.copyWith(readOnly: !file.readOnly);
+      code.readOnly = files[id].readOnly;
     }
 
-    saveFilesLocal(context);
+    if (context.mounted) saveFilesLocal(context);
     notifyListeners();
   }
 

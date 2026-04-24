@@ -112,24 +112,15 @@ class MyMaterial extends StatelessWidget {
   }
 
   Gradient _buildGradient(BuildContext context, bool isGlass) {
-    if (isGlass) {
-      return LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          context.foreground.withOpacity(0.1),
-          Colors.transparent,
-          context.foreground.withOpacity(0.1),
-        ],
-      );
-    }
-
-    final Color baseColor = whiteBG ? context.foreground : context.background;
+    final baseColor = isGlass ? context.foreground : context.background;
     return LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-      colors: [baseColor, baseColor],
-      stops: const [0, 1],
+      colors: [
+        baseColor.withOpacity(isGlass ? 0.1 : 0.9),
+        baseColor.withOpacity(isGlass ? 0 : 0.5),
+        baseColor.withOpacity(isGlass ? 0.1 : 0.9),
+      ],
     );
   }
 

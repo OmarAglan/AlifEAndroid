@@ -6,6 +6,7 @@ import "../../../../core/services/files/open_file.dart";
 import "../../../../core/services/files/open_file_from_storage.dart";
 import "../../../../core/utils/show_dialog.dart";
 import "../../../../core/widgets/radio_input.dart";
+import "../../../../data/data_types.dart";
 import "../../../../data/ide_data.dart";
 import "edit_file_view.dart";
 
@@ -19,8 +20,12 @@ class OpenedFiles extends StatelessWidget {
     );
     showCustomDialog(
       title: l10n.editFile,
-      onConfirm: () =>
-          data.updateFile(context, id, "reName", newName: controller.text),
+      onConfirm: () => data.updateFile(
+        context,
+        id,
+        FileAction.rename,
+        newName: controller.text,
+      ),
       child: EditSheet(file: file, controller: controller),
     );
   }
