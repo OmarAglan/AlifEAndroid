@@ -80,10 +80,6 @@ Future<bool> handleCommands(IdeData data, List<String> commandParts) async {
   }
 }
 
-// ---------------------------------------------------------
-// الدوال المساعدة (Helper Methods)
-// ---------------------------------------------------------
-
 String _getCurrentPath(IdeData data) {
   return data.workspacePath?.isNotEmpty == true
       ? data.workspacePath!

@@ -4,8 +4,6 @@ import "widgets/terminal_input.dart";
 import "widgets/terminal_outputs.dart";
 import "widgets/terminal_top_bar.dart";
 
-// lib/features/terminal/view/terminal_view.dart
-
 class TerminalView extends StatelessWidget {
   const TerminalView({super.key});
 

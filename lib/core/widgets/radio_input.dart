@@ -50,12 +50,10 @@ class _RadioInputState extends State<RadioInput> {
   @override
   void didUpdateWidget(RadioInput oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // لو القيمة اتغيرت أو عدد العناصر اتغير (عشان الحذف)
     if (oldWidget.value != widget.value ||
         oldWidget.items.length != widget.items.length) {
       _updateSelectedIndex();
 
-      // بلاش Future.delayed يا محمد، استخدم دي عشان تستنى الفريم الجديد
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) _scrollToSelected();
       });
