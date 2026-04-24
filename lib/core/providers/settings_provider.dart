@@ -10,7 +10,9 @@ class SettingsProvider extends ChangeNotifier {
   double fontSize = kMediumFont;
   String? alifBinPath;
 
-  SettingsProvider() { _init(); }
+  SettingsProvider() {
+    _init();
+  }
 
   Future<void> _init() async {
     _prefs = await SharedPreferences.getInstance();

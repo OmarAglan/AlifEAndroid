@@ -43,8 +43,8 @@ class OpenedFiles extends StatelessWidget {
                 value: file.id,
                 name:
                     file.name +
-                    (!file.saved ? "*" : "") +
-                    (file.readOnly ? "!" : ""),
+                    (file.readOnly ? "!" : "") +
+                    (!file.saved ? "*" : ""),
               );
             }).toList(),
             onAdd: () => createFile(context: context),

@@ -36,7 +36,7 @@ class _IDEViewState extends State<IDEView> {
       workspace = context.read<WorkspaceProvider>();
       settings = context.read<SettingsProvider>();
 
-      workspace.code.addListener(_onCodeChanged);
+      workspace.codeController.addListener(_onCodeChanged);
 
       if (Platform.isAndroid) {
         _checkAndInitLsp();
@@ -48,9 +48,9 @@ class _IDEViewState extends State<IDEView> {
   void _onCodeChanged() async {
     if (workspace.selectedFile.readOnly) return;
 
-    if (workspace.selectedFile.code != workspace.code.text) {
+    if (workspace.selectedFile.code != workspace.codeController.text) {
       workspace.editCode(
-        workspace.code.text,
+        workspace.codeController.text,
         settings.autoSave,
         markDirty: true,
       );
@@ -73,7 +73,7 @@ class _IDEViewState extends State<IDEView> {
     return Expanded(
       child: CodeForge(
         // init
-        controller: workspace.code,
+        controller: workspace.codeController,
         undoController: workspace.undoController,
         focusNode: workspace.focusNode,
         language: alif,
@@ -140,10 +140,10 @@ class _IDEViewState extends State<IDEView> {
         environment: env,
       );
 
-      workspace.code.lspConfig = _lspConfig;
+      workspace.codeController.lspConfig = _lspConfig;
 
       if (workspace.selectedFile.path != null) {
-        workspace.code.openedFile = workspace.selectedFile.path;
+        workspace.codeController.openedFile = workspace.selectedFile.path;
       }
       debugPrint("Alif LSP Initialized at: $executablePath");
     } catch (e) {
@@ -156,7 +156,7 @@ class _IDEViewState extends State<IDEView> {
   @override
   void dispose() {
     settings.removeListener(_checkAndInitLsp);
-    workspace.code.removeListener(_onCodeChanged);
+    workspace.codeController.removeListener(_onCodeChanged);
     _lspConfig?.dispose();
     super.dispose();
   }

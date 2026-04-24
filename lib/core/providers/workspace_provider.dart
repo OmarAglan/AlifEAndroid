@@ -13,7 +13,7 @@ import "../utils/show_message.dart";
 
 class WorkspaceProvider extends ChangeNotifier {
   SharedPreferences? _prefs;
-  late final CodeForgeController code;
+  late final CodeForgeController codeController;
   late final FindController findController;
   late final UndoRedoController undoController;
   late final FocusNode focusNode;
@@ -26,8 +26,8 @@ class WorkspaceProvider extends ChangeNotifier {
   int lastFile = 0;
 
   WorkspaceProvider() {
-    code = CodeForgeController();
-    findController = FindController(code);
+    codeController = CodeForgeController();
+    findController = FindController(codeController);
     undoController = UndoRedoController();
     focusNode = FocusNode();
     _selectedFile = FileEntity.empty();
@@ -57,7 +57,7 @@ class WorkspaceProvider extends ChangeNotifier {
 
   @override
   void dispose() {
-    code.dispose();
+    codeController.dispose();
     findController.dispose();
     undoController.dispose();
     focusNode.dispose();
@@ -128,7 +128,7 @@ class WorkspaceProvider extends ChangeNotifier {
       }
     } else if (type == FileAction.toggleReadOnly) {
       files[id] = file.copyWith(readOnly: !file.readOnly);
-      code.readOnly = files[id].readOnly;
+      codeController.readOnly = files[id].readOnly;
     }
 
     if (context.mounted) saveFilesLocal(context);
@@ -140,16 +140,22 @@ class WorkspaceProvider extends ChangeNotifier {
       final currentIndex = files.indexWhere((f) => f.id == _selectedFile.id);
       if (currentIndex != -1) {
         files[currentIndex] = files[currentIndex].copyWith(
-          cursor: [code.selection.start, code.selection.end],
+          cursor: [
+            codeController.selection.start,
+            codeController.selection.end,
+          ],
         );
       }
     }
     _selectedFile = file;
-    code.readOnly = file.readOnly;
+    codeController.readOnly = file.readOnly;
     Future.microtask(() {
-      final int start = file.cursor[0].clamp(0, code.text.length);
-      final int end = file.cursor[1].clamp(0, code.text.length);
-      code.selection = TextSelection(baseOffset: start, extentOffset: end);
+      final int start = file.cursor[0].clamp(0, codeController.text.length);
+      final int end = file.cursor[1].clamp(0, codeController.text.length);
+      codeController.selection = TextSelection(
+        baseOffset: start,
+        extentOffset: end,
+      );
     });
     notifyListeners();
   }
@@ -160,8 +166,8 @@ class WorkspaceProvider extends ChangeNotifier {
     TextSelection? selection,
     bool markDirty = false,
   }) {
-    if (code.text != newCode) code.text = newCode;
-    if (selection != null) code.selection = selection;
+    if (codeController.text != newCode) codeController.text = newCode;
+    if (selection != null) codeController.selection = selection;
 
     if (markDirty) {
       _selectedFile = _selectedFile.copyWith(

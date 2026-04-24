@@ -23,7 +23,7 @@ Future<bool> saveFileToStorage(
     return false;
   }
 
-  final code = workspace.code.text;
+  final code = workspace.codeController.text;
   final selectedId = workspace.selectedFile.id;
   final filesList = List<FileEntity>.from(workspace.files);
   final currentIndex = filesList.indexWhere((file) => file.id == selectedId);
@@ -80,7 +80,6 @@ Future<bool> saveFileToStorage(
       if (currentIndex >= 0) {
         filesList[currentIndex] = fileData;
       }
-      workspace.setSelectedFile(fileData);
       workspace.setFiles(filesList);
     } catch (e) {
       terminal.addOutput("خطأ أثناء الحفظ: $e");

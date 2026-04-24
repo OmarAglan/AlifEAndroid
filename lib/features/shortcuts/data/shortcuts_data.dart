@@ -58,7 +58,7 @@ class ShortcutsProvider extends ChangeNotifier {
 
   void insertText(BuildContext context, int index) {
     final workspace = context.read<WorkspaceProvider>();
-    final controller = workspace.code;
+    final controller = workspace.codeController;
     final shortcut = shortcuts[index];
     final selection = controller.selection;
 

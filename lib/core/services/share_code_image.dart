@@ -16,7 +16,7 @@ import "../utils/show_message.dart";
 class ShareAsImageService {
   static Future<void> shareCodeAsImage(BuildContext context) async {
     final workspace = context.read<WorkspaceProvider>();
-    final code = workspace.code;
+    final code = workspace.codeController;
     final lines = code.text.split("\n");
 
     if (lines.isEmpty || code.text.isEmpty) {
