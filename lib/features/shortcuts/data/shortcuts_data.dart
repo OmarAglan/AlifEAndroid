@@ -28,7 +28,7 @@ class ShortcutsData extends ChangeNotifier {
     ShortcutsEntity(id: 11, name: "]"),
     ShortcutsEntity(id: 12, name: "{", closing: "}"),
     ShortcutsEntity(id: 13, name: "}"),
-    ShortcutsEntity(id: 14, name: "#"),
+    ShortcutsEntity(id: 14, name: "#", closing: ""),
     ShortcutsEntity(id: 15, name: ","),
     ShortcutsEntity(id: 16, name: "\\"),
     ShortcutsEntity(id: 17, name: "*"),
@@ -60,18 +60,45 @@ class ShortcutsData extends ChangeNotifier {
     final ideData = Provider.of<IdeData>(context, listen: false);
     final controller = ideData.code;
     final shortcut = shortcuts[index];
+    final selection = controller.selection;
 
     if (shortcut.insert == kCodeSpace) {
+      // اضافة المسافة التلقائية
       controller.indent();
     } else if (shortcut.closing != null) {
-      controller.insertAtCurrentCursor(shortcut.insert + shortcut.closing!);
-
-      final currentOffset = controller.selection.extentOffset;
-      controller.selection = TextSelection.collapsed(
-        offset: currentOffset - shortcut.closing!.length,
-      );
+      if (selection.start != selection.end) {
+        // تحويط النص المحدد
+        final selectedText = controller.text.substring(
+          selection.start,
+          selection.end,
+        );
+        final wrappedText =
+            "${shortcut.insert}${shortcut.insert == "#" ? " " : ""}$selectedText${shortcut.closing}";
+        controller.replaceRange(selection.start, selection.end, wrappedText);
+        controller.selection = TextSelection(
+          baseOffset: selection.start,
+          extentOffset: selection.start + wrappedText.length,
+        );
+      } else {
+        // اضافة مكان المؤشر فتح واغلاق
+        controller.insertAtCurrentCursor(shortcut.insert + shortcut.closing!);
+        final currentOffset = controller.selection.extentOffset;
+        controller.selection = TextSelection.collapsed(
+          offset: currentOffset - shortcut.closing!.length,
+        );
+      }
     } else {
-      controller.insertAtCurrentCursor(shortcut.insert);
+      if (selection.start != selection.end) {
+        // تبديل النص المحدد
+        controller.replaceRange(
+          selection.start,
+          selection.end,
+          shortcut.insert,
+        );
+      } else {
+        // اضافة مكان المؤشر
+        controller.insertAtCurrentCursor(shortcut.insert);
+      }
     }
 
     _updateUsage(index);
@@ -79,9 +106,7 @@ class ShortcutsData extends ChangeNotifier {
 
   void _updateUsage(int index) {
     shortcuts[index].usageCount++;
-    _sortShortcuts();
     _saveCountsOnly();
-    notifyListeners();
   }
 
   void _sortShortcuts() =>

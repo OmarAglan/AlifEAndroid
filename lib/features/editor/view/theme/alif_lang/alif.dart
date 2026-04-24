@@ -108,7 +108,7 @@ final alif = Mode(
     // ---------- Function ----------
     "~function": Mode(
       className: "function",
-      begin: r"([\u0600-\u06FFa-zA-Z_][\u0600-\u06FFa-zA-Z0-9_]*)\s*\(",
+      begin: r"([\u0600-\u06FFa-zA-Z_][\u0600-\u06FFa-zA-Z0-9_]*)\(",
       returnBegin: true,
       end: r"\(",
       excludeEnd: true,

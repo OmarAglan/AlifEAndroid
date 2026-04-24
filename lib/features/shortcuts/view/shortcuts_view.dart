@@ -11,7 +11,7 @@ class ShortcutsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final shortCustsData = context.watch<ShortcutsData>();
+    final shortCustsData = Provider.of<ShortcutsData>(context, listen: false);
     final ideData = context.watch<IdeData>();
     return SafeArea(
       top: false,
