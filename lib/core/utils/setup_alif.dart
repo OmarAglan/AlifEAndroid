@@ -28,7 +28,8 @@ Future<void> setupAlif(BuildContext context) async {
     if (!await alifDir.exists()) await alifDir.create(recursive: true);
     if (!await libDir.exists()) await libDir.create(recursive: true);
 
-    String finalPath = "";
+    String alifPath = "";
+    // String gitPath = "";
     final List<String> filesToCopy = [
       "aliflang/library/التبادل.aliflib",
       "aliflang/library/العشوائي.aliflib",
@@ -40,11 +41,17 @@ Future<void> setupAlif(BuildContext context) async {
         "aliflang/arm64-v8a/alif_lsp",
         "aliflang/arm64-v8a/libalif.so",
         "aliflang/arm64-v8a/libc++_shared.so",
+        // "aliflang/arm64-v8a/bin/libgit.so",
       ]);
-      finalPath = "${alifDir.path}/libalif.so";
+      alifPath = "${alifDir.path}/libalif.so";
+      // gitPath = "${alifDir.path}/libgit.so";
     } else if (Platform.isLinux) {
-      filesToCopy.add("aliflang/linux/amd64");
-      finalPath = "${alifDir.path}/amd64";
+      filesToCopy.addAll([
+        "aliflang/linux/alif/amd64",
+        // "aliflang/linux/bin/git",
+      ]);
+      alifPath = "${alifDir.path}/amd64";
+      // gitPath = "${alifDir.path}/git";
     } else {
       return;
     }
@@ -64,15 +71,20 @@ Future<void> setupAlif(BuildContext context) async {
         }),
       );
 
-      if (Platform.isLinux) await Process.run("chmod", ["+x", finalPath]);
+      if (Platform.isLinux || Platform.isAndroid || Platform.isMacOS) {
+        await Process.run("chmod", ["+x", alifPath]);
+        // await Process.run("chmod", ["+x", gitPath]);
+      }
 
       await prefs.setString(kKeyAlifVersion, kAlifVersion);
       if (installedVersion.isNotEmpty) terminal.addOutput(updateMessage);
     }
 
-    if (finalPath.isNotEmpty) {
+    if (alifPath.isNotEmpty) {
       if (!context.mounted) return;
-      context.read<SettingsProvider>().setAlifPath(finalPath);
+      final settings = context.read<SettingsProvider>();
+      settings.setAlifPath(alifPath);
+      // if (gitPath.isNotEmpty) settings.setGitPath(gitPath);
       terminal.addOutput("${l10n.successInstallAlifVersion} $kAlifVersion");
     }
   } catch (e, s) {

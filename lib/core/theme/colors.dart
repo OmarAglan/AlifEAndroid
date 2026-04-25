@@ -46,6 +46,8 @@ abstract class AppThemes {
       tertiary: AppColors.success,
     ),
     scaffoldBackgroundColor: AppColors.background,
+    visualDensity: VisualDensity.compact,
+    platform: TargetPlatform.linux,
     fontFamily: kMainFont,
   );
 }

@@ -40,11 +40,11 @@ flutter:
     assets:
         - assets/
         - assets/aliflang/
+        - assets/aliflang/library/
         - assets/aliflang/arm64-v8a/alif_lsp
         - assets/aliflang/arm64-v8a/libalif.so
         - assets/aliflang/arm64-v8a/libc++_shared.so
-        - assets/aliflang/library/
-        - assets/aliflang/linux/amd64
+        - assets/aliflang/linux/alif/amd64
 
     fonts:
         - family: Tajawal

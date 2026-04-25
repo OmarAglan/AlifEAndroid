@@ -1,3 +1,4 @@
+import "dart:convert";
 import "dart:io";
 import "package:flutter/material.dart";
 import "package:path_provider/path_provider.dart";
@@ -33,7 +34,13 @@ Future<void> runCommand(BuildContext context, String commandInput) async {
     if (isAlifCommand) {
       await _runAlifCommand(settings, workspace, terminal, commandParts);
     } else {
-      await _runGeneralCommand(context, workspace, terminal, commandParts);
+      await _runGeneralCommand(
+        context,
+        workspace,
+        terminal,
+        settings,
+        commandParts,
+      );
     }
   } catch (e, s) {
     debugPrint("استثناء: $e\n$s");
@@ -86,7 +93,6 @@ Future<void> _runAlifCommand(
       ? workspace.selectedFile.name
       : (commandParts.length > 1 ? commandParts[1] : "");
 
-  // لازم تعدل دالة getPromptPath عشان تقبل WorkspaceProvider
   final prompt = getPromptPath(workspace);
   terminal.addOutput("$prompt > $kAlifBin $outputName");
 
@@ -94,6 +100,7 @@ Future<void> _runAlifCommand(
   await _executeAndListen(
     workspace,
     terminal,
+    settings,
     executable,
     processArgs,
     workingDir,
@@ -105,9 +112,9 @@ Future<void> _runGeneralCommand(
   BuildContext context,
   WorkspaceProvider workspace,
   TerminalProvider terminal,
+  SettingsProvider settings,
   List<String> commandParts,
 ) async {
-  // مررنا الـ context هنا عشان الدالة دي تعتمد على نفسها وتقرا اللي هي عايزاه
   final isBuiltIn = await handleCommands(context, commandParts);
   if (isBuiltIn) return;
 
@@ -125,6 +132,7 @@ Future<void> _runGeneralCommand(
   await _executeAndListen(
     workspace,
     terminal,
+    settings,
     executable,
     processArgs,
     workingDir,
@@ -173,42 +181,99 @@ Future<void> _ensureExecutablePermissions(String path) async {
 Future<void> _executeAndListen(
   WorkspaceProvider workspace,
   TerminalProvider terminal,
+  SettingsProvider settings,
   String executable,
   List<String> args,
   String workingDir,
   Map<String, String> environment,
 ) async {
+  final List<String> finalArgs = List.from(args);
+  String finalExecutable = executable;
+  final env = Map<String, String>.from(environment);
+
+  final isGit = executable.contains("git");
+  final isGitClone = isGit && args.isNotEmpty && args[0] == "clone";
+
+  if (isGit) {
+    if (isGitClone && !args.contains("--progress")) finalArgs.add("--progress");
+    finalExecutable = settings.gitBinPath ?? executable;
+    if (Platform.isAndroid && finalExecutable == "git") {
+      terminal.addOutput("لم يتم العثور على تطبيق Git.", isError: true);
+      terminal.clearRunningProcess();
+      return;
+    }
+    _ensureExecutablePermissions(finalExecutable);
+    env["GIT_TERMINAL_PROMPT"] = "0";
+    env["GIT_FLUSH"] = "1";
+  }
+
   final process = await Process.start(
-    executable,
-    args,
-    environment: environment,
+    finalExecutable,
+    finalArgs,
+    environment: env,
     workingDirectory: workingDir,
+    runInShell: true,
   );
+
+  if (isGitClone) await process.stdin.close();
 
   terminal.editProcess(process);
 
   final stderrFuture = process.stderr
-      .transform(const SystemEncoding().decoder)
+      .transform(const Utf8Decoder(allowMalformed: true))
       .forEach((result) {
-        terminal.addOutput(
-          result.trim(),
-          isError: !result.toLowerCase().contains("warning"),
-        );
+        if (isGit) {
+          final lines = result.split(RegExp(r"\r|\n"));
+          for (var line in lines) {
+            final cleanLine = line.trim();
+            if (cleanLine.isEmpty) continue;
+
+            if (cleanLine.contains("%") &&
+                !cleanLine.toLowerCase().contains("done")) {
+              continue;
+            }
+
+            final isWarning = cleanLine.toLowerCase().contains("warning");
+            terminal.addOutput(cleanLine, isError: isWarning ? false : null);
+          }
+        } else {
+          final isWarning = result.toLowerCase().contains("warning");
+          terminal.addOutput(
+            result,
+            isError: isWarning ? false : null,
+            newLine: false,
+          );
+        }
       });
 
   final stdoutFuture = process.stdout
-      .transform(const SystemEncoding().decoder)
+      .transform(const Utf8Decoder(allowMalformed: true))
       .forEach((result) {
         terminal.terminalFocus.requestFocus();
-        final lines = result.trim().split("\n");
 
-        if (lines.isNotEmpty &&
-            lines.last.isNotEmpty &&
-            lines.last.trim().endsWith(":")) {
-          terminal.updateTerminalHint(lines.last.replaceAll(":", "").trim());
+        if (isGit) {
+          final lines = result.split(RegExp(r"\r|\n"));
+          for (var line in lines) {
+            final cleanLine = line.trim();
+            if (cleanLine.isEmpty) continue;
+
+            if (cleanLine.endsWith(":")) {
+              terminal.updateTerminalHint(cleanLine.replaceAll(":", "").trim());
+            }
+
+            terminal.addOutput(cleanLine);
+          }
+        } else {
+          final lines = result.trim().split("\n");
+
+          if (lines.isNotEmpty &&
+              lines.last.isNotEmpty &&
+              lines.last.trim().endsWith(":")) {
+            terminal.updateTerminalHint(lines.last.replaceAll(":", "").trim());
+          }
+
+          terminal.addOutput(result, newLine: false);
         }
-
-        terminal.addOutput(result, newLine: false);
       });
 
   await Future.wait([stdoutFuture, stderrFuture]);

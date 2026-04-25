@@ -9,6 +9,7 @@ class SettingsProvider extends ChangeNotifier {
   bool autoSave = true;
   double fontSize = kMediumFont;
   String? alifBinPath;
+  String? gitBinPath;
 
   SettingsProvider() {
     _init();
@@ -24,6 +25,11 @@ class SettingsProvider extends ChangeNotifier {
 
   void setAlifPath(String path) {
     alifBinPath = path;
+    notifyListeners();
+  }
+
+  void setGitPath(String path) {
+    gitBinPath = path;
     notifyListeners();
   }
 
