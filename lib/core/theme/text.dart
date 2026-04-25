@@ -15,6 +15,7 @@ abstract class ThemeText {
 
   static const TextStyle mid = TextStyle(
     fontSize: kMediumFont,
+    fontFamily: kMainFont,
     color: AppColors.secondary,
   );
 

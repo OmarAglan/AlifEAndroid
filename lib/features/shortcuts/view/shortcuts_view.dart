@@ -1,142 +1,90 @@
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
+import "../../../constants.dart";
 import "../../../core/providers/workspace_provider.dart";
 import "../../../core/theme/colors.dart";
-import "../../../core/theme/text.dart";
-import "../data/shortcuts_data.dart";
 
-class ShortcutsView extends StatefulWidget {
+class ShortcutsView extends StatelessWidget {
   const ShortcutsView({super.key});
 
   @override
-  State<ShortcutsView> createState() => _ShortcutsViewState();
-}
-
-class _ShortcutsViewState extends State<ShortcutsView> {
-  // دالة التحديث اللي هناديها لما السليكشن يتغير
-  void _updateSelection() {
-    if (mounted) setState(() {});
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // بنجيب الكنترولر ونضيف له الليسنر
-    final workspace = Provider.of<WorkspaceProvider>(context, listen: false);
-    workspace.codeController.addListener(_updateSelection);
-  }
-
-  @override
-  void dispose() {
-    // مهم جداً تشيله عشان الباقة والجهاز ميهنجوش
-    final workspace = Provider.of<WorkspaceProvider>(context, listen: false);
-    workspace.codeController.removeListener(_updateSelection);
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final shortcusts = context.read<ShortcutsProvider>();
     final workspace = context.watch<WorkspaceProvider>();
+    const double iconSize = 17;
 
-    // دلوقتي الحساب ده هيتحدث "لحظياً" أول ما تلمس الشاشة
     final bool hasSelection =
         workspace.codeController.selection.start !=
         workspace.codeController.selection.end;
 
-    return SafeArea(
-      top: false,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 5),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return SizedBox(
+      height: 30,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  // زرار البحث
-                  ShortCutButton(
-                    onPressed: () => workspace.toggleSearch(),
-                    child: Icon(
-                      workspace.findController.isActive
-                          ? LucideIcons.x
-                          : LucideIcons.search,
-                      size: 15,
-                    ),
-                  ),
-                  ShortCutButton(
-                    onPressed: () => workspace.codeController.indent(),
-                    child: const Icon(LucideIcons.arrowRightToLine, size: 15),
-                  ),
-
-                  // Undo / Redo
-                  if (workspace.undoController.canUndo)
-                    ShortCutButton(
-                      onPressed: () => workspace.undoController.undo(),
-                      child: const Icon(LucideIcons.undo2, size: 15),
-                    ),
-                  if (workspace.undoController.canRedo)
-                    ShortCutButton(
-                      onPressed: () => workspace.undoController.redo(),
-                      child: const Icon(LucideIcons.redo2, size: 15),
-                    ),
-
-                  // تحريك السطور وتكرارها
-                  ShortCutButton(
-                    onPressed: () => workspace.codeController.moveLineUp(),
-                    child: const Icon(LucideIcons.arrowUp, size: 15),
-                  ),
-                  ShortCutButton(
-                    onPressed: () => workspace.codeController.moveLineDown(),
-                    child: const Icon(LucideIcons.arrowDown, size: 15),
-                  ),
-                  ShortCutButton(
-                    onPressed: () => workspace.codeController.duplicateLine(),
-                    child: const Icon(LucideIcons.layers2, size: 15),
-                  ),
-
-                  // copy / cut / paste / selectAll
-                  ShortCutButton(
-                    onPressed: () => workspace.codeController.paste(),
-                    child: const Icon(LucideIcons.clipboard, size: 15),
-                  ),
-                  if (hasSelection) ...[
-                    ShortCutButton(
-                      onPressed: () => workspace.codeController.copy(),
-                      child: const Icon(LucideIcons.copy, size: 15),
-                    ),
-                    if (!workspace.codeController.readOnly)
-                      ShortCutButton(
-                        onPressed: () => workspace.codeController.cut(),
-                        child: const Icon(LucideIcons.scissors, size: 15),
-                      ),
-                    ShortCutButton(
-                      onPressed: () => workspace.codeController.selectAll(),
-                      child: const Icon(LucideIcons.squareDashed, size: 15),
-                    ),
-                  ],
-                ],
+            // search
+            ShortCutButton(
+              onPressed: () => workspace.toggleSearch(),
+              child: Icon(
+                workspace.findController.isActive
+                    ? LucideIcons.x
+                    : LucideIcons.search,
+                size: iconSize,
               ),
             ),
+            ShortCutButton(
+              onPressed: () => workspace.codeController.indent(),
+              child: const Icon(LucideIcons.arrowRightToLine, size: iconSize),
+            ),
 
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: List.generate(
-                  shortcusts.shortcuts.length,
-                  (index) => ShortCutButton(
-                    onPressed: () => shortcusts.insertText(context, index),
-                    child: Text(
-                      shortcusts.shortcuts[index].name,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
+            // Undo / Redo
+            if (workspace.undoController.canUndo)
+              ShortCutButton(
+                onPressed: () => workspace.undoController.undo(),
+                child: const Icon(LucideIcons.undo2, size: iconSize),
+              ),
+            if (workspace.undoController.canRedo)
+              ShortCutButton(
+                onPressed: () => workspace.undoController.redo(),
+                child: const Icon(LucideIcons.redo2, size: iconSize),
+              ),
+
+            // تحريك السطور وتكرارها
+            ShortCutButton(
+              onPressed: () => workspace.codeController.moveLineUp(),
+              child: const Icon(LucideIcons.arrowUp, size: iconSize),
+            ),
+            ShortCutButton(
+              onPressed: () => workspace.codeController.moveLineDown(),
+              child: const Icon(LucideIcons.arrowDown, size: iconSize),
+            ),
+            ShortCutButton(
+              onPressed: () => workspace.codeController.duplicateLine(),
+              child: const Icon(LucideIcons.layers2, size: iconSize),
+            ),
+
+            // copy / cut / paste / selectAll
+            ShortCutButton(
+              onPressed: () => workspace.codeController.paste(),
+              child: const Icon(LucideIcons.clipboard, size: iconSize),
+            ),
+            if (hasSelection) ...[
+              ShortCutButton(
+                onPressed: () => workspace.codeController.copy(),
+                child: const Icon(LucideIcons.copy, size: iconSize),
+              ),
+              if (!workspace.codeController.readOnly)
+                ShortCutButton(
+                  onPressed: () => workspace.codeController.cut(),
+                  child: const Icon(LucideIcons.scissors, size: iconSize),
                 ),
+              ShortCutButton(
+                onPressed: () => workspace.codeController.selectAll(),
+                child: const Icon(LucideIcons.squareDashed, size: iconSize),
               ),
-            ),
+            ],
           ],
         ),
       ),
@@ -149,34 +97,59 @@ class ShortCutButton extends StatelessWidget {
     super.key,
     required this.child,
     required this.onPressed,
+    this.onLongPress,
+    this.shortcutLabel,
   });
 
-  final Widget child;
-  final Function() onPressed;
+  final dynamic child;
+  final VoidCallback onPressed;
+  final VoidCallback? onLongPress;
+  final String? shortcutLabel;
 
   @override
   Widget build(BuildContext context) {
+    final Widget mainChild = child is Widget ? child : Text(child.toString());
+
     return Padding(
-      padding: const EdgeInsets.all(1),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          minWidth: 0,
-          maxWidth: 37,
-          maxHeight: 30,
-        ),
+      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
+      child: SizedBox(
+        height: 40,
+        width: 40,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0x601A2340),
             foregroundColor: context.foreground,
-            padding: const EdgeInsets.symmetric(horizontal: 4),
+            padding: EdgeInsets.zero,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(8),
             ),
-            textStyle: ThemeText.mid,
+            textStyle: const TextStyle(
+              fontSize: kLargeFont,
+              fontFamily: kMainFont,
+            ),
           ),
-          onPressed: () => onPressed(),
-          child: child,
+          onPressed: onPressed,
+          onLongPress: onLongPress,
+          child: shortcutLabel == null
+              ? Center(child: mainChild)
+              : Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Center(child: mainChild),
+                    Positioned(
+                      top: 2,
+                      right: 4,
+                      child: Text(
+                        shortcutLabel!,
+                        style: TextStyle(
+                          fontSize: kSoSmallFont,
+                          color: context.secondary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
         ),
       ),
     );

@@ -4,6 +4,7 @@ import "../../../core/services/files/load_saved_files.dart";
 import "../../../core/services/premissions.dart";
 import "../../../core/utils/setup_alif.dart";
 import "../../../core/widgets/custom_app_bar.dart";
+import "../../keyboard/view/keyboard_view.dart";
 import "../../shortcuts/view/shortcuts_view.dart";
 import "widgets/ide_view.dart";
 import "widgets/opened_files.dart";
@@ -40,7 +41,15 @@ class _EditorViewState extends State<EditorView> {
         ),
         child: Column(
           spacing: 1,
-          children: [CustomAppBar(), OpenedFiles(), IDEView(), ShortcutsView()],
+          children: [
+            CustomAppBar(),
+            OpenedFiles(),
+            IDEView(),
+            SafeArea(
+              top: false,
+              child: Column(children: [ShortcutsView(), KeyboardView()]),
+            ),
+          ],
         ),
       ),
     );

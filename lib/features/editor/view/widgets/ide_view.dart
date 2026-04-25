@@ -76,6 +76,7 @@ class _IDEViewState extends State<IDEView> {
         focusNode: workspace.focusNode,
         language: alif,
         filePath: workspace.selectedFile.path,
+        keyboardType: TextInputType.none,
         // features
         enableFolding: settings.get(AppSetting.enableFolding),
         enableGuideLines: settings.get(AppSetting.enableGuideLines),

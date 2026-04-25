@@ -30,6 +30,7 @@ class WorkspaceProvider extends ChangeNotifier {
     findController = FindController(codeController);
     undoController = UndoRedoController();
     focusNode = FocusNode();
+    focusNode.addListener(_onFocusChange);
     _selectedFile = FileEntity.empty();
     _init();
   }
@@ -187,6 +188,14 @@ class WorkspaceProvider extends ChangeNotifier {
       }
     }
     notifyListeners();
+  }
+
+  bool enableKeybord = false;
+  void _onFocusChange() {
+    if (enableKeybord != focusNode.hasFocus) {
+      enableKeybord = focusNode.hasFocus;
+      notifyListeners();
+    }
   }
 
   void toggleSearch() {
