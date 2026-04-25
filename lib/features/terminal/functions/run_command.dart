@@ -56,10 +56,6 @@ Future<void> _runAlifCommand(
   List<String> commandParts,
 ) async {
   final binPath = settings.alifBinPath;
-  if (binPath == null) {
-    terminal.addOutput("لم يتم العثور على مسار لغة ألف", isError: true);
-    return;
-  }
 
   final alifFile = File(binPath);
   if (!await alifFile.exists()) {
@@ -196,7 +192,7 @@ Future<void> _executeAndListen(
 
   if (isGit) {
     if (isGitClone && !args.contains("--progress")) finalArgs.add("--progress");
-    finalExecutable = settings.gitBinPath ?? executable;
+    finalExecutable = settings.get(AppSetting.gitBinPath) ?? executable;
     if (Platform.isAndroid && finalExecutable == "git") {
       terminal.addOutput("لم يتم العثور على تطبيق Git.", isError: true);
       terminal.clearRunningProcess();

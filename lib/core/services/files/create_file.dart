@@ -18,9 +18,10 @@ void createFile({
       ? 0
       : workspace.files.map((file) => file.id).reduce(max) + 1;
 
+  final fileName = "ملف_جديد_${workspace.files.length + 1}.الف";
   final FileEntity newFile = FileEntity(
     id: newId,
-    name: name.isEmpty ? "ملف_جديد_${workspace.files.length + 1}.الف" : name,
+    name: name.isEmpty ? fileName : name,
     path: path.isEmpty ? null : path,
     code: code,
     saved: false,

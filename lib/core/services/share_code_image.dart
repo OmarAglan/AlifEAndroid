@@ -27,7 +27,7 @@ class ShareAsImageService {
     try {
       final image = await _captureCodeAsImage(
         code,
-        context.read<SettingsProvider>().fontSize,
+        context.read<SettingsProvider>().get(AppSetting.fontSize),
         workspace.selectedFile.name,
       );
 

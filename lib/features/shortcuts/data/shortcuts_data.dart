@@ -15,7 +15,6 @@ class ShortcutsProvider extends ChangeNotifier {
   List<ShortcutsEntity> shortcuts = [];
 
   final List<ShortcutsEntity> _defaultShortcuts = [
-    ShortcutsEntity(id: 1, name: "↹", insert: kCodeSpace),
     ShortcutsEntity(id: 2, name: "(", closing: ")"),
     ShortcutsEntity(id: 3, name: '"', closing: '"'),
     ShortcutsEntity(id: 4, name: "'", closing: "'"),
@@ -62,10 +61,7 @@ class ShortcutsProvider extends ChangeNotifier {
     final shortcut = shortcuts[index];
     final selection = controller.selection;
 
-    if (shortcut.insert == kCodeSpace) {
-      // اضافة المسافة التلقائية
-      controller.indent();
-    } else if (shortcut.closing != null) {
+    if (shortcut.closing != null) {
       if (selection.start != selection.end) {
         // تحويط النص المحدد
         final selectedText = controller.text.substring(

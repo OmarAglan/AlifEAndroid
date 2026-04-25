@@ -20,7 +20,11 @@ class Taif extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
-        ChangeNotifierProvider(create: (_) => TerminalProvider()),
+        ChangeNotifierProxyProvider<SettingsProvider, TerminalProvider>(
+          create: (context) =>
+              TerminalProvider(context.read<SettingsProvider>()),
+          update: (context, settings, terminal) => TerminalProvider(settings),
+        ),
         ChangeNotifierProvider(create: (_) => WorkspaceProvider()),
         ChangeNotifierProvider(create: (_) => ShortcutsProvider()),
       ],

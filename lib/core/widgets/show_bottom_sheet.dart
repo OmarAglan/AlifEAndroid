@@ -14,6 +14,7 @@ class MyBottomSheet extends StatefulWidget {
     this.actionButtons = const [],
     this.header,
     this.height,
+    this.isScrolable = false,
   });
 
   final Widget child;
@@ -23,6 +24,7 @@ class MyBottomSheet extends StatefulWidget {
   final List<Widget> actionButtons;
   final Widget? header;
   final double? height;
+  final bool isScrolable;
 
   @override
   State<MyBottomSheet> createState() => _MyBottomSheetState();
@@ -43,24 +45,58 @@ class _MyBottomSheetState extends State<MyBottomSheet> {
           topLeft: Radius.circular(kMediumBorderRadius),
           topRight: Radius.circular(kMediumBorderRadius),
         ),
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(
-                horizontal: kMediumPadding,
-                vertical: kSmallPadding,
-              ),
-              child: widget.header ?? _buildDefaultHeader(context),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: kMediumPadding),
-                child: widget.child,
-              ),
-            ),
-          ],
+        child: widget.isScrolable
+            ? _scrolableBottomSheet(controller)
+            : _statciBottomSheet(),
+      ),
+    );
+  }
+
+  Widget _statciBottomSheet() {
+    return Column(
+      children: [
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(
+            horizontal: kMediumPadding,
+            vertical: kSmallPadding,
+          ),
+          child: widget.header ?? _buildDefaultHeader(context),
         ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: kMediumPadding),
+            child: widget.child,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _scrolableBottomSheet(ScrollController controller) {
+    return SingleChildScrollView(
+      controller: controller,
+      reverse: widget.reverse,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(
+              horizontal: kMediumPadding,
+              vertical: kSmallPadding,
+            ),
+            child: widget.header ?? _buildDefaultHeader(context),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(
+              left: kMediumPadding,
+              right: kMediumPadding,
+              bottom: kMediumPadding,
+            ),
+            child: widget.child,
+          ),
+        ],
       ),
     );
   }
@@ -112,6 +148,7 @@ class _MyBottomSheetState extends State<MyBottomSheet> {
 Future<T?> showMyBottomSheet<T>({
   required BuildContext context,
   required Widget child,
+  bool isScrolable = false,
   bool reverse = false,
   bool easyClose = true,
   bool? closeButton,
@@ -141,6 +178,7 @@ Future<T?> showMyBottomSheet<T>({
         ),
         child: MyBottomSheet(
           reverse: reverse,
+          isScrolable: isScrolable,
           closeButton: closeButton ?? false,
           actionButtons: actionButtons ?? [],
           header: header,

@@ -46,16 +46,14 @@ class _IDEViewState extends State<IDEView> {
   }
 
   void _onCodeChanged() async {
-    if (workspace.selectedFile.readOnly) return;
-
     if (workspace.selectedFile.code != workspace.codeController.text) {
       workspace.editCode(
         workspace.codeController.text,
-        settings.autoSave,
+        settings.get(AppSetting.autoSave),
         markDirty: true,
       );
 
-      if (settings.autoSave) {
+      if (settings.get(AppSetting.autoSave)) {
         if (workspace.selectedFile.path?.isNotEmpty ?? false) {
           await saveFileToStorage(context);
         } else {
@@ -77,10 +75,13 @@ class _IDEViewState extends State<IDEView> {
         undoController: workspace.undoController,
         focusNode: workspace.focusNode,
         language: alif,
+        filePath: workspace.selectedFile.path,
         // features
-        enableFolding: false,
-        enableGuideLines: false,
-        enableSuggestions: !Platform.isAndroid,
+        enableFolding: settings.get(AppSetting.enableFolding),
+        enableGuideLines: settings.get(AppSetting.enableGuideLines),
+        enableSuggestions: settings.get(AppSetting.enableSuggestions),
+        lineWrap: settings.get(AppSetting.lineWrap),
+        // tapSize: settings.tapSize,
         customCodeSnippets: alifSnippets,
         findController: workspace.findController,
         finderBuilder: (context, findController) => PreferredSize(
@@ -93,13 +94,13 @@ class _IDEViewState extends State<IDEView> {
         innerPadding: const EdgeInsets.only(left: kDefaultPadding * 2),
         textStyle: TextStyle(
           fontFamily: kMainFont,
-          fontSize: settings.fontSize,
+          fontSize: settings.get(AppSetting.fontSize),
           height: Platform.isAndroid ? 1.4 : null,
         ),
         gutterStyle: Platform.isAndroid
             ? GutterStyle(
                 lineNumberStyle: TextStyle(
-                  fontSize: settings.fontSize * 0.95,
+                  fontSize: settings.get(AppSetting.fontSize) * 0.95,
                   fontFamily: kMainFont,
                 ),
               )
@@ -109,9 +110,7 @@ class _IDEViewState extends State<IDEView> {
   }
 
   void _checkAndInitLsp() {
-    if (settings.alifBinPath != null &&
-        _lspConfig == null &&
-        !_lspInitializing) {
+    if (_lspConfig == null && !_lspInitializing) {
       _lspInitializing = true;
       _initAlifLsp();
     }
@@ -121,7 +120,7 @@ class _IDEViewState extends State<IDEView> {
     try {
       final currentWorkspace =
           workspace.workspacePath ?? Directory.current.path;
-      final alifDir = File(settings.alifBinPath!).parent.path;
+      final alifDir = File(settings.alifBinPath).parent.path;
       const String executableName = "alif_lsp";
       final executablePath = "$alifDir/$executableName";
 

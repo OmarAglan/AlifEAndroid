@@ -128,6 +128,7 @@ class WorkspaceProvider extends ChangeNotifier {
       }
     } else if (type == FileAction.toggleReadOnly) {
       files[id] = file.copyWith(readOnly: !file.readOnly);
+      if (_selectedFile.id == files[id].id) _selectedFile = files[id];
       codeController.readOnly = files[id].readOnly;
     }
 
@@ -147,8 +148,11 @@ class WorkspaceProvider extends ChangeNotifier {
         );
       }
     }
+
     _selectedFile = file;
+    if (codeController.text != file.code) codeController.text = file.code;
     codeController.readOnly = file.readOnly;
+
     Future.microtask(() {
       final int start = file.cursor[0].clamp(0, codeController.text.length);
       final int end = file.cursor[1].clamp(0, codeController.text.length);

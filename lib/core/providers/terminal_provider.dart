@@ -1,12 +1,13 @@
 import "dart:io";
 import "package:flutter/material.dart";
-import "package:vibration/vibration.dart";
 
 import "../../constants.dart";
 import "../models/data_typs.dart";
+import "settings_provider.dart";
 
 class TerminalProvider extends ChangeNotifier {
   late final FocusNode terminalFocus;
+  final SettingsProvider _settings;
 
   final List<TerminalLine> outputLines = [];
   String get output => outputLines.join("\n");
@@ -15,7 +16,7 @@ class TerminalProvider extends ChangeNotifier {
   String terminalHint = "أدخل الأمر...";
   Process? runningProcess;
 
-  TerminalProvider() {
+  TerminalProvider(this._settings) {
     terminalFocus = FocusNode();
   }
 
@@ -52,7 +53,14 @@ class TerminalProvider extends ChangeNotifier {
     }
 
     notifyListeners();
-    _triggerHapticFeedback(isError);
+    _settings.runVibration(
+      pattern: isError == true
+          ? [0, 100, 50, 100]
+          : isError == false
+          ? [0, 100]
+          : [0, 50],
+      duration: isError == false ? 100 : 0,
+    );
   }
 
   void clearOutput() {
@@ -81,18 +89,6 @@ class TerminalProvider extends ChangeNotifier {
     runningProcess = null;
     terminalHint = "أدخل الأمر...";
     notifyListeners();
-  }
-
-  void _triggerHapticFeedback(bool? isError) {
-    if (isError == null) return;
-    Vibration.hasVibrator().then((has) {
-      if (has == true) {
-        Vibration.vibrate(
-          pattern: isError ? [0, 100, 50, 100] : [],
-          duration: isError ? 0 : 50,
-        );
-      }
-    });
   }
 
   @override

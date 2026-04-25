@@ -35,6 +35,7 @@ class CustomAppBar extends StatelessWidget {
                   onPressed: () {
                     showMyBottomSheet(
                       context: context,
+                      isScrolable: true,
                       child: const SettingsView(),
                     );
                   },

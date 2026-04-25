@@ -83,8 +83,8 @@ Future<void> setupAlif(BuildContext context) async {
     if (alifPath.isNotEmpty) {
       if (!context.mounted) return;
       final settings = context.read<SettingsProvider>();
-      settings.setAlifPath(alifPath);
-      // if (gitPath.isNotEmpty) settings.setGitPath(gitPath);
+      settings.set(AppSetting.alifBinPath, alifPath);
+      // if (gitPath.isNotEmpty) settings.set(AppSetting.gitBinPath, gitPath);
       terminal.addOutput("${l10n.successInstallAlifVersion} $kAlifVersion");
     }
   } catch (e, s) {
