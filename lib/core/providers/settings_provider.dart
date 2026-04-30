@@ -9,6 +9,7 @@ enum AppSetting {
   enableFolding,
   enableGuideLines,
   enableSuggestions,
+  customKeyboard,
   lineWrap,
   tapSize,
   enableVibration,
@@ -22,11 +23,11 @@ extension AppSettingExt on AppSetting {
   dynamic get defaultValue {
     switch (this) {
       case AppSetting.autoSave:
+      case AppSetting.enableVibration:
+      case AppSetting.customKeyboard:
         return true;
       case AppSetting.fontSize:
         return kMediumFont;
-      case AppSetting.enableVibration:
-        return true;
       case AppSetting.tapSize:
         return kCodeSpaceLength;
       case AppSetting.alifBinPath:

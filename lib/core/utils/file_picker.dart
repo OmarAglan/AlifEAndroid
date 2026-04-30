@@ -15,6 +15,7 @@ Future<void> showFileManagerModal(
   void Function(String) onFileSelected, {
   String rootPath = "/",
   String? startPath,
+  bool isWorkspace = false,
   void Function(String)? onFolderSelected,
 }) async {
   final currentPath = startPath ?? rootPath;
@@ -103,7 +104,8 @@ Future<void> showFileManagerModal(
                             : "الحجم ${formatFileSize(File(entity.path).statSync().size)}",
                         style: TextStyle(color: context.secondary),
                       ),
-                      trailing: isDir && onFolderSelected != null
+                      trailing:
+                          isDir && onFolderSelected != null && !isWorkspace
                           ? IconButton(
                               icon: Icon(
                                 LucideIcons.plus,

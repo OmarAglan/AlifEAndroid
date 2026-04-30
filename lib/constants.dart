@@ -4,7 +4,14 @@ import "dart:io";
 import "package:flutter/material.dart";
 import "generated/l10n.dart";
 
-const String kMainFont = "Tajawal";
+const String kMainFont = "tajawal";
+const List<String> kFonts = [
+  kMainFont,
+  "noto_kufi",
+  "kawkab",
+  "hasubi",
+  "alaq_halab",
+];
 
 // Fonts Size
 const double kSoSmallFont = 12;

@@ -13,6 +13,7 @@ Future<void> openFileFromStorage(
   BuildContext context, {
   String rootPath = "/",
   String? startPath,
+  bool isWorkspace = false,
 }) async {
   try {
     final workspace = context.read<WorkspaceProvider>();
@@ -42,9 +43,8 @@ Future<void> openFileFromStorage(
       },
       rootPath: rootPath,
       startPath: startPath,
-      onFolderSelected: (folderPath) {
-        workspace.setWorkspacePath(folderPath);
-      },
+      isWorkspace: isWorkspace,
+      onFolderSelected: (folderPath) => workspace.setWorkspacePath(folderPath),
     );
   } catch (e) {
     showMessage("فشل في فتح الملف");

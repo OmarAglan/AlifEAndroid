@@ -47,9 +47,21 @@ flutter:
         - assets/aliflang/linux/alif/amd64
 
     fonts:
-        - family: Tajawal
+        - family: tajawal
           fonts:
-              - asset: assets/Tajawal.ttf
+              - asset: assets/fonts/tajawal.ttf
+        - family: noto_kufi
+          fonts:
+              - asset: assets/fonts/noto_kufi_arabic_regular.ttf
+        - family: kawkab
+          fonts:
+              - asset: assets/fonts/kawkab_mono_regular.ttf
+        - family: hasubi
+          fonts:
+              - asset: assets/fonts/hasubi_mono.ttf
+        - family: alaq_halab
+          fonts:
+              - asset: assets/fonts/alaq_halab.otf
 
 flutter_intl:
     enabled: true

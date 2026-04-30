@@ -4,9 +4,9 @@ import "package:provider/provider.dart";
 
 import "../../constants.dart";
 import "../../features/settings/view/settings_view.dart";
-import "../../features/terminal/functions/run_command.dart";
 import "../../features/terminal/view/terminal_view.dart";
-import "../providers/terminal_provider.dart";
+import "../providers/workspace_provider.dart";
+import "../services/files/create_file.dart";
 import "../services/files/open_file_from_storage.dart";
 import "../services/files/save_file.dart";
 import "../theme/colors.dart";
@@ -18,6 +18,8 @@ class CustomAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final workspace = context.watch<WorkspaceProvider>();
+
     return SafeArea(
       bottom: false,
       child: Column(
@@ -44,6 +46,14 @@ class CustomAppBar extends StatelessWidget {
                 Row(
                   children: [
                     IconButton(
+                      onPressed: () => createFile(context: context),
+                      icon: Icon(
+                        LucideIcons.plus,
+                        size: 20,
+                        color: context.text,
+                      ),
+                    ),
+                    IconButton(
                       icon: Icon(
                         LucideIcons.terminal,
                         color: context.foreground,
@@ -51,19 +61,20 @@ class CustomAppBar extends StatelessWidget {
                       ),
                       onPressed: () => showTerminalView(context),
                     ),
-                    IconButton(
-                      icon: Icon(
-                        LucideIcons.play,
-                        color: context.foreground,
-                        size: kLargeFont,
+                    if (workspace.workspacePath != null)
+                      IconButton(
+                        onPressed: () => openFileFromStorage(
+                          context,
+                          rootPath: workspace.workspacePath!,
+                          startPath: workspace.workspacePath,
+                          isWorkspace: true,
+                        ),
+                        icon: Icon(
+                          LucideIcons.files,
+                          size: 20,
+                          color: context.text,
+                        ),
                       ),
-                      onPressed: () => {
-                        context.read<TerminalProvider>().clearOutput(),
-                        runCommand(context, kAlifBin),
-                        showTerminalView(context),
-                      },
-                    ),
-
                     IconButton(
                       icon: Icon(
                         LucideIcons.save,

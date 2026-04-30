@@ -53,6 +53,8 @@ class SettingsView extends StatelessWidget {
                 AppSetting.enableFolding,
                 AppSetting.lineWrap,
                 AppSetting.enableVibration,
+                AppSetting.enableVibration,
+                AppSetting.customKeyboard,
               ].map((setting) {
                 return _buildSwitchRow(
                   context,
@@ -81,6 +83,8 @@ class SettingsView extends StatelessWidget {
         return "طي الأسطر";
       case AppSetting.enableVibration:
         return "تفعيل الاهتزاز";
+      case AppSetting.customKeyboard:
+        return "لوحة مفاتيح طيف";
       default:
         return "";
     }

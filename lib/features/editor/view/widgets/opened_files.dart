@@ -3,9 +3,7 @@ import "package:provider/provider.dart";
 import "../../../../constants.dart";
 import "../../../../core/models/data_typs.dart";
 import "../../../../core/providers/workspace_provider.dart";
-import "../../../../core/services/files/create_file.dart";
 import "../../../../core/services/files/open_file.dart";
-import "../../../../core/services/files/open_file_from_storage.dart";
 import "../../../../core/utils/show_dialog.dart";
 import "../../../../core/widgets/radio_input.dart";
 import "edit_file_view.dart";
@@ -35,30 +33,20 @@ class OpenedFiles extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: kSmallPadding),
       child: Consumer<WorkspaceProvider>(
-        builder: (context, data, child) {
-          return RadioInput(
-            value: data.selectedFile.id,
-            items: data.files.map((file) {
-              return SelectEntity(
-                value: file.id,
-                name:
-                    file.name +
-                    (file.readOnly ? "!" : "") +
-                    (!file.saved ? "*" : ""),
-              );
-            }).toList(),
-            onAdd: () => createFile(context: context),
-            onOpen: data.workspacePath != null
-                ? () => openFileFromStorage(
-                    context,
-                    rootPath: data.workspacePath!,
-                    startPath: data.workspacePath,
-                  )
-                : null,
-            onLongPress: (id) => onLongPress(context, id, data),
-            onChanged: (id) => openFile(id as int, context),
-          );
-        },
+        builder: (context, workspce, child) => RadioInput(
+          value: workspce.selectedFile.id,
+          items: workspce.files.map((file) {
+            return SelectEntity(
+              value: file.id,
+              name:
+                  file.name +
+                  (file.readOnly ? "!" : "") +
+                  (!file.saved ? "*" : ""),
+            );
+          }).toList(),
+          onLongPress: (id) => onLongPress(context, id, workspce),
+          onChanged: (id) => openFile(id as int, context),
+        ),
       ),
     );
   }

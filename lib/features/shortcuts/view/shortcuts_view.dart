@@ -1,9 +1,14 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
 import "../../../constants.dart";
+import "../../../core/providers/terminal_provider.dart";
 import "../../../core/providers/workspace_provider.dart";
 import "../../../core/theme/colors.dart";
+import "../../terminal/functions/run_command.dart";
+import "../../terminal/view/terminal_view.dart";
 
 class ShortcutsView extends StatelessWidget {
   const ShortcutsView({super.key});
@@ -22,8 +27,17 @@ class ShortcutsView extends StatelessWidget {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // Run
+            ShortCutButton(
+              onPressed: () => {
+                context.read<TerminalProvider>().clearOutput(),
+                runCommand(context, kAlifBin),
+                showTerminalView(context),
+              },
+              child: const Icon(LucideIcons.play, size: iconSize),
+            ),
             // search
             ShortCutButton(
               onPressed: () => workspace.toggleSearch(),
@@ -34,6 +48,7 @@ class ShortcutsView extends StatelessWidget {
                 size: iconSize,
               ),
             ),
+            // Tab
             ShortCutButton(
               onPressed: () => workspace.codeController.indent(),
               child: const Icon(LucideIcons.arrowRightToLine, size: iconSize),
@@ -92,64 +107,122 @@ class ShortcutsView extends StatelessWidget {
   }
 }
 
-class ShortCutButton extends StatelessWidget {
+class ShortCutButton extends StatefulWidget {
   const ShortCutButton({
     super.key,
     required this.child,
     required this.onPressed,
     this.onLongPress,
     this.shortcutLabel,
+    this.isRepeatable = false,
+    this.onPanUpdate, // هيفيدنا في تحريك المؤشر
+    this.onPanEnd,
   });
 
   final dynamic child;
   final VoidCallback onPressed;
   final VoidCallback? onLongPress;
   final String? shortcutLabel;
+  final bool isRepeatable;
+  final Function(DragUpdateDetails)? onPanUpdate;
+  final Function(DragEndDetails)? onPanEnd;
+
+  @override
+  State<ShortCutButton> createState() => _ShortCutButtonState();
+}
+
+class _ShortCutButtonState extends State<ShortCutButton> {
+  Timer? _delayTimer;
+  Timer? _periodicTimer;
+  bool _isLongPressed = false;
+
+  void _stopTimers() {
+    _delayTimer?.cancel();
+    _periodicTimer?.cancel();
+  }
+
+  void _handleTapDown(TapDownDetails details) {
+    _isLongPressed = false;
+
+    _delayTimer = Timer(const Duration(milliseconds: 200), () {
+      _isLongPressed = true;
+      if (widget.onLongPress != null) {
+        widget.onLongPress!();
+      }
+
+      // لو الزرار قابل للتكرار (زي الحذف) بنشغل التايمر الدوري
+      if (widget.isRepeatable) {
+        _periodicTimer = Timer.periodic(const Duration(milliseconds: 50), (
+          timer,
+        ) {
+          widget.onPressed(); // بيفضل ينفذ الحذف كل ٥٠ مللي ثانية
+        });
+      }
+    });
+  }
+
+  void _handleTapUp(TapUpDetails details) {
+    if (!_isLongPressed) {
+      widget.onPressed(); // ضغطة عادية سريعة
+    }
+    _stopTimers();
+  }
+
+  @override
+  void dispose() {
+    _stopTimers();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final Widget mainChild = child is Widget ? child : Text(child.toString());
-
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
-      child: SizedBox(
-        height: 40,
-        width: 40,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0x601A2340),
-            foregroundColor: context.foreground,
-            padding: EdgeInsets.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            textStyle: const TextStyle(
-              fontSize: kLargeFont,
-              fontFamily: kMainFont,
+      padding: const EdgeInsets.all(2.0),
+      child: Material(
+        color: const Color(0x601A2340),
+        borderRadius: BorderRadius.circular(8),
+        child: GestureDetector(
+          onTapDown: _handleTapDown,
+          onTapUp: _handleTapUp,
+          onTapCancel: _stopTimers,
+          onPanUpdate: widget.onPanUpdate,
+          onPanEnd: widget.onPanEnd,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(8),
+            onTap: null,
+            child: SizedBox(
+              height: 45,
+              width: 45,
+              child: widget.shortcutLabel == null
+                  ? Center(
+                      child: widget.child is Widget
+                          ? widget.child
+                          : Text(widget.child.toString()),
+                    )
+                  : Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        widget.child is Widget
+                            ? widget.child
+                            : Text(
+                                widget.child.toString(),
+                                style: const TextStyle(fontSize: kLargeFont),
+                              ),
+                        Positioned(
+                          top: 2,
+                          right: 4,
+                          child: Text(
+                            widget.shortcutLabel!,
+                            style: TextStyle(
+                              fontSize: kSoSmallFont,
+                              color: context.secondary,
+                            ), // مثال
+                          ),
+                        ),
+                      ],
+                    ),
             ),
           ),
-          onPressed: onPressed,
-          onLongPress: onLongPress,
-          child: shortcutLabel == null
-              ? Center(child: mainChild)
-              : Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Center(child: mainChild),
-                    Positioned(
-                      top: 2,
-                      right: 4,
-                      child: Text(
-                        shortcutLabel!,
-                        style: TextStyle(
-                          fontSize: kSoSmallFont,
-                          color: context.secondary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
         ),
       ),
     );

@@ -17,6 +17,9 @@ class _KeyboardViewState extends State<KeyboardView> {
   bool isArabic = true;
   bool isCap = false;
   bool isNum = true;
+  double _dragOffsetDx = 0;
+  double _dragOffsetDy = 0;
+  static const double _threshold = 15.0;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +40,7 @@ class _KeyboardViewState extends State<KeyboardView> {
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
       alignment: Alignment.bottomCenter,
-      child: workspace.enableKeybord
+      child: workspace.isKeyboardEnabled
           ? Container(
               height: screenHeight * 0.3,
               padding: const EdgeInsets.only(
@@ -48,6 +51,7 @@ class _KeyboardViewState extends State<KeyboardView> {
               child: Directionality(
                 textDirection: TextDirection.rtl,
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ...currentLayout.asMap().entries.map((entry) {
                       final int rowIndex = entry.key;
@@ -60,15 +64,17 @@ class _KeyboardViewState extends State<KeyboardView> {
                             : item.name;
 
                         return Expanded(
+                          flex: 2,
                           child: ShortCutButton(
                             child: name,
                             shortcutLabel: hasShortcut ? item.insert : null,
                             onPressed: () {
-                              controller.insertAtCurrentCursor(name);
+                              shortcuts.insert(context, char: name);
                               setState(() => isCap = false);
                             },
                             onLongPress: hasShortcut
-                                ? () => shortcuts.insertEntity(context, item)
+                                ? () =>
+                                      shortcuts.insert(context, shortcut: item)
                                 : null,
                           ),
                         );
@@ -78,10 +84,11 @@ class _KeyboardViewState extends State<KeyboardView> {
                         rowChildren.insert(
                           0,
                           Expanded(
-                            flex: 1,
+                            flex: 3,
                             child: ShortCutButton(
-                              child: const Icon(LucideIcons.delete, size: 20),
+                              isRepeatable: true,
                               onPressed: () => shortcuts.deleteFunc(context),
+                              child: const Icon(LucideIcons.delete, size: 20),
                             ),
                           ),
                         );
@@ -89,7 +96,7 @@ class _KeyboardViewState extends State<KeyboardView> {
                         if (!isArabic) {
                           rowChildren.add(
                             Expanded(
-                              flex: 1,
+                              flex: 2,
                               child: ShortCutButton(
                                 child: const Icon(
                                   LucideIcons.arrowUp,
@@ -121,7 +128,7 @@ class _KeyboardViewState extends State<KeyboardView> {
                                 size: 20,
                               ),
                               onPressed: () =>
-                                  controller.insertAtCurrentCursor("\n"),
+                                  shortcuts.insert(context, char: "\n"),
                             ),
                           ),
                           Expanded(
@@ -129,7 +136,7 @@ class _KeyboardViewState extends State<KeyboardView> {
                             child: ShortCutButton(
                               child: ".",
                               onPressed: () =>
-                                  controller.insertAtCurrentCursor("."),
+                                  shortcuts.insert(context, char: "."),
                             ),
                           ),
                           Expanded(
@@ -137,7 +144,30 @@ class _KeyboardViewState extends State<KeyboardView> {
                             child: ShortCutButton(
                               child: isArabic ? "العربية" : "English",
                               onPressed: () =>
-                                  controller.insertAtCurrentCursor(" "),
+                                  shortcuts.insert(context, char: " "),
+                              onPanUpdate: (details) {
+                                _dragOffsetDx += details.delta.dx;
+                                _dragOffsetDy += details.delta.dy;
+
+                                if (_dragOffsetDx.abs() > _threshold) {
+                                  shortcuts.moveCursorHorizontal(
+                                    controller,
+                                    _dragOffsetDx > 0 ? 1 : -1,
+                                  );
+                                  _dragOffsetDx = 0;
+                                }
+                                if (_dragOffsetDy.abs() > _threshold) {
+                                  shortcuts.moveCursorVertical(
+                                    controller,
+                                    _dragOffsetDy > 0 ? 1 : -1,
+                                  );
+                                  _dragOffsetDy = 0;
+                                }
+                              },
+                              onPanEnd: (_) {
+                                _dragOffsetDx = 0;
+                                _dragOffsetDy = 0;
+                              },
                             ),
                           ),
                           Expanded(
@@ -152,8 +182,9 @@ class _KeyboardViewState extends State<KeyboardView> {
                             flex: 1,
                             child: ShortCutButton(
                               child: isArabic ? "،" : ",",
-                              onPressed: () => controller.insertAtCurrentCursor(
-                                isArabic ? "،" : ",",
+                              onPressed: () => shortcuts.insert(
+                                context,
+                                char: isArabic ? "،" : ",",
                               ),
                             ),
                           ),
@@ -168,7 +199,16 @@ class _KeyboardViewState extends State<KeyboardView> {
                       ),
                     ),
 
-                    const SizedBox(height: kLargePadding),
+                    SizedBox(
+                      child: IconButton(
+                        onPressed: () => workspace.toggleKeyboard(),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: kDefaultPadding,
+                          vertical: kSmallPadding,
+                        ),
+                        icon: const Icon(LucideIcons.chevronDown),
+                      ),
+                    ),
                   ],
                 ),
               ),

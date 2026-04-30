@@ -1,5 +1,7 @@
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
 
+import "../../../core/providers/workspace_provider.dart";
 import "../../../core/services/files/load_saved_files.dart";
 import "../../../core/services/premissions.dart";
 import "../../../core/utils/setup_alif.dart";
@@ -30,9 +32,11 @@ class _EditorViewState extends State<EditorView> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    final workspace = context.watch<WorkspaceProvider>();
+
+    return Scaffold(
       body: DecoratedBox(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage("assets/Background.webp"),
             fit: BoxFit.cover,
@@ -42,12 +46,13 @@ class _EditorViewState extends State<EditorView> {
         child: Column(
           spacing: 1,
           children: [
-            CustomAppBar(),
-            OpenedFiles(),
-            IDEView(),
+            const CustomAppBar(),
+            const OpenedFiles(),
+            const IDEView(),
             SafeArea(
               top: false,
-              child: Column(children: [ShortcutsView(), KeyboardView()]),
+              bottom: !workspace.focusNode.hasFocus,
+              child: const Column(children: [ShortcutsView(), KeyboardView()]),
             ),
           ],
         ),

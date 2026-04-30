@@ -1,6 +1,6 @@
 import "dart:math";
 import "package:flutter/material.dart";
-import "package:lucide_icons_flutter/lucide_icons.dart";
+
 import "../../constants.dart";
 import "../theme/colors.dart";
 
@@ -11,8 +11,6 @@ class RadioInput extends StatefulWidget {
     required this.items,
     required this.onChanged,
     this.onLongPress,
-    this.onAdd,
-    this.onOpen,
     this.disabled = false,
     this.hasBorder = false,
     this.whiteBG = true,
@@ -23,28 +21,22 @@ class RadioInput extends StatefulWidget {
   final bool disabled, hasBorder, whiteBG;
   final Function(dynamic) onChanged;
   final Function(dynamic)? onLongPress;
-  final VoidCallback? onAdd;
-  final VoidCallback? onOpen;
 
   @override
   State<RadioInput> createState() => _RadioInputState();
 }
 
 class _RadioInputState extends State<RadioInput> {
-  int _selectedValue = -1;
+  late int _selectedValue;
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _updateSelectedIndex();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _initialScroll());
-  }
-
-  void _initialScroll() {
-    if (_selectedValue != -1) {
-      _scrollToSelected(isInitial: true);
-    }
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _scrollToSelected(isInitial: true),
+    );
   }
 
   @override
@@ -53,157 +45,98 @@ class _RadioInputState extends State<RadioInput> {
     if (oldWidget.value != widget.value ||
         oldWidget.items.length != widget.items.length) {
       _updateSelectedIndex();
-
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _scrollToSelected();
-      });
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToSelected());
     }
   }
 
   void _updateSelectedIndex() {
-    setState(() {
-      _selectedValue = widget.items.indexWhere(
-        (item) => item.value == widget.value,
-      );
-    });
+    _selectedValue = widget.items.indexWhere(
+      (item) => item.value == widget.value,
+    );
   }
 
-  void _scrollToSelected({bool isInitial = false}) {
-    if (!mounted ||
-        !_scrollController.hasClients ||
-        widget.items.isEmpty ||
-        _selectedValue == -1 ||
-        _selectedValue >= widget.items.length) {
-      return;
-    }
-
-    const double iconWidth = 40.0;
+  // حسابات الـ Layout في مكان واحد عشان منكررش الكود
+  Map<String, double> _calculateLayout(double maxWidth) {
     const double paddingVal = 2;
-
-    final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
-    if (renderBox == null) return;
-    final double maxWidth = renderBox.size.width;
-
     final int totalFlex = widget.items.fold(
       0,
       (sum, item) => sum + item.name.length,
     );
-    if (totalFlex == 0) return;
-
-    final double innerContainerWidth = maxWidth - (paddingVal * 4);
-    final double requiredWidth =
-        (totalFlex * 10) +
-        (widget.onAdd != null ? iconWidth : 0) +
-        (widget.onOpen != null ? iconWidth : 0);
-
-    final double scrollableWidth = max(innerContainerWidth, requiredWidth);
-    final double offsetForIcons =
-        (widget.onAdd != null ? iconWidth : 0) +
-        (widget.onOpen != null ? iconWidth : 0);
-
-    int flexBefore = 0;
-    for (int i = 0; i < _selectedValue; i++) {
-      flexBefore += widget.items[i].name.length;
+    if (totalFlex == 0) {
+      return {"totalFlex": 0, "scrollableWidth": 0, "start": 0, "width": 0};
     }
 
-    final double itemsAvailableWidth = scrollableWidth - offsetForIcons;
-    final double targetStart =
-        offsetForIcons + ((flexBefore / totalFlex) * itemsAvailableWidth);
+    final double innerWidth = maxWidth - (paddingVal * 4);
+    final double scrollableWidth = max(innerWidth, totalFlex * 10.0);
 
-    final double targetOffset = targetStart - (maxWidth / 2) + 20;
-    final double finalOffset = targetOffset.clamp(
-      0.0,
-      _scrollController.position.maxScrollExtent,
-    );
+    double selectorStart = 0;
+    double selectorWidth = 0;
+
+    if (_selectedValue != -1) {
+      final int flexBefore = widget.items
+          .take(_selectedValue)
+          .fold(0, (sum, item) => sum + item.name.length);
+      selectorStart = (flexBefore / totalFlex) * scrollableWidth;
+      selectorWidth =
+          (widget.items[_selectedValue].name.length / totalFlex) *
+          scrollableWidth;
+    }
+
+    return {
+      "totalFlex": totalFlex.toDouble(),
+      "scrollableWidth": scrollableWidth,
+      "start": selectorStart,
+      "width": selectorWidth,
+    };
+  }
+
+  void _scrollToSelected({bool isInitial = false}) {
+    if (!mounted || !_scrollController.hasClients || _selectedValue == -1) {
+      return;
+    }
+
+    final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+
+    final layout = _calculateLayout(renderBox.size.width);
+    final double targetOffset =
+        (layout["start"]! - (renderBox.size.width / 2) + 20).clamp(
+          0.0,
+          _scrollController.position.maxScrollExtent,
+        );
 
     if (isInitial) {
-      _scrollController.jumpTo(finalOffset);
+      _scrollController.jumpTo(targetOffset);
     } else {
       _scrollController.animateTo(
-        finalOffset,
+        targetOffset,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
-    }
-
-    try {
-      final double maxScroll = _scrollController.position.maxScrollExtent;
-      final double finalOffset = targetOffset.clamp(0.0, maxScroll);
-
-      if (isInitial) {
-        _scrollController.jumpTo(finalOffset);
-      } else {
-        _scrollController.animateTo(
-          finalOffset,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-      }
-    } catch (e) {
-      debugPrint("Scroll error: $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final bool hasSelection = _selectedValue != -1;
-
     return LayoutBuilder(
       builder: (context, constraints) {
-        final double maxWidth = constraints.maxWidth;
-        const double height = 35;
-        const double paddingVal = 2;
-        const double iconWidth = 40.0;
-
-        final int totalFlex = widget.items.fold(
-          0,
-          (sum, item) => sum + item.name.length,
-        );
-
-        final double innerContainerWidth = maxWidth - (paddingVal * 4);
-
-        final double requiredWidth =
-            (totalFlex * 10) +
-            (widget.onAdd != null ? iconWidth : 0) +
-            (widget.onOpen != null ? iconWidth : 0);
-        final double scrollableWidth = max(innerContainerWidth, requiredWidth);
-
-        double selectorWidth = 0;
-        double selectorStart = 0;
-
-        final double offsetForIcons =
-            (widget.onAdd != null ? iconWidth : 0) +
-            (widget.onOpen != null ? iconWidth : 0);
-
-        if (hasSelection && totalFlex > 0) {
-          int flexBefore = 0;
-          for (int i = 0; i < _selectedValue; i++) {
-            flexBefore += widget.items[i].name.length;
-          }
-          final double itemsAvailableWidth = scrollableWidth - offsetForIcons;
-          selectorStart =
-              offsetForIcons + ((flexBefore / totalFlex) * itemsAvailableWidth);
-          selectorWidth =
-              (widget.items[_selectedValue].name.length / totalFlex) *
-              itemsAvailableWidth;
-        }
+        final layout = _calculateLayout(constraints.maxWidth);
 
         return SizedBox(
-          height: height,
-          width: maxWidth,
+          height: 35,
           child: SingleChildScrollView(
             controller: _scrollController,
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: paddingVal * 2),
+            padding: const EdgeInsets.symmetric(horizontal: kSmallPadding),
             child: SizedBox(
-              width: scrollableWidth,
+              width: layout["scrollableWidth"],
               child: Stack(
                 children: [
-                  if (hasSelection)
+                  if (_selectedValue != -1)
                     AnimatedPositionedDirectional(
-                      start: selectorStart,
-                      width: selectorWidth,
+                      start: layout["start"]!,
+                      width: layout["width"]!,
                       top: 4,
                       bottom: 4,
                       duration: const Duration(milliseconds: 250),
@@ -219,57 +152,31 @@ class _RadioInputState extends State<RadioInput> {
                       ),
                     ),
                   Row(
-                    children: [
-                      if (widget.onOpen != null)
-                        SizedBox(
-                          width: iconWidth,
-                          child: IconButton(
-                            onPressed: widget.onOpen,
-                            icon: Icon(
-                              LucideIcons.files,
-                              size: 18,
-                              color: context.text,
+                    children: List.generate(widget.items.length, (index) {
+                      final item = widget.items[index];
+                      return Expanded(
+                        flex: item.name.length,
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.translucent,
+                          onTap: () {
+                            if (widget.disabled) return;
+                            setState(() => _selectedValue = index);
+                            widget.onChanged(item.value);
+                          },
+                          onLongPress: () =>
+                              widget.onLongPress?.call(item.value),
+                          child: Container(
+                            alignment: Alignment.center,
+                            child: Text(
+                              item.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: kSmallFont),
                             ),
                           ),
                         ),
-                      if (widget.onAdd != null)
-                        SizedBox(
-                          width: iconWidth,
-                          child: IconButton(
-                            onPressed: widget.onAdd,
-                            icon: Icon(
-                              LucideIcons.plus,
-                              size: 20,
-                              color: context.text,
-                            ),
-                          ),
-                        ),
-                      ...List.generate(widget.items.length, (index) {
-                        final item = widget.items[index];
-                        return Expanded(
-                          flex: item.name.length,
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.translucent,
-                            onTap: () {
-                              if (widget.disabled) return;
-                              setState(() => _selectedValue = index);
-                              widget.onChanged(item.value);
-                            },
-                            onLongPress: () =>
-                                widget.onLongPress?.call(item.value),
-                            child: Container(
-                              alignment: Alignment.center,
-                              child: Text(
-                                item.name,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontSize: kSmallFont),
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-                    ],
+                      );
+                    }),
                   ),
                 ],
               ),

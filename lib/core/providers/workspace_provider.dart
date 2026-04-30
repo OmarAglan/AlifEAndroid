@@ -190,11 +190,19 @@ class WorkspaceProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool enableKeybord = false;
+  bool isKeyboardEnabled = false;
   void _onFocusChange() {
-    if (enableKeybord != focusNode.hasFocus) {
-      enableKeybord = focusNode.hasFocus;
+    if (isKeyboardEnabled != focusNode.hasFocus) {
+      isKeyboardEnabled = focusNode.hasFocus;
       notifyListeners();
+    }
+  }
+
+  void toggleKeyboard() {
+    if (focusNode.hasFocus) {
+      focusNode.unfocus();
+    } else {
+      focusNode.requestFocus();
     }
   }
 
