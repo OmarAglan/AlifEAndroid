@@ -7,7 +7,7 @@ import "core/providers/terminal_provider.dart";
 import "core/providers/workspace_provider.dart";
 import "core/theme/colors.dart";
 import "features/editor/view/editor_view.dart";
-import "features/shortcuts/data/shortcuts_provider.dart";
+import "features/keyboard/data/keyboard_provider.dart";
 import "generated/l10n.dart";
 
 void main() => runApp(const Taif());

@@ -3,8 +3,9 @@ import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
 import "../../../constants.dart";
 import "../../../core/providers/workspace_provider.dart";
-import "../../shortcuts/data/shortcuts_provider.dart";
-import "../../shortcuts/view/shortcuts_view.dart";
+import "../../editor/models/key_entity.dart";
+import "../data/keyboard_provider.dart";
+import "widgets/key_button.dart";
 
 class KeyboardView extends StatefulWidget {
   const KeyboardView({super.key});
@@ -55,7 +56,7 @@ class _KeyboardViewState extends State<KeyboardView> {
                   children: [
                     ...currentLayout.asMap().entries.map((entry) {
                       final int rowIndex = entry.key;
-                      final List<ShortcutsEntity> row = entry.value;
+                      final List<KeyEntity> row = entry.value;
 
                       final List<Widget> rowChildren = row.map((item) {
                         final bool hasShortcut = item.insert != item.name;
@@ -65,16 +66,16 @@ class _KeyboardViewState extends State<KeyboardView> {
 
                         return Expanded(
                           flex: 2,
-                          child: ShortCutButton(
+                          child: KeyButton(
                             child: name,
                             shortcutLabel: hasShortcut ? item.insert : null,
                             onPressed: () {
-                              shortcuts.insert(context, char: name);
+                              controller.insert(context, char: name);
                               setState(() => isCap = false);
                             },
                             onLongPress: hasShortcut
                                 ? () =>
-                                      shortcuts.insert(context, shortcut: item)
+                                      controller.insert(context, shortcut: item)
                                 : null,
                           ),
                         );
@@ -85,9 +86,9 @@ class _KeyboardViewState extends State<KeyboardView> {
                           0,
                           Expanded(
                             flex: 3,
-                            child: ShortCutButton(
+                            child: KeyButton(
                               isRepeatable: true,
-                              onPressed: () => shortcuts.deleteFunc(context),
+                              onPressed: () => controller.backspace(),
                               child: const Icon(LucideIcons.delete, size: 20),
                             ),
                           ),
@@ -97,7 +98,7 @@ class _KeyboardViewState extends State<KeyboardView> {
                           rowChildren.add(
                             Expanded(
                               flex: 2,
-                              child: ShortCutButton(
+                              child: KeyButton(
                                 child: const Icon(
                                   LucideIcons.arrowUp,
                                   size: 20,
@@ -122,29 +123,29 @@ class _KeyboardViewState extends State<KeyboardView> {
                         children: [
                           Expanded(
                             flex: 2,
-                            child: ShortCutButton(
+                            child: KeyButton(
                               child: const Icon(
                                 LucideIcons.cornerDownLeft,
                                 size: 20,
                               ),
                               onPressed: () =>
-                                  shortcuts.insert(context, char: "\n"),
+                                  controller.insert(context, char: "\n"),
                             ),
                           ),
                           Expanded(
                             flex: 1,
-                            child: ShortCutButton(
+                            child: KeyButton(
                               child: ".",
                               onPressed: () =>
-                                  shortcuts.insert(context, char: "."),
+                                  controller.insert(context, char: "."),
                             ),
                           ),
                           Expanded(
                             flex: 5,
-                            child: ShortCutButton(
+                            child: KeyButton(
                               child: isArabic ? "العربية" : "English",
                               onPressed: () =>
-                                  shortcuts.insert(context, char: " "),
+                                  controller.insert(context, char: " "),
                               onPanUpdate: (details) {
                                 _dragOffsetDx += details.delta.dx;
                                 _dragOffsetDy += details.delta.dy;
@@ -172,7 +173,7 @@ class _KeyboardViewState extends State<KeyboardView> {
                           ),
                           Expanded(
                             flex: 1,
-                            child: ShortCutButton(
+                            child: KeyButton(
                               child: const Icon(LucideIcons.globe, size: 20),
                               onPressed: () =>
                                   setState(() => isArabic = !isArabic),
@@ -180,9 +181,9 @@ class _KeyboardViewState extends State<KeyboardView> {
                           ),
                           Expanded(
                             flex: 1,
-                            child: ShortCutButton(
+                            child: KeyButton(
                               child: isArabic ? "،" : ",",
-                              onPressed: () => shortcuts.insert(
+                              onPressed: () => controller.insert(
                                 context,
                                 char: isArabic ? "،" : ",",
                               ),
@@ -190,7 +191,7 @@ class _KeyboardViewState extends State<KeyboardView> {
                           ),
                           Expanded(
                             flex: 2,
-                            child: ShortCutButton(
+                            child: KeyButton(
                               child: Text(isNum ? "ABC" : "?123"),
                               onPressed: () => setState(() => isNum = !isNum),
                             ),

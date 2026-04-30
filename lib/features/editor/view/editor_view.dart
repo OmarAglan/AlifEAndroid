@@ -7,7 +7,7 @@ import "../../../core/services/premissions.dart";
 import "../../../core/utils/setup_alif.dart";
 import "../../../core/widgets/custom_app_bar.dart";
 import "../../keyboard/view/keyboard_view.dart";
-import "../../shortcuts/view/shortcuts_view.dart";
+import "../../keyboard/view/widgets/shortcuts_view.dart";
 import "widgets/ide_view.dart";
 import "widgets/opened_files.dart";
 

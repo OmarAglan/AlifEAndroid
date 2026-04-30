@@ -6,6 +6,7 @@ import "package:flutter/material.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
 import "../../constants.dart";
+import "../../features/editor/models/code_controller.dart";
 import "../models/data_typs.dart";
 import "../services/files/open_file.dart";
 import "../services/files/save_file.dart";
@@ -13,7 +14,7 @@ import "../utils/show_message.dart";
 
 class WorkspaceProvider extends ChangeNotifier {
   SharedPreferences? _prefs;
-  late final CodeForgeController codeController;
+  late final CodeController codeController;
   late final FindController findController;
   late final UndoRedoController undoController;
   late final FocusNode focusNode;
@@ -26,7 +27,7 @@ class WorkspaceProvider extends ChangeNotifier {
   int lastFile = 0;
 
   WorkspaceProvider() {
-    codeController = CodeForgeController();
+    codeController = CodeController();
     findController = FindController(codeController);
     undoController = UndoRedoController();
     focusNode = FocusNode();

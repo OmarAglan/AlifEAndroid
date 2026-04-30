@@ -1,21 +1,19 @@
 import "package:code_forge/code_forge.dart";
 import "package:flutter/material.dart";
-import "package:flutter/services.dart";
-import "package:provider/provider.dart";
-import "../../../core/providers/workspace_provider.dart";
+import "../../editor/models/key_entity.dart";
 
 class ShortcutsProvider extends ChangeNotifier {
-  final List<ShortcutsEntity> nums = [
-    ShortcutsEntity(name: "0", insert: "(", closing: ")"),
-    ShortcutsEntity(name: "9", insert: ")"),
-    ShortcutsEntity(name: "8", insert: "*"),
-    ShortcutsEntity(name: "7", insert: "&"),
-    ShortcutsEntity(name: "6", insert: "^"),
-    ShortcutsEntity(name: "5", insert: "%"),
-    ShortcutsEntity(name: "4", insert: "\$"),
-    ShortcutsEntity(name: "3", insert: "#"),
-    ShortcutsEntity(name: "2", insert: "@"),
-    ShortcutsEntity(name: "1", insert: "!"),
+  final List<KeyEntity> nums = [
+    KeyEntity(name: "0", insert: "(", closing: ")"),
+    KeyEntity(name: "9", insert: ")"),
+    KeyEntity(name: "8", insert: "*"),
+    KeyEntity(name: "7", insert: "&"),
+    KeyEntity(name: "6", insert: "^"),
+    KeyEntity(name: "5", insert: "%"),
+    KeyEntity(name: "4", insert: "\$"),
+    KeyEntity(name: "3", insert: "#"),
+    KeyEntity(name: "2", insert: "@"),
+    KeyEntity(name: "1", insert: "!"),
   ];
 
   final List<List<SymbolData>> symbolsTemplate = [
@@ -71,14 +69,14 @@ class ShortcutsProvider extends ChangeNotifier {
     ["m", "n", "b", "v", "c", "x", "z"],
   ];
 
-  List<List<ShortcutsEntity>> buildLayout(
+  List<List<KeyEntity>> buildLayout(
     List<List<String>> names,
     List<List<SymbolData>> templates,
   ) {
     return List.generate(names.length, (rowIndex) {
       return List.generate(names[rowIndex].length, (charIndex) {
         final symbol = templates[rowIndex][charIndex];
-        return ShortcutsEntity(
+        return KeyEntity(
           name: names[rowIndex][charIndex],
           insert: symbol.insert,
           closing: symbol.closing,
@@ -87,86 +85,10 @@ class ShortcutsProvider extends ChangeNotifier {
     });
   }
 
-  List<List<ShortcutsEntity>> get arabicLayout =>
+  List<List<KeyEntity>> get arabicLayout =>
       buildLayout(arabicNames, symbolsTemplate);
-  List<List<ShortcutsEntity>> get englishLayout =>
+  List<List<KeyEntity>> get englishLayout =>
       buildLayout(englishNames, symbolsTemplate);
-
-  void insert(
-    BuildContext context, {
-    ShortcutsEntity? shortcut,
-    String? char,
-  }) async {
-    final workspace = context.read<WorkspaceProvider>();
-    final controller = workspace.codeController;
-    final selection = controller.selection;
-    final String input = shortcut?.insert ?? char ?? "";
-
-    if (input.isEmpty && (shortcut?.closing == null)) return;
-
-    if (shortcut != null &&
-        shortcut.closing != null &&
-        selection.start != selection.end) {
-      final selectedText = controller.text.substring(
-        selection.start,
-        selection.end,
-      );
-      final wrappedText =
-          "${shortcut.insert}${shortcut.insert == "#" ? " " : ""}$selectedText${shortcut.closing}";
-      controller.replaceRange(selection.start, selection.end, wrappedText);
-      controller.selection = TextSelection(
-        baseOffset: selection.start,
-        extentOffset: selection.start + wrappedText.length,
-      );
-      return;
-    }
-
-    final currentText = controller.text;
-    final offset = selection.extentOffset;
-
-    // ignore: invalid_use_of_protected_member
-    controller.updateEditingValueWithDeltas([
-      TextEditingDeltaInsertion(
-        oldText: currentText,
-        textInserted: input,
-        insertionOffset: offset,
-        selection: TextSelection.collapsed(offset: offset + input.length),
-        composing: TextRange.empty,
-      ),
-    ]);
-  }
-
-  void deleteFunc(BuildContext context) {
-    final controller = context.read<WorkspaceProvider>().codeController;
-    final selection = controller.selection;
-    final text = controller.text;
-
-    if (selection.start != selection.end) {
-      controller.replaceRange(selection.start, selection.end, "");
-      return;
-    }
-
-    if (selection.start > 0) {
-      if (selection.start < text.length) {
-        final charBefore = text[selection.start - 1];
-        final charAfter = text[selection.start];
-        const pairs = {
-          "(": ")",
-          "{": "}",
-          "[": "]",
-          "<": ">",
-          '"': '"',
-          "'": "'",
-          "`": "`",
-        };
-        if (pairs[charBefore] == charAfter) {
-          controller.replaceRange(selection.start - 1, selection.start + 1, "");
-          return;
-        }
-      }
-      controller.replaceRange(selection.start - 1, selection.start, "");
-    }
-  }
 
   void moveCursorHorizontal(CodeForgeController controller, int direction) {
     const isRTL = true;
@@ -208,26 +130,4 @@ class ShortcutsProvider extends ChangeNotifier {
     // 5. تحديث المؤشر (استخدم silent عشان م تضربش IME)
     controller.setSelectionSilently(TextSelection.collapsed(offset: newOffset));
   }
-}
-
-class ShortcutsEntity {
-  final int id;
-  final String name;
-  final String insert;
-  final String? closing;
-  int usageCount;
-
-  ShortcutsEntity({
-    this.id = 0,
-    required this.name,
-    String? insert,
-    this.closing,
-    this.usageCount = 0,
-  }) : insert = insert ?? name;
-}
-
-class SymbolData {
-  final String insert;
-  final String? closing;
-  SymbolData(this.insert, {this.closing});
 }
