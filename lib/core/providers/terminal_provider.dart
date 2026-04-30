@@ -26,26 +26,55 @@ class TerminalProvider extends ChangeNotifier {
   }
 
   void addOutput(String text, {bool newLine = true, bool? isError}) {
-    final prefix = isError == true
+    final prefix = (isError == true) || text.contains(l10n.error)
         ? "${l10n.error}: "
-        : (isError == false ? "${l10n.warning}: " : "");
-    final toAdd = "$prefix$text${newLine ? "\n" : ""}";
+        : (isError == false) || text.contains(l10n.warning)
+        ? "${l10n.warning}: "
+        : "";
 
     if (outputLines.isEmpty) {
       outputLines.add(TerminalLine(text: "", sessionId: currentSessionId));
     }
 
-    final combined = outputLines.removeLast().text + toAdd;
-    final newTextLines = combined.split(RegExp(r"\r?\n"));
+    final String lastLineText = outputLines.removeLast().text;
 
-    for (var lineText in newTextLines) {
-      outputLines.add(
-        TerminalLine(
-          text: lineText,
-          sessionId: currentSessionId,
-          isError: isError,
-        ),
-      );
+    final String fullText =
+        lastLineText +
+        (lastLineText.isEmpty ? prefix : "") +
+        text +
+        (newLine ? "\n" : "");
+
+    final List<String> rawLines = fullText.split("\n");
+
+    for (int i = 0; i < rawLines.length; i++) {
+      String processedLine = rawLines[i];
+      if (processedLine.contains("\r")) {
+        processedLine = processedLine.substring(
+          processedLine.lastIndexOf("\r") + 1,
+        );
+      }
+
+      if (i < rawLines.length - 1) {
+        outputLines.add(
+          TerminalLine(
+            text: processedLine,
+            sessionId: currentSessionId,
+            isError: isError,
+          ),
+        );
+      } else {
+        if (fullText.endsWith("\n") && processedLine.isEmpty) {
+          outputLines.add(TerminalLine(text: "", sessionId: currentSessionId));
+        } else {
+          outputLines.add(
+            TerminalLine(
+              text: processedLine,
+              sessionId: currentSessionId,
+              isError: isError,
+            ),
+          );
+        }
+      }
     }
 
     if (outputLines.length > 300) {
