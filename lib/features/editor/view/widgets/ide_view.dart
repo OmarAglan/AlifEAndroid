@@ -96,7 +96,7 @@ class _IDEViewState extends State<IDEView> {
         textDirection: TextDirection.rtl,
         innerPadding: const EdgeInsets.only(left: kDefaultPadding * 2),
         textStyle: TextStyle(
-          fontFamily: kMainFont,
+          fontFamily: settings.get(AppSetting.editorFont),
           fontSize: settings.get(AppSetting.fontSize),
           height: Platform.isAndroid ? 1.4 : null,
         ),
@@ -104,7 +104,7 @@ class _IDEViewState extends State<IDEView> {
             ? GutterStyle(
                 lineNumberStyle: TextStyle(
                   fontSize: settings.get(AppSetting.fontSize) * 0.95,
-                  fontFamily: kMainFont,
+                  fontFamily: settings.get(AppSetting.editorFont),
                 ),
               )
             : null,

@@ -4,8 +4,9 @@ import "package:vibration/vibration.dart";
 import "../../constants.dart";
 
 enum AppSetting {
-  autoSave,
   fontSize,
+  editorFont,
+  autoSave,
   enableFolding,
   enableGuideLines,
   enableSuggestions,
@@ -22,12 +23,14 @@ extension AppSettingExt on AppSetting {
 
   dynamic get defaultValue {
     switch (this) {
+      case AppSetting.fontSize:
+        return kMediumFont;
+      case AppSetting.editorFont:
+        return kMainFont;
       case AppSetting.autoSave:
       case AppSetting.enableVibration:
       case AppSetting.customKeyboard:
         return true;
-      case AppSetting.fontSize:
-        return kMediumFont;
       case AppSetting.tapSize:
         return kCodeSpaceLength;
       case AppSetting.alifBinPath:

@@ -27,6 +27,7 @@ class SettingsView extends StatelessWidget {
           child: Column(
             spacing: kMediumPadding,
             children: [
+              _buildSectionTitle(context, "المظهر"),
               _buildNumberRow(
                 context,
                 title: l10n.fontSize,
@@ -37,31 +38,45 @@ class SettingsView extends StatelessWidget {
                 onChanged: (val) =>
                     settings.set(AppSetting.fontSize, val.toDouble()),
               ),
-              _buildNumberRow(
+              _buildDropdownRow(
                 context,
-                title: "حجم المسافة",
-                subTitle: "($kCodeSpaceLength)",
-                value: settings.get<int>(AppSetting.tapSize),
-                min: 2,
-                max: 10,
-                onChanged: (val) =>
-                    settings.set(AppSetting.tapSize, val.toInt()),
+                title: "خط المحرر",
+                value: settings.get<String>(AppSetting.editorFont),
+                items: kFonts,
+                onChanged: (val) => settings.set(AppSetting.editorFont, val),
               ),
+              _buildSectionTitle(context, "المحرر"),
+              // _buildNumberRow(
+              //   context,
+              //   title: "حجم المسافة",
+              //   subTitle: "($kCodeSpaceLength)",
+              //   value: settings.get<int>(AppSetting.tapSize),
+              //   min: 2,
+              //   max: 10,
+              //   onChanged: (val) =>
+              //       settings.set(AppSetting.tapSize, val.toInt()),
+              // ),
               ...[
                 AppSetting.autoSave,
                 AppSetting.enableSuggestions,
                 AppSetting.enableFolding,
                 AppSetting.lineWrap,
-                AppSetting.enableVibration,
+                "النظام",
                 AppSetting.enableVibration,
                 AppSetting.customKeyboard,
               ].map((setting) {
-                return _buildSwitchRow(
-                  context,
-                  title: _getSettingTitle(setting),
-                  value: settings.get<bool>(setting),
-                  onChanged: (val) => settings.set(setting, val),
-                );
+                if (setting is String) {
+                  return _buildSectionTitle(context, setting);
+                }
+                if (setting is AppSetting) {
+                  return _buildSwitchRow(
+                    context,
+                    title: _getSettingTitle(setting),
+                    value: settings.get<bool>(setting),
+                    onChanged: (val) => settings.set(setting, val),
+                  );
+                }
+                return Container();
               }),
             ],
           ),
@@ -174,6 +189,52 @@ class SettingsView extends StatelessWidget {
             ),
             onQtyChanged: (val) => val != null ? onChanged(val as num) : null,
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSectionTitle(BuildContext context, String title) {
+    return Row(
+      spacing: kMediumPadding,
+      children: [
+        Text(title, style: TextStyle(color: context.secondary)),
+        const Expanded(child: Divider()),
+      ],
+    );
+  }
+
+  Widget _buildDropdownRow(
+    BuildContext context, {
+    required String title,
+    required String value,
+    required List<String> items,
+    required Function(String) onChanged,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: ThemeText.title.copyWith(fontWeight: FontWeight.normal),
+        ),
+        DropdownButton<String>(
+          value: items.contains(value) ? value : items.first,
+          dropdownColor: context.background,
+          underline: Container(),
+          items: items.map((String font) {
+            return DropdownMenuItem<String>(
+              value: font,
+              child: Text(
+                font
+                    .split("_")
+                    .map((e) => e[0].toUpperCase() + e.substring(1))
+                    .join(" "),
+                style: TextStyle(color: context.foreground, fontFamily: font),
+              ),
+            );
+          }).toList(),
+          onChanged: (val) => val != null ? onChanged(val) : null,
         ),
       ],
     );
