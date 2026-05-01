@@ -1,5 +1,5 @@
 import "package:re_highlight/re_highlight.dart";
-import "keywords.dart";
+import "alif_keywords.dart";
 export "alif_snippets.dart";
 
 final allModes = [

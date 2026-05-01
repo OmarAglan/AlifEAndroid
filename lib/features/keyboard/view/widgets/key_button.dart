@@ -48,21 +48,18 @@ class _KeyButtonState extends State<KeyButton> {
         widget.onLongPress!();
       }
 
-      // لو الزرار قابل للتكرار (زي الحذف) بنشغل التايمر الدوري
       if (widget.isRepeatable) {
         _periodicTimer = Timer.periodic(const Duration(milliseconds: 50), (
           timer,
         ) {
-          widget.onPressed(); // بيفضل ينفذ الحذف كل ٥٠ مللي ثانية
+          widget.onPressed();
         });
       }
     });
   }
 
   void _handleTapUp(TapUpDetails details) {
-    if (!_isLongPressed) {
-      widget.onPressed(); // ضغطة عادية سريعة
-    }
+    if (!_isLongPressed) widget.onPressed();
     _stopTimers();
   }
 

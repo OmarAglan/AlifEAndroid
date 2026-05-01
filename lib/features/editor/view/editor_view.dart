@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
+import "../../../constants.dart";
 import "../../../core/providers/workspace_provider.dart";
 import "../../../core/services/files/load_saved_files.dart";
 import "../../../core/services/premissions.dart";
@@ -22,40 +23,80 @@ class _EditorViewState extends State<EditorView> {
   @override
   void initState() {
     super.initState();
+    _initializeEditor();
+  }
+
+  Future<void> _initializeEditor() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await loadFilesFromStorage(context);
       await requestStoragePermission();
       if (!mounted) return;
-      await setupAlif(context);
+      await Future.wait([loadFilesFromStorage(context), setupAlif(context)]);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final workspace = context.watch<WorkspaceProvider>();
-
-    return Scaffold(
-      body: DecoratedBox(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/Background.webp"),
-            fit: BoxFit.cover,
-            alignment: Alignment.topLeft,
-          ),
-        ),
-        child: Column(
-          spacing: 1,
-          children: [
-            const CustomAppBar(),
-            const OpenedFiles(),
-            const IDEView(),
-            SafeArea(
-              top: false,
-              bottom: !workspace.focusNode.hasFocus,
-              child: const Column(children: [ShortcutsView(), KeyboardView()]),
+    return Selector<WorkspaceProvider, bool>(
+      selector: (_, prov) => prov.isKeyboardEnabled,
+      builder: (context, isKeyboardEnabled, child) {
+        return Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: PopScope(
+            canPop: !isKeyboardEnabled,
+            onPopInvokedWithResult: (didPop, result) {
+              if (isKeyboardEnabled && !didPop) {
+                context.read<WorkspaceProvider>().toggleKeyboard();
+              }
+            },
+            child: DecoratedBox(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/Background.webp"),
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topLeft,
+                ),
+              ),
+              child: Column(
+                children: [
+                  const CustomAppBar(),
+                  const OpenedFiles(),
+                  const Expanded(child: IDEView()),
+                  _BuiltInKeyboard(isKeyboardEnabled: isKeyboardEnabled),
+                ],
+              ),
             ),
-          ],
-        ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _BuiltInKeyboard extends StatelessWidget {
+  final bool isKeyboardEnabled;
+  const _BuiltInKeyboard({required this.isKeyboardEnabled});
+
+  @override
+  Widget build(BuildContext context) {
+    final hasFocus = context.select<WorkspaceProvider, bool>(
+      (p) => p.focusNode.hasFocus,
+    );
+
+    return SafeArea(
+      top: false,
+      bottom: !hasFocus,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const ShortcutsView(),
+          AnimatedSize(
+            duration: kAnimationDuration,
+            curve: kCurveEaseInOut,
+            child: isKeyboardEnabled
+                ? const KeyboardView()
+                : const SizedBox(width: double.infinity, height: 0),
+          ),
+        ],
       ),
     );
   }

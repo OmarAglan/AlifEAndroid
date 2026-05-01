@@ -70,13 +70,28 @@ class S {
   }
 
   /// `New File`
-  String get new_file {
-    return Intl.message('New File', name: 'new_file', desc: '', args: []);
+  String get newFile {
+    return Intl.message('New File', name: 'newFile', desc: '', args: []);
   }
 
   /// `Open File`
-  String get open_file {
-    return Intl.message('Open File', name: 'open_file', desc: '', args: []);
+  String get openFile {
+    return Intl.message('Open File', name: 'openFile', desc: '', args: []);
+  }
+
+  /// `Delete File`
+  String get deleteFile {
+    return Intl.message('Delete File', name: 'deleteFile', desc: '', args: []);
+  }
+
+  /// `Are you sure?`
+  String get areYouSure {
+    return Intl.message(
+      'Are you sure?',
+      name: 'areYouSure',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Save`
@@ -87,11 +102,6 @@ class S {
   /// `Save As`
   String get save_as {
     return Intl.message('Save As', name: 'save_as', desc: '', args: []);
-  }
-
-  /// `Close`
-  String get close {
-    return Intl.message('Close', name: 'close', desc: '', args: []);
   }
 
   /// `Delete`
@@ -139,6 +149,16 @@ class S {
     return Intl.message('Search', name: 'search', desc: '', args: []);
   }
 
+  /// `Replace With`
+  String get replaceWith {
+    return Intl.message(
+      'Replace With',
+      name: 'replaceWith',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Error`
   String get error {
     return Intl.message('Error', name: 'error', desc: '', args: []);
@@ -157,6 +177,36 @@ class S {
   /// `Cancel`
   String get cancel {
     return Intl.message('Cancel', name: 'cancel', desc: '', args: []);
+  }
+
+  /// `Confirm`
+  String get confirm {
+    return Intl.message('Confirm', name: 'confirm', desc: '', args: []);
+  }
+
+  /// `Close`
+  String get close {
+    return Intl.message('Close', name: 'close', desc: '', args: []);
+  }
+
+  /// `Share`
+  String get share {
+    return Intl.message('Share', name: 'share', desc: '', args: []);
+  }
+
+  /// `For Read Only`
+  String get forReadOnly {
+    return Intl.message(
+      'For Read Only',
+      name: 'forReadOnly',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `For Write`
+  String get forWrite {
+    return Intl.message('For Write', name: 'forWrite', desc: '', args: []);
   }
 
   /// `Successfully installed Alif version`

@@ -9,53 +9,81 @@ import "../../../terminal/functions/run_command.dart";
 import "../../../terminal/view/terminal_view.dart";
 import "key_button.dart";
 
-class ShortcutsView extends StatelessWidget {
+class ShortcutsView extends StatefulWidget {
   const ShortcutsView({super.key});
 
   @override
+  State<ShortcutsView> createState() => _ShortcutsViewState();
+}
+
+class _ShortcutsViewState extends State<ShortcutsView> {
+  void _update() => setState(() {});
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<WorkspaceProvider>().codeController.addListener(_update);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final workspace = context.watch<WorkspaceProvider>();
-    final terminal = context.watch<TerminalProvider>();
-    const double iconSize = 17;
+    final workspace = context.read<WorkspaceProvider>();
+
+    final isSearchActive = context.select<WorkspaceProvider, bool>(
+      (p) => p.findController.isActive,
+    );
+    final isReadOnly = context.select<WorkspaceProvider, bool>(
+      (p) => p.codeController.readOnly,
+    );
+    final canUndo = context.select<WorkspaceProvider, bool>(
+      (p) => p.undoController.canUndo,
+    );
+    final canRedo = context.select<WorkspaceProvider, bool>(
+      (p) => p.undoController.canRedo,
+    );
+    final isRunning = context.select<TerminalProvider, bool>(
+      (p) => p.runningProcess?.exitCode == null && p.runningProcess != null,
+    );
 
     final bool hasSelection =
         workspace.codeController.selection.start !=
         workspace.codeController.selection.end;
 
+    const double iconSize = 17;
+
     return SizedBox(
       height: 30,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: kSmallPadding),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Run
+            // زرار التشغيل
             KeyButton(
-              onPressed: () => {
-                context.read<TerminalProvider>().clearOutput(),
-                runCommand(context, kAlifBin),
-                showTerminalView(context),
+              onPressed: () {
+                final terminal = context.read<TerminalProvider>();
+                terminal.clearOutput();
+                runCommand(context, kAlifBin);
+                showTerminalView(context);
               },
               child: Icon(
-                terminal.runningProcess?.exitCode == null
-                    ? LucideIcons.play
-                    : LucideIcons.square,
+                isRunning ? LucideIcons.square : LucideIcons.play,
                 size: iconSize,
-                color: terminal.runningProcess?.exitCode == null
-                    ? context.foreground
-                    : Colors.red,
+                color: isRunning ? Colors.red : context.foreground,
               ),
             ),
-            // search
+
             KeyButton(
               onPressed: () => workspace.toggleSearch(),
               child: Icon(
-                workspace.findController.isActive
-                    ? LucideIcons.x
-                    : LucideIcons.search,
+                isSearchActive ? LucideIcons.x : LucideIcons.search,
                 size: iconSize,
               ),
             ),
+
             // Tab
             KeyButton(
               onPressed: () => workspace.codeController.indent(),
@@ -63,18 +91,18 @@ class ShortcutsView extends StatelessWidget {
             ),
 
             // Undo / Redo
-            if (workspace.undoController.canUndo)
+            if (canUndo)
               KeyButton(
                 onPressed: () => workspace.undoController.undo(),
                 child: const Icon(LucideIcons.undo2, size: iconSize),
               ),
-            if (workspace.undoController.canRedo)
+            if (canRedo)
               KeyButton(
                 onPressed: () => workspace.undoController.redo(),
                 child: const Icon(LucideIcons.redo2, size: iconSize),
               ),
 
-            // تحريك السطور وتكرارها
+            // عمليات السطور
             KeyButton(
               onPressed: () => workspace.codeController.moveLineUp(),
               child: const Icon(LucideIcons.arrowUp, size: iconSize),
@@ -88,17 +116,19 @@ class ShortcutsView extends StatelessWidget {
               child: const Icon(LucideIcons.layers2, size: iconSize),
             ),
 
-            // copy / cut / paste / selectAll
+            // Clipboard
             KeyButton(
               onPressed: () => workspace.codeController.paste(),
               child: const Icon(LucideIcons.clipboard, size: iconSize),
             ),
+
+            // أزرار التحديد
             if (hasSelection) ...[
               KeyButton(
                 onPressed: () => workspace.codeController.copy(),
                 child: const Icon(LucideIcons.copy, size: iconSize),
               ),
-              if (!workspace.codeController.readOnly)
+              if (!isReadOnly)
                 KeyButton(
                   onPressed: () => workspace.codeController.cut(),
                   child: const Icon(LucideIcons.scissors, size: iconSize),
@@ -112,5 +142,13 @@ class ShortcutsView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    try {
+      context.read<WorkspaceProvider>().codeController.removeListener(_update);
+    } catch (_) {}
+    super.dispose();
   }
 }

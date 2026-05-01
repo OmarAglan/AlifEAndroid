@@ -127,7 +127,7 @@ class CustomDialog extends StatelessWidget {
                 if (withConfirm) ...[
                   Expanded(
                     child: DialogButton(
-                      title: "تاكيد",
+                      title: l10n.confirm,
                       color: context.primary,
                       onTap: () {
                         onConfirm?.call();

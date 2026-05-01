@@ -3,6 +3,7 @@ import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
 
 import "../../../../constants.dart";
+import "../../../../core/extensions/strings.dart";
 import "../../../../core/models/data_typs.dart";
 import "../../../../core/providers/workspace_provider.dart";
 import "../../../../core/services/share_code_image.dart";
@@ -18,7 +19,6 @@ class EditSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final workspace = context.read<WorkspaceProvider>();
     final bool hasPath = file.path != null && file.path!.isNotEmpty;
 
     return Column(
@@ -39,9 +39,9 @@ class EditSheet extends StatelessWidget {
           ),
         ),
         SelectableText(
-          hasPath ? file.path!.replaceAll(kHomeDir, "~") : l10n.noPath,
+          hasPath ? file.path!.handelHomePath : l10n.noPath,
           textAlign: TextAlign.center,
-          style: TextStyle(color: context.secondary, fontSize: 12),
+          style: TextStyle(color: context.secondary, fontSize: kSoSmallFont),
         ),
         Row(
           spacing: kSmallPadding,
@@ -49,13 +49,17 @@ class EditSheet extends StatelessWidget {
             Expanded(
               child: DialogButton(
                 title: l10n.delete,
-                color: Colors.red,
+                color: context.error,
                 icon: LucideIcons.trash,
                 onTap: () => showCustomDialog(
-                  title: "حذف الملف",
-                  subtitle: "هل متاكد من حذف الملف؟",
+                  title: l10n.deleteFile,
+                  subtitle: l10n.areYouSure,
                   onConfirm: () {
-                    workspace.updateFile(context, file.id, FileAction.delete);
+                    context.read<WorkspaceProvider>().updateFile(
+                      context,
+                      file.id,
+                      FileAction.delete,
+                    );
                     Navigator.pop(context);
                   },
                 ),
@@ -64,11 +68,15 @@ class EditSheet extends StatelessWidget {
             if (hasPath)
               Expanded(
                 child: DialogButton(
-                  title: "إغلاق",
-                  color: Colors.amber,
+                  title: l10n.close,
+                  color: context.warning,
                   icon: LucideIcons.x,
                   onTap: () {
-                    workspace.updateFile(context, file.id, FileAction.close);
+                    context.read<WorkspaceProvider>().updateFile(
+                      context,
+                      file.id,
+                      FileAction.close,
+                    );
                     Navigator.pop(context);
                   },
                 ),
@@ -80,11 +88,11 @@ class EditSheet extends StatelessWidget {
           children: [
             Expanded(
               child: DialogButton(
-                title: file.readOnly ? "للقراءة" : "للكتابة",
-                color: file.readOnly ? Colors.red : Colors.green,
+                title: file.readOnly ? l10n.forReadOnly : l10n.forWrite,
+                color: file.readOnly ? context.error : context.success,
                 icon: file.readOnly ? LucideIcons.penOff : LucideIcons.pen,
                 onTap: () {
-                  workspace.updateFile(
+                  context.read<WorkspaceProvider>().updateFile(
                     context,
                     file.id,
                     FileAction.toggleReadOnly,
@@ -95,7 +103,7 @@ class EditSheet extends StatelessWidget {
             ),
             Expanded(
               child: DialogButton(
-                title: "مشاركة",
+                title: l10n.share,
                 color: context.text,
                 icon: LucideIcons.share,
                 onTap: () => ShareAsImageService.shareCodeAsImage(context),

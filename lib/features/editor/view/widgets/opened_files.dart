@@ -11,12 +11,17 @@ import "edit_file_view.dart";
 class OpenedFiles extends StatelessWidget {
   const OpenedFiles({super.key});
 
-  void onLongPress(BuildContext context, dynamic id, WorkspaceProvider data) {
+  Future<void> onLongPress(
+    BuildContext context,
+    dynamic id,
+    WorkspaceProvider data,
+  ) async {
     final file = data.files[id];
     final TextEditingController controller = TextEditingController(
       text: file.name,
     );
-    showCustomDialog(
+
+    await showCustomDialog(
       title: l10n.editFile,
       onConfirm: () => data.updateFile(
         context,
@@ -26,6 +31,8 @@ class OpenedFiles extends StatelessWidget {
       ),
       child: EditSheet(file: file, controller: controller),
     );
+
+    controller.dispose();
   }
 
   @override
@@ -33,19 +40,17 @@ class OpenedFiles extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: kSmallPadding),
       child: Consumer<WorkspaceProvider>(
-        builder: (context, workspce, child) => RadioInput(
-          value: workspce.selectedFile.id,
-          items: workspce.files.map((file) {
-            return SelectEntity(
-              value: file.id,
-              name:
-                  file.name +
-                  (file.readOnly ? "!" : "") +
-                  (!file.saved ? "*" : ""),
-            );
+        builder: (context, workspace, child) => RadioInput(
+          value: workspace.selectedFile.id,
+          items: workspace.files.map((file) {
+            final String suffix =
+                "${file.readOnly ? "!" : ""}${!file.saved ? "*" : ""}";
+            return SelectEntity(value: file.id, name: "${file.name}$suffix");
           }).toList(),
-          onLongPress: (id) => onLongPress(context, id, workspce),
-          onChanged: (id) => openFile(id as int, context),
+          onLongPress: (id) => onLongPress(context, id, workspace),
+          onChanged: (id) {
+            if (id is int) openFile(id, context);
+          },
         ),
       ),
     );

@@ -28,10 +28,10 @@ class WorkspaceProvider extends ChangeNotifier {
 
   WorkspaceProvider() {
     codeController = CodeController();
-    findController = FindController(codeController);
-    undoController = UndoRedoController();
     focusNode = FocusNode();
     focusNode.addListener(_onFocusChange);
+    findController = FindController(codeController);
+    undoController = UndoRedoController();
     _selectedFile = FileEntity.empty();
     _init();
   }

@@ -139,8 +139,8 @@ class _RadioInputState extends State<RadioInput> {
                       width: layout["width"]!,
                       top: 4,
                       bottom: 4,
-                      duration: const Duration(milliseconds: 250),
-                      curve: Curves.easeInOut,
+                      duration: kAnimationDuration,
+                      curve: kCurveEaseInOut,
                       child: Container(
                         decoration: BoxDecoration(
                           color: context.sacheme.withOpacity(0.1),
