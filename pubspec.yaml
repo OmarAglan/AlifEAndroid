@@ -1,12 +1,16 @@
 name: taif
 description: "مُحرر لغة ألف"
+publish_to: none
 version: 1.1.0
 
 environment:
     sdk: ">=3.11.0 <4.0.0"
 
 dependencies:
-    code_forge: ^9.8.0
+    code_forge:
+        git:
+            url: https://github.com/heckmon/code_forge.git
+            ref: main
     file_saver: ^0.3.1
     flutter:
         sdk: flutter

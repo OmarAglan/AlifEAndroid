@@ -46,19 +46,20 @@ class SettingsView extends StatelessWidget {
                 onChanged: (val) => settings.set(AppSetting.editorFont, val),
               ),
               _buildSectionTitle(context, "المحرر"),
-              // _buildNumberRow(
-              //   context,
-              //   title: "حجم المسافة",
-              //   subTitle: "($kCodeSpaceLength)",
-              //   value: settings.get<int>(AppSetting.tapSize),
-              //   min: 2,
-              //   max: 10,
-              //   onChanged: (val) =>
-              //       settings.set(AppSetting.tapSize, val.toInt()),
-              // ),
+              _buildNumberRow(
+                context,
+                title: "حجم المسافة",
+                subTitle: "($kCodeSpaceLength)",
+                value: settings.get<int>(AppSetting.tabSize),
+                min: 2,
+                max: 10,
+                onChanged: (val) =>
+                    settings.set(AppSetting.tabSize, val.toInt()),
+              ),
               ...[
                 AppSetting.autoSave,
                 AppSetting.enableSuggestions,
+                AppSetting.enableGuideLines,
                 AppSetting.enableFolding,
                 AppSetting.lineWrap,
                 "النظام",
@@ -94,6 +95,8 @@ class SettingsView extends StatelessWidget {
         return "تفعيل الاقتراحات";
       case AppSetting.enableFolding:
         return "طي الشفرة";
+      case AppSetting.enableGuideLines:
+        return "خطوط المسافات";
       case AppSetting.lineWrap:
         return "طي الأسطر";
       case AppSetting.enableVibration:

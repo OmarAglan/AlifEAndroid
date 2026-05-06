@@ -94,7 +94,7 @@ class _IDEViewState extends State<IDEView> {
       enableGuideLines: settings.get(AppSetting.enableGuideLines),
       enableSuggestions: settings.get(AppSetting.enableSuggestions),
       lineWrap: settings.get(AppSetting.lineWrap),
-      // tapSize: settings.tapSize,
+      tabSize: settings.get(AppSetting.tabSize),
       customCodeSnippets: alifSnippets,
       findController: workspace.findController,
       finderBuilder: (context, findController) => PreferredSize(
