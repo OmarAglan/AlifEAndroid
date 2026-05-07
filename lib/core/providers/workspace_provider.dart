@@ -210,6 +210,15 @@ class WorkspaceProvider extends ChangeNotifier {
   void toggleSearch() {
     findController.isActive = !findController.isActive;
     if (findController.isActive) {
+      if (!codeController.selection.isCollapsed) {
+        final selectedText = codeController.text.substring(
+          codeController.selection.start,
+          codeController.selection.end,
+        );
+
+        findController.findInputController.text = selectedText;
+      }
+
       Future.microtask(() => findController.findInputFocusNode.requestFocus());
     } else {
       findController.clear();

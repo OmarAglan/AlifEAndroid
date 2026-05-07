@@ -78,64 +78,55 @@ class _ShortcutsViewState extends State<ShortcutsView> {
 
             KeyButton(
               onPressed: () => workspace.toggleSearch(),
-              child: Icon(
-                isSearchActive ? LucideIcons.x : LucideIcons.search,
-                size: iconSize,
-              ),
-            ),
-
-            // Tab
-            KeyButton(
-              onPressed: () => workspace.codeController.indent(),
-              child: const Icon(LucideIcons.arrowRightToLine, size: iconSize),
+              child: isSearchActive ? LucideIcons.x : LucideIcons.search,
             ),
 
             // Undo / Redo
-            if (canUndo)
-              KeyButton(
-                onPressed: () => workspace.undoController.undo(),
-                child: const Icon(LucideIcons.undo2, size: iconSize),
-              ),
-            if (canRedo)
-              KeyButton(
-                onPressed: () => workspace.undoController.redo(),
-                child: const Icon(LucideIcons.redo2, size: iconSize),
-              ),
+            KeyButton(
+              onPressed: () => workspace.undoController.undo(),
+              disabled: !canUndo,
+              child: LucideIcons.undo2,
+            ),
+            KeyButton(
+              onPressed: () => workspace.undoController.redo(),
+              disabled: !canRedo,
+              child: LucideIcons.redo2,
+            ),
 
             // عمليات السطور
             KeyButton(
               onPressed: () => workspace.codeController.moveLineUp(),
-              child: const Icon(LucideIcons.arrowUp, size: iconSize),
+              child: LucideIcons.arrowUp,
             ),
             KeyButton(
               onPressed: () => workspace.codeController.moveLineDown(),
-              child: const Icon(LucideIcons.arrowDown, size: iconSize),
+              child: LucideIcons.arrowDown,
             ),
             KeyButton(
               onPressed: () => workspace.codeController.duplicateLine(),
-              child: const Icon(LucideIcons.layers2, size: iconSize),
+              child: LucideIcons.layers2,
             ),
 
             // Clipboard
             KeyButton(
               onPressed: () => workspace.codeController.paste(),
-              child: const Icon(LucideIcons.clipboard, size: iconSize),
+              child: LucideIcons.clipboard,
             ),
 
             // أزرار التحديد
             if (hasSelection) ...[
               KeyButton(
                 onPressed: () => workspace.codeController.copy(),
-                child: const Icon(LucideIcons.copy, size: iconSize),
+                child: LucideIcons.copy,
               ),
               if (!isReadOnly)
                 KeyButton(
                   onPressed: () => workspace.codeController.cut(),
-                  child: const Icon(LucideIcons.scissors, size: iconSize),
+                  child: LucideIcons.scissors,
                 ),
               KeyButton(
                 onPressed: () => workspace.codeController.selectAll(),
-                child: const Icon(LucideIcons.squareDashed, size: iconSize),
+                child: LucideIcons.squareDashed,
               ),
             ],
           ],

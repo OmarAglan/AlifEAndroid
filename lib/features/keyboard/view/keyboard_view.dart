@@ -3,6 +3,7 @@ import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
 import "../../../constants.dart";
 import "../../../core/providers/workspace_provider.dart";
+import "../../editor/models/code_controller.dart";
 import "../../editor/models/key_entity.dart";
 import "../data/keyboard_provider.dart"; // تأكد إن ده فيه الـ ShortcutsProvider الجديد
 import "widgets/key_button.dart";
@@ -95,7 +96,7 @@ class _KeyboardViewState extends State<KeyboardView> {
       return Expanded(
         flex: 2,
         child: KeyButton(
-          shortcutLabel: hasShortcut ? item.insert : null,
+          shortcut: hasShortcut ? item.insert : null,
           onPressed: () {
             controller.insert(context, char: name);
             if (isCap) setState(() => isCap = false);
@@ -144,12 +145,17 @@ class _KeyboardViewState extends State<KeyboardView> {
     );
   }
 
-  Widget _buildBottomRow(dynamic controller, dynamic workspace) {
+  Widget _buildBottomRow(
+    CodeController controller,
+    WorkspaceProvider workspace,
+  ) {
     return Row(
       children: [
         _buildActionKey(
           LucideIcons.cornerDownLeft,
           () => controller.insert(context, char: "\n"),
+          label: LucideIcons.arrowRightToLine,
+          onLongPress: () => controller.indent(),
           flex: 2,
         ),
         _buildActionKey(
@@ -191,13 +197,16 @@ class _KeyboardViewState extends State<KeyboardView> {
   Widget _buildActionKey(
     IconData? icon,
     VoidCallback onPressed, {
-    String? label,
+    VoidCallback? onLongPress,
+    dynamic label,
     int flex = 1,
   }) {
     return Expanded(
       flex: flex,
       child: KeyButton(
         onPressed: onPressed,
+        onLongPress: onLongPress,
+        shortcut: icon == null ? null : label,
         child: icon != null ? Icon(icon, size: 20) : Text(label ?? ""),
       ),
     );

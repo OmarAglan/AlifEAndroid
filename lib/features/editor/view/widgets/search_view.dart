@@ -53,6 +53,7 @@ class SearchView extends StatelessWidget {
                   child: TextField(
                     autofocus: true,
                     focusNode: findController.findInputFocusNode,
+                    controller: findController.findInputController,
                     decoration: InputDecoration(
                       hint: Text(
                         "${l10n.search}...",

@@ -11,19 +11,21 @@ class KeyButton extends StatefulWidget {
     required this.child,
     required this.onPressed,
     this.onLongPress,
-    this.shortcutLabel,
+    this.shortcut,
     this.isRepeatable = false,
     this.onPanUpdate,
     this.onPanEnd,
+    this.disabled = false,
   });
 
   final dynamic child;
   final VoidCallback onPressed;
   final VoidCallback? onLongPress;
-  final String? shortcutLabel;
+  final dynamic shortcut;
   final bool isRepeatable;
   final Function(DragUpdateDetails)? onPanUpdate;
   final Function(DragEndDetails)? onPanEnd;
+  final bool disabled;
 
   @override
   State<KeyButton> createState() => _KeyButtonState();
@@ -41,13 +43,9 @@ class _KeyButtonState extends State<KeyButton> {
 
   void _handleTapDown(TapDownDetails details) {
     _isLongPressed = false;
-
     _delayTimer = Timer(const Duration(milliseconds: 200), () {
       _isLongPressed = true;
-      if (widget.onLongPress != null) {
-        widget.onLongPress!();
-      }
-
+      if (widget.onLongPress != null) widget.onLongPress!();
       if (widget.isRepeatable) {
         _periodicTimer = Timer.periodic(const Duration(milliseconds: 50), (
           timer,
@@ -58,62 +56,46 @@ class _KeyButtonState extends State<KeyButton> {
     });
   }
 
-  void _handleTapUp(TapUpDetails details) {
-    if (!_isLongPressed) widget.onPressed();
-    _stopTimers();
-  }
-
-  @override
-  void dispose() {
-    _stopTimers();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final mainContent = _buildContent(widget.child);
+    final shortcutContent = widget.shortcut != null
+        ? _buildContent(
+            widget.shortcut,
+            iconSize: 14,
+            fontSize: kSoSmallFont,
+            color: context.secondary,
+          )
+        : null;
+
     return Padding(
       padding: const EdgeInsets.all(2.0),
       child: Material(
         color: const Color(0x601A2340),
         borderRadius: BorderRadius.circular(8),
         child: GestureDetector(
-          onTapDown: _handleTapDown,
-          onTapUp: _handleTapUp,
-          onTapCancel: _stopTimers,
-          onPanUpdate: widget.onPanUpdate,
-          onPanEnd: widget.onPanEnd,
+          onPanUpdate: widget.disabled ? null : widget.onPanUpdate,
+          onPanEnd: widget.disabled ? null : widget.onPanEnd,
           child: InkWell(
             borderRadius: BorderRadius.circular(8),
-            onTap: null,
+            onTapDown: widget.disabled ? null : _handleTapDown,
+            onTap: widget.disabled
+                ? null
+                : () {
+                    if (!_isLongPressed) widget.onPressed();
+                    _stopTimers();
+                  },
+            onTapCancel: widget.disabled ? null : _stopTimers,
             child: SizedBox(
               height: 45,
               width: 45,
-              child: widget.shortcutLabel == null
-                  ? Center(
-                      child: widget.child is Widget
-                          ? widget.child
-                          : Text(widget.child.toString()),
-                    )
+              child: shortcutContent == null
+                  ? Center(child: mainContent)
                   : Stack(
                       alignment: Alignment.center,
                       children: [
-                        widget.child is Widget
-                            ? widget.child
-                            : Text(
-                                widget.child.toString(),
-                                style: const TextStyle(fontSize: kLargeFont),
-                              ),
-                        Positioned(
-                          top: 2,
-                          right: 4,
-                          child: Text(
-                            widget.shortcutLabel!,
-                            style: TextStyle(
-                              fontSize: kSoSmallFont,
-                              color: context.secondary,
-                            ), // مثال
-                          ),
-                        ),
+                        mainContent,
+                        Positioned(top: 2, right: 4, child: shortcutContent),
                       ],
                     ),
             ),
@@ -121,5 +103,31 @@ class _KeyButtonState extends State<KeyButton> {
         ),
       ),
     );
+  }
+
+  Widget _buildContent(
+    dynamic data, {
+    double? iconSize,
+    double? fontSize,
+    Color? color,
+  }) {
+    if (data is Widget) return data;
+    if (data is IconData) {
+      return Icon(
+        data,
+        size: iconSize ?? 17,
+        color: widget.disabled ? context.secondary : color,
+      );
+    }
+    if (data is String) {
+      return Text(
+        data,
+        style: TextStyle(
+          fontSize: fontSize ?? kLargeFont,
+          color: widget.disabled ? context.secondary : color,
+        ),
+      );
+    }
+    return Text(data.toString());
   }
 }
