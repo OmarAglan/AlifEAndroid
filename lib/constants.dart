@@ -5,9 +5,10 @@ import "package:flutter/material.dart";
 import "generated/l10n.dart";
 
 const String kMainFont = "tajawal";
+const String kTerminalFont = "noto_kufi";
 const List<String> kFonts = [
   kMainFont,
-  "noto_kufi",
+  kTerminalFont,
   "kawkab",
   "hasubi",
   "alaq_halab",

@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "../../../constants.dart";
 import "../../../core/widgets/show_bottom_sheet.dart";
 import "widgets/terminal_input.dart";
 import "widgets/terminal_outputs.dart";
@@ -9,11 +10,16 @@ class TerminalView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
-      children: [
-        Expanded(child: TerminalOutputs()),
-        TerminalInput(),
-      ],
+    return DefaultTextStyle(
+      style: DefaultTextStyle.of(
+        context,
+      ).style.copyWith(fontFamily: kTerminalFont),
+      child: const Column(
+        children: [
+          Expanded(child: TerminalOutputs()),
+          TerminalInput(),
+        ],
+      ),
     );
   }
 }

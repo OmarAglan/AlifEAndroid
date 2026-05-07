@@ -1,6 +1,7 @@
 import "dart:convert";
 
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:provider/provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
@@ -35,32 +36,9 @@ Future<void> loadFilesFromStorage(BuildContext context) async {
         : 0;
     await openFile(selectedIndex, context);
   } else {
-    createFile(name: defultFile.name, code: defultFile.code, context: context);
+    const fileName = "لعبة_اكس_او.الف";
+    final gameCode = await rootBundle.loadString("assets/examples/$fileName");
+    if (!context.mounted) return;
+    createFile(name: fileName, code: gameCode, context: context);
   }
 }
-
-FileEntity defultFile = const FileEntity(
-  id: 0,
-  name: "الأعداد_الاولية.الف",
-  code: """
-# هذا البرنامج يقوم بطباعة الاعداد الاولية ضمن المدى المعطى له
-دالة هل_اولي(عدد):
-    اذا عدد < 2:
-        ارجع
-    اذا عدد == 2:
-        اطبع(عدد)
-        ارجع
-    اذا ليس عدد \\\\ 2:
-        ارجع
-    لكل مقسوم في مدى(3, صحيح(\\^عدد) + 1, 2):
-        اذا ليس عدد \\\\ مقسوم:
-            ارجع
-    اطبع(عدد)
-
-اطبع("*- هذا البرنامج يقوم بإيجاد الأعداد الأولية ضمن المدى المدخل له -*")
-ن = صحيح(ادخل("ادخل عدد: "))
-لكل ب في مدى(ن):
-    هل_اولي(ب)
-اطبع(م"تم إيجاد الاعداد الاولية ضمن العدد { ن }")
-""",
-);

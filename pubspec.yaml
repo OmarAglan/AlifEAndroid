@@ -44,6 +44,7 @@ flutter:
 
     assets:
         - assets/
+        - assets/examples/
         - assets/aliflang/
         - assets/aliflang/library/
         - assets/aliflang/arm64-v8a/alif_lsp
