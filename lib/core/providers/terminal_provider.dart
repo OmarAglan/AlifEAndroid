@@ -10,7 +10,7 @@ class TerminalProvider extends ChangeNotifier {
   final SettingsProvider _settings;
 
   final List<TerminalLine> outputLines = [];
-  String get output => outputLines.join("\n");
+  String get output => outputLines.map((e) => e.text).join("\n");
 
   int currentSessionId = 0;
   String terminalHint = "أدخل الأمر...";

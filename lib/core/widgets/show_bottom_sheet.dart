@@ -35,7 +35,7 @@ class _MyBottomSheetState extends State<MyBottomSheet> {
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       expand: false,
-      initialChildSize: 0.7,
+      initialChildSize: widget.height ?? 0.7,
       minChildSize: 0.4,
       maxChildSize: 0.95,
       builder: (_, controller) => MyMaterial(
@@ -45,68 +45,83 @@ class _MyBottomSheetState extends State<MyBottomSheet> {
           topLeft: Radius.circular(kMediumBorderRadius),
           topRight: Radius.circular(kMediumBorderRadius),
         ),
-        child: widget.isScrolable
-            ? _scrolableBottomSheet(controller)
-            : _statciBottomSheet(),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: widget.isScrolable
+                  ? _buildScrollableContent(controller)
+                  : _buildStaticContent(),
+            ),
+
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: _buildFloatingHeader(context),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _statciBottomSheet() {
-    return Column(
-      children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(
-            horizontal: kMediumPadding,
-            vertical: kSmallPadding,
-          ),
-          child: widget.header ?? _buildDefaultHeader(context),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: kMediumPadding),
-            child: widget.child,
-          ),
-        ),
-      ],
+  Widget _buildStaticContent() {
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: kMediumPadding,
+        right: kMediumPadding,
+        top: kSmallPadding,
+      ),
+      child: widget.child,
     );
   }
 
-  Widget _scrolableBottomSheet(ScrollController controller) {
-    return SingleChildScrollView(
+  Widget _buildScrollableContent(ScrollController controller) {
+    return ListView(
       controller: controller,
       reverse: widget.reverse,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(
-              horizontal: kMediumPadding,
-              vertical: kSmallPadding,
-            ),
-            child: widget.header ?? _buildDefaultHeader(context),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-              left: kMediumPadding,
-              right: kMediumPadding,
-              bottom: kMediumPadding,
-            ),
-            child: widget.child,
-          ),
-        ],
+      padding: const EdgeInsets.only(
+        left: kMediumPadding,
+        right: kMediumPadding,
+        top: 80.0,
+        bottom: kMediumPadding,
       ),
+      children: [widget.child],
+    );
+  }
+
+  Widget _buildFloatingHeader(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(kMediumBorderRadius),
+          topRight: Radius.circular(kMediumBorderRadius),
+        ),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [context.background, context.background.withOpacity(0)],
+        ),
+      ),
+      padding: const EdgeInsets.only(
+        left: kMediumPadding,
+        right: kMediumPadding,
+        top: kSmallPadding,
+        bottom: kLargePadding,
+      ),
+      child: widget.header ?? _buildDefaultHeader(context),
     );
   }
 
   Widget _buildDefaultHeader(BuildContext context) {
+    final hasActions = widget.closeButton || widget.actionButtons.isNotEmpty;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          margin: const EdgeInsets.only(top: kMediumPadding),
+          margin: const EdgeInsets.only(bottom: kSmallPadding),
           decoration: BoxDecoration(
             color: context.secondary,
             borderRadius: BorderRadius.circular(kMediumBorderRadius),
@@ -114,32 +129,23 @@ class _MyBottomSheetState extends State<MyBottomSheet> {
           height: 5,
           width: 40,
         ),
-        Row(
-          children: [
-            Expanded(
-              child: Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: (widget.closeButton || widget.actionButtons.isNotEmpty)
-                    ? IconButton(
-                        icon: const Icon(LucideIcons.x),
-                        onPressed: () => Navigator.pop(context),
-                      )
-                    : const SizedBox.shrink(),
-              ),
-            ),
-            Expanded(
-              child: Align(
-                alignment: AlignmentDirectional.centerEnd,
-                child: widget.actionButtons.isNotEmpty
-                    ? Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: widget.actionButtons,
-                      )
-                    : const SizedBox.shrink(),
-              ),
-            ),
-          ],
-        ),
+        if (hasActions)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              widget.closeButton
+                  ? IconButton(
+                      icon: const Icon(LucideIcons.x),
+                      onPressed: () => Navigator.pop(context),
+                    )
+                  : const SizedBox.shrink(),
+              if (widget.actionButtons.isNotEmpty)
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: widget.actionButtons,
+                ),
+            ],
+          ),
       ],
     );
   }

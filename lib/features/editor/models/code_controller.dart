@@ -8,11 +8,26 @@ import "key_entity.dart";
 
 class CodeController extends CodeForgeController {
   CodeController({super.lspConfig}) {
-    suggestionsNotifier.addListener(_autoSelectFirstSuggestion);
+    suggestionsNotifier.addListener(_handleSuggestions);
   }
-  void _autoSelectFirstSuggestion() {
+
+  void _handleSuggestions() {
     if (suggestionsNotifier.value != null &&
         suggestionsNotifier.value!.isNotEmpty) {
+      final offset = selection.extentOffset;
+
+      if (offset > 0 && offset <= text.length) {
+        final charBefore = text[offset - 1];
+        if (charBefore == ":") {
+          Future.microtask(() {
+            if (suggestionsNotifier.value != null) {
+              suggestionsNotifier.value = null;
+            }
+          });
+          return;
+        }
+      }
+
       currentlySelectedSuggestion ??= 0;
     }
   }
@@ -65,6 +80,10 @@ class CodeController extends CodeForgeController {
         composing: TextRange.empty,
       ),
     ]);
+
+    if (input == ":") {
+      suggestionsNotifier.value = null;
+    }
   }
 
   @override

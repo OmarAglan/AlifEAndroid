@@ -123,7 +123,8 @@ class _KeyButtonState extends State<KeyButton> {
       return Text(
         data,
         style: TextStyle(
-          fontSize: fontSize ?? kLargeFont,
+          fontSize: fontSize ?? kMediumFont,
+          fontFamily: kTerminalFont,
           color: widget.disabled ? context.secondary : color,
         ),
       );

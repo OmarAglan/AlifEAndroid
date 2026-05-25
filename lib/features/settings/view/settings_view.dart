@@ -211,7 +211,7 @@ class SettingsView extends StatelessWidget {
     BuildContext context, {
     required String title,
     required String value,
-    required List<String> items,
+    required Map<String, String> items,
     required Function(String) onChanged,
   }) {
     return Row(
@@ -222,18 +222,18 @@ class SettingsView extends StatelessWidget {
           style: ThemeText.title.copyWith(fontWeight: FontWeight.normal),
         ),
         DropdownButton<String>(
-          value: items.contains(value) ? value : items.first,
+          value: items.containsKey(value) ? value : kFonts.keys.first,
           dropdownColor: context.background,
-          underline: Container(),
-          items: items.map((String font) {
+          underline: const SizedBox.shrink(),
+          items: items.entries.map((entry) {
             return DropdownMenuItem<String>(
-              value: font,
+              value: entry.key,
               child: Text(
-                font
-                    .split("_")
-                    .map((e) => e[0].toUpperCase() + e.substring(1))
-                    .join(" "),
-                style: TextStyle(color: context.foreground, fontFamily: font),
+                entry.value,
+                style: TextStyle(
+                  color: context.foreground,
+                  fontFamily: entry.key,
+                ),
               ),
             );
           }).toList(),

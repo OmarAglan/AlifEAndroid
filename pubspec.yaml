@@ -7,10 +7,7 @@ environment:
     sdk: ">=3.11.0 <4.0.0"
 
 dependencies:
-    code_forge:
-        git:
-            url: https://github.com/heckmon/code_forge.git
-            ref: main
+    code_forge: ^9.10.0
     file_saver: ^0.3.1
     flutter:
         sdk: flutter

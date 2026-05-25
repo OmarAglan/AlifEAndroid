@@ -84,11 +84,10 @@ packages:
   code_forge:
     dependency: "direct main"
     description:
-      path: "."
-      ref: main
-      resolved-ref: "23cf14a3bfe14b1aeb0605ed8ca96e56456a76f6"
-      url: "https://github.com/heckmon/code_forge.git"
-    source: git
+      name: code_forge
+      sha256: "3e3520d94ec04c7c91330a5d410477da003299b4652f04c9a528f86e465b2d24"
+      url: "https://pub.dev"
+    source: hosted
     version: "9.10.0"
   collection:
     dependency: transitive

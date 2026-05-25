@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:lucide_icons_flutter/lucide_icons.dart";
 import "package:provider/provider.dart";
 
@@ -6,6 +7,7 @@ import "../../../../constants.dart";
 import "../../../../core/providers/terminal_provider.dart";
 import "../../../../core/theme/colors.dart";
 import "../../../../core/theme/text.dart";
+import "../../../../core/utils/show_message.dart";
 import "../../functions/run_command.dart";
 
 class TerminalTopBar extends StatelessWidget {
@@ -28,11 +30,22 @@ class TerminalTopBar extends StatelessWidget {
             children: [
               IconButton(
                 icon: Icon(
-                  Icons.clear_all_rounded,
+                  LucideIcons.listX,
                   color: context.foreground,
-                  size: kSmallFont * 2,
+                  size: kLargeFont,
                 ),
                 onPressed: data.clearOutput,
+              ),
+              IconButton(
+                icon: Icon(
+                  LucideIcons.copy,
+                  color: context.foreground,
+                  size: kLargeFont,
+                ),
+                onPressed: () async {
+                  await Clipboard.setData(ClipboardData(text: data.output));
+                  showMessage("تم نسخ مخرجات الطرفية بالكامل", isError: false);
+                },
               ),
               IconButton(
                 icon: Icon(

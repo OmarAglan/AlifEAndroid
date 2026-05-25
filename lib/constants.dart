@@ -6,13 +6,13 @@ import "generated/l10n.dart";
 
 const String kMainFont = "tajawal";
 const String kTerminalFont = "noto_kufi";
-const List<String> kFonts = [
-  kMainFont,
-  kTerminalFont,
-  "kawkab",
-  "hasubi",
-  "alaq_halab",
-];
+const Map<String, String> kFonts = {
+  kMainFont: "تجوال",
+  kTerminalFont: "كوفي",
+  "hasubi": "حاسوب",
+  "alaq_halab": "حلب",
+  "kawkab": "كويكب",
+};
 
 // Fonts Size
 const double kSoSmallFont = 12;

@@ -25,7 +25,7 @@ class TerminalOutputs extends StatelessWidget {
 
         return ListView.builder(
           reverse: true,
-          padding: const EdgeInsets.all(kSmallPadding),
+          padding: const EdgeInsets.only(top: kDefaultPadding * 1.5),
           itemCount: sessionIds.length,
           itemBuilder: (context, index) {
             final sessionId = sessionIds[index];
