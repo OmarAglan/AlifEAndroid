@@ -52,7 +52,7 @@ class About extends StatelessWidget {
           children: [
             TextButton.icon(
               icon: Icon(
-                LucideIcons.github,
+                LucideIcons.gitMerge,
                 color: context.secondary,
                 size: 13,
               ),

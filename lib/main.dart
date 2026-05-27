@@ -1,7 +1,9 @@
+import "package:code_forge/code_forge.dart";
 import "package:flutter/material.dart";
 import "package:flutter_localizations/flutter_localizations.dart";
 import "package:provider/provider.dart";
 import "package:shared_preferences/shared_preferences.dart";
+
 import "constants.dart";
 import "core/providers/settings_provider.dart";
 import "core/providers/terminal_provider.dart";
@@ -15,6 +17,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final prefs = await SharedPreferences.getInstance();
+  await RustLib.init();
 
   runApp(
     MultiProvider(

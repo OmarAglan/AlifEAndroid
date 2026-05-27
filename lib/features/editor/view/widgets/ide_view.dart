@@ -92,7 +92,7 @@ class _IDEViewState extends State<IDEView> {
       // features
       enableFolding: settings.get(AppSetting.enableFolding),
       enableGuideLines: settings.get(AppSetting.enableGuideLines),
-      enableSuggestions: settings.get(AppSetting.enableSuggestions),
+      enableLocalSuggestions: settings.get(AppSetting.enableSuggestions),
       lineWrap: settings.get(AppSetting.lineWrap),
       tabSize: settings.get(AppSetting.tabSize),
       customCodeSnippets: alifSnippets,

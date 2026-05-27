@@ -40,11 +40,11 @@ class ShortcutsProvider extends ChangeNotifier {
       SymbolData("!="),
       SymbolData("&&"),
       SymbolData("||"),
-      SymbolData("-"),
+      SymbolData(""),
       SymbolData("?"),
     ],
     [
-      SymbolData("."),
+      SymbolData("-"),
       SymbolData(","),
       SymbolData("<"),
       SymbolData(">"),
